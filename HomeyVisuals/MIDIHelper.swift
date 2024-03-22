@@ -107,7 +107,7 @@ final class MIDIHelper: ObservableObject {
         let turnedOnNotes = self.turnedOnNotes.sorted(by: <)
         if !turnedOnNotes.isEmpty {
             for note in turnedOnNotes {
-                integerNotes.append(mod(note - turnedOnNotes[0], 12))
+                integerNotes.append((note - (self.upwardPitchDirection ? turnedOnNotes.first! : turnedOnNotes.last!)) % 12)
             }
         }
         return integerNotes
@@ -118,46 +118,59 @@ final class MIDIHelper: ObservableObject {
         
         DispatchQueue.main.async {
             self.chordIntegerLabel = chord.map {note in
-                if (self.upwardPitchDirection) {
-                    String(note)
-                } else {
-                    String(note - chord.last!)
-                }
+                String(note)
             }.joined(separator: ",")
         }
     }
     
-    public func updateChordLabel() {
-        let chord = integerNotes()
-        let majorMinor: String = if (chord.contains(4) && chord.contains(7)) ||
-            (chord.contains(3) && chord.contains(8)) ||
-            (chord.contains(5) && chord.contains(9))
-        {
-            if self.upwardPitchDirection {
-                "Major"
-                //                TODO: add images for shorthand
-                //                Image(systemName: "plus.square.fill")
-                //                    .foregroundColor(Default.majorColor)
-                //                Image(systemName: "greaterthan.square")
-                //                    .foregroundColor(Default.majorColor)
-            } else {
-                "Mixolydian"
-            }
-        } else if (chord.contains(3) && chord.contains(7)) ||
-            (chord.contains(4) && chord.contains(9)) ||
-            (chord.contains(5) && chord.contains(8)) {
-            if self.upwardPitchDirection {
-                "Minor"
-            } else {
-                "Phrygian"
-            }
+    private func extraInterval(chord: Array<Int>) -> String {
+        return if chord.contains(8) || chord.contains(9) ||
+                    chord.contains(-8) || chord.contains(-9) {
+            "6"
+        } else if chord.contains(10) || chord.contains(11) ||
+                    chord.contains(-10) || chord.contains(-11) {
+            "7"
         } else {
             ""
         }
-        
-        DispatchQueue.main.async {
-            self.chordLabel = "\(majorMinor)"
+    }
+    
+    public func updateChordLabel() {
+        if !turnedOnNotes.isEmpty {
+            
+            let chordRoot: Int = self.upwardPitchDirection ? self.turnedOnNotes.sorted(by: <).first! : self.turnedOnNotes.sorted(by: <).last!
+            let chord = integerNotes()
+            
+            let majorMinor: String = if (chord.contains(4) && chord.contains(7)) ||
+            (chord.contains(3) && chord.contains(8)) ||
+            (chord.contains(5) && chord.contains(9)) {
+                "Major"
+            } else if (chord.contains(-3) && chord.contains(-7)) ||
+                        (chord.contains(-4) && chord.contains(-9)) ||
+                        (chord.contains(-5) && chord.contains(-8)) {
+                "Mixolydian"
+            } else if (chord.contains(3) && chord.contains(7)) ||
+                        (chord.contains(4) && chord.contains(9)) ||
+                        (chord.contains(5) && chord.contains(8)) {
+                "Minor"
+            } else if (chord.contains(-4) && chord.contains(-7)) ||
+                        (chord.contains(-3) && chord.contains(-8)) ||
+                        (chord.contains(-5) && chord.contains(-9)) {
+                "Phrygian"
+            } else {
+                ""
+            }
+            DispatchQueue.main.async {
+                // TODO: figure out 6th and 7th chords
+                // self.chordLabel = "\(chordRoot) \(majorMinor) \(self.extraInterval(chord: chord))"
+                self.chordLabel = "\(chordRoot) \(majorMinor) \(self.extraInterval(chord: chord))"
+            }
+        } else {
+            DispatchQueue.main.async {
+                self.chordLabel = ""
+            }
         }
+            
     }
     
     public func updateDegreeLabel() {

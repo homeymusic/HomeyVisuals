@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xl="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="900 1121 136 113" width="136" height="113">
+  <defs/>
+  <g id="Diamond_Gold" stroke-dasharray="none" fill="none" fill-opacity="1" stroke-opacity="1" stroke="none">
+    <title>Diamond Gold</title>
+    <g id="Diamond_Gold_Layer_3">
+      <title>Layer 3</title>
+      <g id="Group_24">
+        <g id="Group_31">
+          <g id="Graphic_36">
+            <path d="M 949.75 1121.0792 L 927.25 1121.0792 L 901 1154.8292 L 938.5 1154.8292 Z" fill="white"/>
+          </g>
+          <g id="Graphic_35">
+            <path d="M 1036 1154.8292 L 1009.75 1121.0792 L 987.25 1121.0792 L 998.5 1154.8292 Z" fill="white"/>
+          </g>
+          <g id="Graphic_34">
+            <path d="M 998.5 1154.8292 L 1036 1154.8292 L 968.5 1233.5792 Z" fill="white"/>
+          </g>
+          <g id="Graphic_33">
+            <path d="M 938.5 1154.8292 L 901 1154.8292 L 968.5 1233.5792 Z M 949.75 1121.0792 L 938.5 1154.8292 L 998.5 1154.8292 L 987.25 1121.0792 Z" fill="white"/>
+          </g>
+          <g id="Graphic_32">
+            <path d="M 968.5 1233.5792 L 938.5 1154.8292 L 998.5 1154.8292 Z" fill="white"/>
+          </g>
+        </g>
+        <g id="Group_25">
+          <g id="Graphic_30">
+            <path d="M 949.75 1121.0792 L 927.25 1121.0792 L 901 1154.8292 L 938.5 1154.8292 Z" fill="#ffb000" fill-opacity=".25"/>
+          </g>
+          <g id="Graphic_29">
+            <path d="M 1036 1154.8292 L 1009.75 1121.0792 L 987.25 1121.0792 L 998.5 1154.8292 Z" fill="#ffb000" fill-opacity=".7"/>
+          </g>
+          <g id="Graphic_28">
+            <path d="M 998.5 1154.8292 L 1036 1154.8292 L 968.5 1233.5792 Z" fill="#ffb000" fill-opacity=".9"/>
+          </g>
+          <g id="Graphic_27">
+            <path d="M 938.5 1154.8292 L 901 1154.8292 L 968.5 1233.5792 Z M 949.75 1121.0792 L 938.5 1154.8292 L 998.5 1154.8292 L 987.25 1121.0792 Z" fill="#ffb000" fill-opacity=".5"/>
+          </g>
+          <g id="Graphic_26">
+            <path d="M 968.5 1233.5792 L 938.5 1154.8292 L 998.5 1154.8292 Z" fill="#ffb000" fill-opacity=".6"/>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

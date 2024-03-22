@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xl="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="597 1121 136 113" width="136" height="113">
+  <defs/>
+  <g id="Diamond_Blue" stroke-dasharray="none" fill="none" fill-opacity="1" stroke-opacity="1" stroke="none">
+    <title>Diamond Blue</title>
+    <g id="Diamond_Blue_Layer_3">
+      <title>Layer 3</title>
+      <g id="Group_37">
+        <g id="Group_44">
+          <g id="Graphic_49">
+            <path d="M 646.75 1121.0792 L 624.25 1121.0792 L 598 1154.8292 L 635.5 1154.8292 Z" fill="white"/>
+          </g>
+          <g id="Graphic_48">
+            <path d="M 733 1154.8292 L 706.75 1121.0792 L 684.25 1121.0792 L 695.5 1154.8292 Z" fill="white"/>
+          </g>
+          <g id="Graphic_47">
+            <path d="M 695.5 1154.8292 L 733 1154.8292 L 665.5 1233.5792 Z" fill="white"/>
+          </g>
+          <g id="Graphic_46">
+            <path d="M 635.5 1154.8292 L 598 1154.8292 L 665.5 1233.5792 Z M 646.75 1121.0792 L 635.5 1154.8292 L 695.5 1154.8292 L 684.25 1121.0792 Z" fill="white"/>
+          </g>
+          <g id="Graphic_45">
+            <path d="M 665.5 1233.5792 L 635.5 1154.8292 L 695.5 1154.8292 Z" fill="white"/>
+          </g>
+        </g>
+        <g id="Group_38">
+          <g id="Graphic_43">
+            <path d="M 646.75 1121.0792 L 624.25 1121.0792 L 598 1154.8292 L 635.5 1154.8292 Z" fill="#8ac5ff" fill-opacity=".25"/>
+          </g>
+          <g id="Graphic_42">
+            <path d="M 733 1154.8292 L 706.75 1121.0792 L 684.25 1121.0792 L 695.5 1154.8292 Z" fill="#8ac5ff" fill-opacity=".7"/>
+          </g>
+          <g id="Graphic_41">
+            <path d="M 695.5 1154.8292 L 733 1154.8292 L 665.5 1233.5792 Z" fill="#8ac5ff" fill-opacity=".9"/>
+          </g>
+          <g id="Graphic_40">
+            <path d="M 635.5 1154.8292 L 598 1154.8292 L 665.5 1233.5792 Z M 646.75 1121.0792 L 635.5 1154.8292 L 695.5 1154.8292 L 684.25 1121.0792 Z" fill="#8ac5ff" fill-opacity=".5"/>
+          </g>
+          <g id="Graphic_39">
+            <path d="M 665.5 1233.5792 L 635.5 1154.8292 L 695.5 1154.8292 Z" fill="#8ac5ff" fill-opacity=".6"/>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
