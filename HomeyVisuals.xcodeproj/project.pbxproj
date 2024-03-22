@@ -8,18 +8,24 @@
 
 /* Begin PBXBuildFile section */
 		B03F8D4B2BADC80700B38395 /* HomeyVisualsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03F8D4A2BADC80700B38395 /* HomeyVisualsApp.swift */; };
-		B03F8D4D2BADC80700B38395 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03F8D4C2BADC80700B38395 /* ContentView.swift */; };
 		B03F8D4F2BADC80900B38395 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B03F8D4E2BADC80900B38395 /* Assets.xcassets */; };
 		B03F8D522BADC80900B38395 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B03F8D512BADC80900B38395 /* Preview Assets.xcassets */; };
+		B03F8D5C2BADC82700B38395 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03F8D592BADC82700B38395 /* ContentView.swift */; };
+		B03F8D5D2BADC82700B38395 /* MIDIHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03F8D5A2BADC82700B38395 /* MIDIHelper.swift */; };
+		B03F8D5E2BADC82700B38395 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03F8D5B2BADC82700B38395 /* Utilities.swift */; };
+		B03F8D612BADC88C00B38395 /* MIDIKit in Frameworks */ = {isa = PBXBuildFile; productRef = B03F8D602BADC88C00B38395 /* MIDIKit */; };
+		B03F8D632BADC88C00B38395 /* MIDIKitIO in Frameworks */ = {isa = PBXBuildFile; productRef = B03F8D622BADC88C00B38395 /* MIDIKitIO */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		B03F8D472BADC80700B38395 /* HomeyVisuals.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HomeyVisuals.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B03F8D4A2BADC80700B38395 /* HomeyVisualsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeyVisualsApp.swift; sourceTree = "<group>"; };
-		B03F8D4C2BADC80700B38395 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B03F8D4E2BADC80900B38395 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B03F8D512BADC80900B38395 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		B03F8D532BADC80900B38395 /* HomeyVisuals.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HomeyVisuals.entitlements; sourceTree = "<group>"; };
+		B03F8D592BADC82700B38395 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B03F8D5A2BADC82700B38395 /* MIDIHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MIDIHelper.swift; sourceTree = "<group>"; };
+		B03F8D5B2BADC82700B38395 /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -27,6 +33,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B03F8D632BADC88C00B38395 /* MIDIKitIO in Frameworks */,
+				B03F8D612BADC88C00B38395 /* MIDIKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -53,7 +61,9 @@
 			isa = PBXGroup;
 			children = (
 				B03F8D4A2BADC80700B38395 /* HomeyVisualsApp.swift */,
-				B03F8D4C2BADC80700B38395 /* ContentView.swift */,
+				B03F8D592BADC82700B38395 /* ContentView.swift */,
+				B03F8D5A2BADC82700B38395 /* MIDIHelper.swift */,
+				B03F8D5B2BADC82700B38395 /* Utilities.swift */,
 				B03F8D4E2BADC80900B38395 /* Assets.xcassets */,
 				B03F8D532BADC80900B38395 /* HomeyVisuals.entitlements */,
 				B03F8D502BADC80900B38395 /* Preview Content */,
@@ -85,6 +95,10 @@
 			dependencies = (
 			);
 			name = HomeyVisuals;
+			packageProductDependencies = (
+				B03F8D602BADC88C00B38395 /* MIDIKit */,
+				B03F8D622BADC88C00B38395 /* MIDIKitIO */,
+			);
 			productName = HomeyVisuals;
 			productReference = B03F8D472BADC80700B38395 /* HomeyVisuals.app */;
 			productType = "com.apple.product-type.application";
@@ -113,6 +127,9 @@
 				Base,
 			);
 			mainGroup = B03F8D3E2BADC80700B38395;
+			packageReferences = (
+				B03F8D5F2BADC88C00B38395 /* XCRemoteSwiftPackageReference "MIDIKit" */,
+			);
 			productRefGroup = B03F8D482BADC80700B38395 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -139,7 +156,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B03F8D4D2BADC80700B38395 /* ContentView.swift in Sources */,
+				B03F8D5D2BADC82700B38395 /* MIDIHelper.swift in Sources */,
+				B03F8D5C2BADC82700B38395 /* ContentView.swift in Sources */,
+				B03F8D5E2BADC82700B38395 /* Utilities.swift in Sources */,
 				B03F8D4B2BADC80700B38395 /* HomeyVisualsApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -341,6 +360,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B03F8D5F2BADC88C00B38395 /* XCRemoteSwiftPackageReference "MIDIKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/orchetect/MIDIKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.5;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B03F8D602BADC88C00B38395 /* MIDIKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B03F8D5F2BADC88C00B38395 /* XCRemoteSwiftPackageReference "MIDIKit" */;
+			productName = MIDIKit;
+		};
+		B03F8D622BADC88C00B38395 /* MIDIKitIO */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B03F8D5F2BADC88C00B38395 /* XCRemoteSwiftPackageReference "MIDIKit" */;
+			productName = MIDIKitIO;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B03F8D3F2BADC80700B38395 /* Project object */;
 }
