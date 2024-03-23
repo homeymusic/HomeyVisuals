@@ -114,31 +114,37 @@ struct ContentView: View {
                     .scaledToFit()
                     .offset(y: midiHelper.turnedOnNotes.contains(60) ? -300 : 0 )
                     .animation(.spring(), value: midiHelper.turnedOnNotes.contains(60))
+                    .scaleEffect(x: -1)
                 Image("stone_blue")         // m2
                     .resizable()
                     .scaledToFit()
                     .offset(y: midiHelper.turnedOnNotes.contains(61) ? -300 : 0 )
                     .animation(.spring(), value: midiHelper.turnedOnNotes.contains(61))
+                    .scaleEffect(x: -1)
                 Image("stone_gold")         // M2
                     .resizable()
                     .scaledToFit()
                     .offset(y: midiHelper.turnedOnNotes.contains(62) ? -300 : 0 )
                     .animation(.spring(), value: midiHelper.turnedOnNotes.contains(62))
+                    .scaleEffect(x: -1)
                 Image("diamond_blue")       // m3
                     .resizable()
                     .scaledToFit()
                     .offset(y: midiHelper.turnedOnNotes.contains(63) ? -300 : 0 )
                     .animation(.spring(), value: midiHelper.turnedOnNotes.contains(63))
+                    .scaleEffect(x: -1)
                 Image("diamond_gold")       // M3
                     .resizable()
                     .scaledToFit()
                     .offset(y: midiHelper.turnedOnNotes.contains(64) ? -300 : 0 )
                     .animation(.spring(), value: midiHelper.turnedOnNotes.contains(64))
+                    .scaleEffect(x: -1)
                 Image("tent")               // P4
                     .resizable()
                     .scaledToFit()
                     .offset(y: midiHelper.turnedOnNotes.contains(65) ? -300 : 0 )
                     .animation(.spring(), value: midiHelper.turnedOnNotes.contains(65))
+                    .scaleEffect(x: -1)
                 Image("stone_orange")       // tt
                     .resizable()
                     .scaledToFit()
