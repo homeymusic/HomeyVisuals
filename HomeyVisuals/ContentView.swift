@@ -37,7 +37,8 @@ struct ContentView: View {
     
     var body: some View {
         @State var xScaleEffect: CGFloat = midiHelper.upwardPitchDirection ? +1.0 : -1.0
-        
+        let tritoneNote = midiHelper.tonicNote + (midiHelper.upwardPitchDirection ? 6 : -6)
+
         VStack {
             midiInConnectionView
                 .padding(5)
@@ -67,10 +68,11 @@ struct ContentView: View {
                         .scaledToFit()
                         .offset(y: midiHelper.turnedOnPitches.contains($0) ? -3 * imageHeight : 0 )
                         .animation(.spring(), value: midiHelper.turnedOnPitches.contains($0))
-                        .scaleEffect(x: -1)
+                        .scaleEffect(x: $0 < tritoneNote ? -1 : 1)
                 }
             }
-            .frame(height: 200)
+            .frame(height: 75)
+
             Spacer()
             HStack(alignment: .bottom, spacing: 9) {
                 ForEach(48...84, id: \.self) {
@@ -82,7 +84,7 @@ struct ContentView: View {
                         .scaledToFit()
                         .offset(y: midiHelper.turnedOnPitches.contains($0) ? -3 * imageHeight : 0 )
                         .animation(.spring(), value: midiHelper.turnedOnPitches.contains($0))
-                        .scaleEffect(x: -1)
+                        .scaleEffect(x: $0 < tritoneNote ? -1 : 1)
                 }
             }
             .frame(height: 75)
