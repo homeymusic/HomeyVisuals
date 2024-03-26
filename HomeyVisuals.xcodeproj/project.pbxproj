@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,6 +15,10 @@
 		B03F8D5E2BADC82700B38395 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03F8D5B2BADC82700B38395 /* Utilities.swift */; };
 		B03F8D612BADC88C00B38395 /* MIDIKit in Frameworks */ = {isa = PBXBuildFile; productRef = B03F8D602BADC88C00B38395 /* MIDIKit */; };
 		B03F8D632BADC88C00B38395 /* MIDIKitIO in Frameworks */ = {isa = PBXBuildFile; productRef = B03F8D622BADC88C00B38395 /* MIDIKitIO */; };
+		B0C8EFDB2BB37838005874C3 /* Tonic in Frameworks */ = {isa = PBXBuildFile; productRef = B0C8EFDA2BB37838005874C3 /* Tonic */; };
+		B0E6937A2BB3774400A584B4 /* Tonic in Frameworks */ = {isa = PBXBuildFile; productRef = B0E693792BB3774400A584B4 /* Tonic */; };
+		B0E6937C2BB3778500A584B4 /* Tonic in Frameworks */ = {isa = PBXBuildFile; productRef = B0E6937B2BB3778500A584B4 /* Tonic */; };
+		B0E6937F2BB377C800A584B4 /* Tonic in Frameworks */ = {isa = PBXBuildFile; productRef = B0E6937E2BB377C800A584B4 /* Tonic */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,7 +37,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B0C8EFDB2BB37838005874C3 /* Tonic in Frameworks */,
+				B0E6937A2BB3774400A584B4 /* Tonic in Frameworks */,
 				B03F8D632BADC88C00B38395 /* MIDIKitIO in Frameworks */,
+				B0E6937C2BB3778500A584B4 /* Tonic in Frameworks */,
+				B0E6937F2BB377C800A584B4 /* Tonic in Frameworks */,
 				B03F8D612BADC88C00B38395 /* MIDIKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -98,6 +106,10 @@
 			packageProductDependencies = (
 				B03F8D602BADC88C00B38395 /* MIDIKit */,
 				B03F8D622BADC88C00B38395 /* MIDIKitIO */,
+				B0E693792BB3774400A584B4 /* Tonic */,
+				B0E6937B2BB3778500A584B4 /* Tonic */,
+				B0E6937E2BB377C800A584B4 /* Tonic */,
+				B0C8EFDA2BB37838005874C3 /* Tonic */,
 			);
 			productName = HomeyVisuals;
 			productReference = B03F8D472BADC80700B38395 /* HomeyVisuals.app */;
@@ -129,6 +141,7 @@
 			mainGroup = B03F8D3E2BADC80700B38395;
 			packageReferences = (
 				B03F8D5F2BADC88C00B38395 /* XCRemoteSwiftPackageReference "MIDIKit" */,
+				B0C8EFD92BB37838005874C3 /* XCLocalSwiftPackageReference "../Tonic" */,
 			);
 			productRefGroup = B03F8D482BADC80700B38395 /* Products */;
 			projectDirPath = "";
@@ -361,6 +374,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		B0C8EFD92BB37838005874C3 /* XCLocalSwiftPackageReference "../Tonic" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Tonic;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		B03F8D5F2BADC88C00B38395 /* XCRemoteSwiftPackageReference "MIDIKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -382,6 +402,22 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B03F8D5F2BADC88C00B38395 /* XCRemoteSwiftPackageReference "MIDIKit" */;
 			productName = MIDIKitIO;
+		};
+		B0C8EFDA2BB37838005874C3 /* Tonic */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Tonic;
+		};
+		B0E693792BB3774400A584B4 /* Tonic */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Tonic;
+		};
+		B0E6937B2BB3778500A584B4 /* Tonic */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Tonic;
+		};
+		B0E6937E2BB377C800A584B4 /* Tonic */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Tonic;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

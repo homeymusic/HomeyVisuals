@@ -14,12 +14,20 @@ final class MIDIHelper: ObservableObject {
     private weak var midiManager: ObservableMIDIManager?
     
     @Published
-    public private(set) var turnedOnNotes = Set<Int>() {
+    public private(set) var turnedOnPitches = Set<Int>() {
         didSet {
-            if oldValue != self.turnedOnNotes {
+            if oldValue != self.turnedOnPitches {
                 self.updateChordIntegerLabel()
                 self.updateChordLabel()
                 self.updateDegreeLabel()
+            }
+        }
+    }
+    
+    @Published
+    public private(set) var paletteOfNotes = Array<Int>() {
+        didSet {
+            if oldValue != self.paletteOfNotes {
             }
         }
     }
@@ -34,7 +42,13 @@ final class MIDIHelper: ObservableObject {
     public private(set) var degreeLabel: String = ""
 
     @Published
-    public private(set) var tonicNote: Int = 60
+    public private(set) var tonicNote: Int = 60 {
+        didSet {
+            if oldValue != self.tonicNote {
+                paletteOfNotes = []
+            }
+        }
+    }
 
     @Published
     public private(set) var upwardPitchDirection: Bool = true
@@ -81,19 +95,24 @@ final class MIDIHelper: ObservableObject {
                 }
             }
         case let .noteOn(payload):
-            if (!turnedOnNotes.contains(payload.note.number.intValue)) {
+            if (!turnedOnPitches.contains(payload.note.number.intValue)) {
                 DispatchQueue.main.async {
-                    self.turnedOnNotes.insert(payload.note.number.intValue)
+                    self.turnedOnPitches.insert(payload.note.number.intValue)
+                }
+            }
+            if (!paletteOfNotes.contains(payload.note.number.intValue)) {
+                DispatchQueue.main.async {
+                    self.paletteOfNotes.append(payload.note.number.intValue)
                 }
             }
         case let .noteOff(payload):
             DispatchQueue.main.async {
-                self.turnedOnNotes.remove(payload.note.number.intValue)
+                self.turnedOnPitches.remove(payload.note.number.intValue)
             }
         default:
             print("other")
         }
-        print("turnedOnNotes", turnedOnNotes)
+        print("turnedOnNotes", turnedOnPitches)
     }
 
     // MARK: - MIDI Input Connection
@@ -104,7 +123,7 @@ final class MIDIHelper: ObservableObject {
     
     private func integerNotes() -> Array<Int> {
         var integerNotes: Array<Int> = Array<Int>()
-        let turnedOnNotes = self.turnedOnNotes.sorted(by: <)
+        let turnedOnNotes = self.turnedOnPitches.sorted(by: <)
         if !turnedOnNotes.isEmpty {
             for note in turnedOnNotes {
                 integerNotes.append((note - (self.upwardPitchDirection ? turnedOnNotes.first! : turnedOnNotes.last!)) % 12)
@@ -136,9 +155,9 @@ final class MIDIHelper: ObservableObject {
     }
     
     public func updateChordLabel() {
-        if !turnedOnNotes.isEmpty {
+        if !turnedOnPitches.isEmpty {
             
-            let chordRoot: Int = self.upwardPitchDirection ? self.turnedOnNotes.sorted(by: <).first! : self.turnedOnNotes.sorted(by: <).last!
+            let chordRoot: Int = self.upwardPitchDirection ? self.turnedOnPitches.sorted(by: <).first! : self.turnedOnPitches.sorted(by: <).last!
             let chord = integerNotes()
             
             let majorMinor: String = if (chord.contains(4) && chord.contains(7)) ||
@@ -175,13 +194,13 @@ final class MIDIHelper: ObservableObject {
     
     public func updateDegreeLabel() {
         var scaleDegree: String = ""
-        if !turnedOnNotes.isEmpty {
+        if !turnedOnPitches.isEmpty {
             
             let accidental = self.upwardPitchDirection ? "♭" : "♯"
             let prefix = self.upwardPitchDirection ? "" : "<"
             let caret = "\u{0302}"
             let tritone = self.upwardPitchDirection ? "\(prefix)♭5\(caret)" : "\(prefix)♯5\(caret)"
-            let turnedOnNotes = self.turnedOnNotes.sorted(by: <)
+            let turnedOnNotes = self.turnedOnPitches.sorted(by: <)
             print("turnedOnNotes.last!", turnedOnNotes.last!)
             let rootToTonicDistance = self.upwardPitchDirection ? (turnedOnNotes.first!  - self.tonicNote) : (self.tonicNote - turnedOnNotes.last!)
             
