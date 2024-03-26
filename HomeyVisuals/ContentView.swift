@@ -57,32 +57,35 @@ struct ContentView: View {
             
             Text("Palette: \(midiHelper.paletteOfNotes)")
             
+            Button(action: {midiHelper.resetPaletteOfNotes()}, label: {
+                Text("Reset")
+            })
+            
             Spacer()
             HStack(alignment: .bottom, spacing: 9) {
                 ForEach(midiHelper.paletteOfNotes.sorted(by: <), id: \.self) {
-                    let imageHeight = 75.0
                     let interval = modulo(Int8(Int($0 - midiHelper.tonicNote)), 12)
                     let emojiName = IntervalEmoji.homey[Int(interval)]
                     Image(emojiName)
                         .resizable()
                         .scaledToFit()
-                        .offset(y: midiHelper.turnedOnPitches.contains($0) ? -3 * imageHeight : 0 )
+                        .offset(y: midiHelper.turnedOnPitches.contains($0) ? -300 : 0 )
                         .animation(.spring(), value: midiHelper.turnedOnPitches.contains($0))
                         .scaleEffect(x: $0 < tritoneNote ? -1 : 1)
                 }
             }
+            .animation(.easeInOut)
             .frame(height: 75)
 
             Spacer()
             HStack(alignment: .bottom, spacing: 9) {
                 ForEach(48...84, id: \.self) {
-                    let imageHeight = 75.0
                     let interval = modulo(Int8(Int($0 - midiHelper.tonicNote)), 12)
                     let emojiName = IntervalEmoji.homey[Int(interval)]
                     Image(emojiName)
                         .resizable()
                         .scaledToFit()
-                        .offset(y: midiHelper.turnedOnPitches.contains($0) ? -3 * imageHeight : 0 )
+                        .offset(y: midiHelper.turnedOnPitches.contains($0) ? -50 : 0 )
                         .animation(.spring(), value: midiHelper.turnedOnPitches.contains($0))
                         .scaleEffect(x: $0 < tritoneNote ? -1 : 1)
                 }

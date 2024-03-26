@@ -31,6 +31,9 @@ final class MIDIHelper: ObservableObject {
             }
         }
     }
+    public func resetPaletteOfNotes() {
+        self.paletteOfNotes = []
+    }
     
     @Published
     public private(set) var chordIntegerLabel: String = ""
@@ -45,7 +48,7 @@ final class MIDIHelper: ObservableObject {
     public private(set) var tonicNote: Int = 60 {
         didSet {
             if oldValue != self.tonicNote {
-                paletteOfNotes = []
+                resetPaletteOfNotes()
             }
         }
     }
