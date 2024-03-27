@@ -29,7 +29,7 @@ final class MIDIHelper: ObservableObject {
     
 
     @Published
-    public private(set) var paletteOfNotes = Array<Int>() {
+    public private(set) var paletteOfNotes = Set<Int>() {
         didSet {
             if oldValue != self.paletteOfNotes {
             }
@@ -54,7 +54,7 @@ final class MIDIHelper: ObservableObject {
     public private(set) var degreeLabel: String = ""
 
     @Published
-    public private(set) var tonicNote: Int = 60 {
+    public private(set) var tonicNote: Int = 64 {
         didSet {
             if oldValue != self.tonicNote {
                 resetPaletteOfNotes()
@@ -63,7 +63,7 @@ final class MIDIHelper: ObservableObject {
     }
 
     @Published
-    public private(set) var upwardPitchDirection: Bool = true
+    public private(set) var upwardPitchDirection: Bool = false
 
     public init() { }
     
@@ -114,7 +114,7 @@ final class MIDIHelper: ObservableObject {
             }
             if (!paletteOfNotes.contains(payload.note.number.intValue)) {
                 DispatchQueue.main.async {
-                    self.paletteOfNotes.append(payload.note.number.intValue)
+                    self.paletteOfNotes.insert(payload.note.number.intValue)
                 }
             }
         case let .noteOff(payload):

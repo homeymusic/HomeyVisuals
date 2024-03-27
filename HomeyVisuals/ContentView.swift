@@ -79,7 +79,7 @@ struct ContentView: View {
 
             Spacer()
             HStack(alignment: .bottom, spacing: 9) {
-                ForEach(48...84, id: \.self) {
+                ForEach(0...127, id: \.self) {
                     let interval = modulo(Int8(Int($0 - midiHelper.tonicNote)), 12)
                     let emojiName = IntervalEmoji.homey[Int(interval)]
                     Image(emojiName)
