@@ -14,7 +14,7 @@ public struct IntervalEmoji {
     public static var homey: [String] {
         ["home", 
          "stone_blue", "stone_gold", "diamond_blue", "diamond_gold", 
-         "tent", "stone_orange", "tent",
+         "castle_blue", "stone_orange", "castle_gold",
          "diamond_blue", "diamond_gold", "stone_blue", "stone_gold",
         ]
     }
@@ -57,7 +57,7 @@ struct ContentView: View {
             
             Text("Palette: \(midiHelper.paletteOfNotes)")
             
-            Button(action: {midiHelper.resetPaletteOfNotes()}, label: {
+            Button(action: {midiHelper.reset()}, label: {
                 Text("Reset")
             })
             

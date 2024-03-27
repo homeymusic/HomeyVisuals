@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xl="http://www.w3.org/1999/xlink" version="1.1" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="0 0 36 32" width="36" height="32">
+  <defs/>
+  <g id="Canvas_305" stroke="none" fill="none" fill-opacity="1" stroke-opacity="1" stroke-dasharray="none">
+    <title>Canvas 305</title>
+    <g id="Canvas_305_Layer_1">
+      <title>Layer 1</title>
+      <g id="Graphic_2">
+        <rect x="4" y="13" width="28" height="19" fill="#ccd6dd"/>
+      </g>
+      <g id="Graphic_3">
+        <rect x="6" y="9" width="23" height="5" fill="#ffb000"/>
+      </g>
+      <g id="Graphic_4">
+        <path d="M 1 8 L 1 30 C 1 31.104 1.896 32 3 32 L 7 32 L 7 8 Z M 29 8 L 29 32 L 33 32 C 34.104 32 35 31.104 35 30 L 35 8 Z" fill="#aab8c2"/>
+      </g>
+      <g id="Graphic_5">
+        <rect x="14" y="18" width="8" height="11" fill="#f2f9ff"/>
+      </g>
+      <g id="Graphic_6">
+        <path d="M 22 15 C 21.705 15 21.442 15.391 21.26 16 L 14.74 16 C 14.557 15.391 14.295 15 14 15 C 13.448 15 13 16.344 13 18 C 13 19.657 13.448 21 14 21 C 14.552 21 15 19.657 15 18 L 21 18 C 21 19.657 21.447 21 22 21 C 22.553 21 23 19.657 23 18 C 23 16.344 22.553 15 22 15 Z" fill="#ffb000"/>
+      </g>
+      <g id="Graphic_7">
+        <path d="M 3 13 L 5 13 L 5 15 L 3 15 Z M 9 16 L 11 16 L 11 18 L 9 18 Z M 25 16 L 27 16 L 27 18 L 25 18 Z M 9 20 L 11 20 L 11 22 L 9 22 Z M 25 20 L 27 20 L 27 22 L 25 22 Z M 3 17 L 5 17 L 5 19 L 3 19 Z M 31 13 L 33 13 L 33 15 L 31 15 Z M 31 17 L 33 17 L 33 19 L 31 19 Z" fill="#66757f"/>
+      </g>
+      <g id="Graphic_8">
+        <rect x="13" y="18" width="10" height="4" fill="#f2f9ff"/>
+      </g>
+      <g id="Graphic_9">
+        <path d="M 18 22 C 16.896 22 16 22.896 16 24 L 16 29 L 20 29 L 20 24 C 20 22.896 19.104 22 18 22 Z" fill="#66757f"/>
+      </g>
+      <g id="Graphic_10">
+        <rect x="12" y="29" width="12" height="3" fill="#8899a6"/>
+      </g>
+      <g id="Graphic_11">
+        <path d="M 1 8 L 7 8 C 7 8 5 0 4 0 C 3 0 1 8 1 8 Z M 29 8 L 35 8 C 35 8 33 0 32 0 C 31 0 29 8 29 8 Z" fill="#ffb000"/>
+      </g>
+      <g id="Graphic_12">
+        <path d="M 8 10 C 8 10.552 7.552 11 7 11 L 1 11 C .448 11 0 10.552 0 10 C 0 9.448 .448 9 1 9 L 7 9 C 7.552 9 8 9.448 8 10 Z M 36 10 C 36 10.552 35.553 11 35 11 L 29 11 C 28.447 11 28 10.552 28 10 C 28 9.448 28.447 9 29 9 L 35 9 C 35.553 9 36 9.448 36 10 Z" fill="#ccd6dd"/>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -23,7 +23,11 @@ final class MIDIHelper: ObservableObject {
             }
         }
     }
+    public func resetTurnedOnPitches() {
+        self.turnedOnPitches = []
+    }
     
+
     @Published
     public private(set) var paletteOfNotes = Array<Int>() {
         didSet {
@@ -35,6 +39,11 @@ final class MIDIHelper: ObservableObject {
         self.paletteOfNotes = []
     }
     
+    public func reset() {
+        resetPaletteOfNotes()
+        resetTurnedOnPitches()
+    }
+
     @Published
     public private(set) var chordIntegerLabel: String = ""
 
