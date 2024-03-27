@@ -96,6 +96,8 @@ final class MIDIHelper: ObservableObject {
         switch event {
         case let .cc(payload):
             print("payload.controller", payload.controller)
+            print("MIDIEvent.CC.Controller.generalPurpose1", MIDIEvent.CC.Controller.generalPurpose1)
+            print("MIDIEvent.CC.Controller.generalPurpose2", MIDIEvent.CC.Controller.generalPurpose2)
             DispatchQueue.main.async {
                 switch payload.controller {
                 case MIDIEvent.CC.Controller.generalPurpose1:
