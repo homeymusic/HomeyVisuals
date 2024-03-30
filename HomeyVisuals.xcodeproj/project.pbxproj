@@ -15,6 +15,7 @@
 		B03F8D5E2BADC82700B38395 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03F8D5B2BADC82700B38395 /* Utilities.swift */; };
 		B03F8D612BADC88C00B38395 /* MIDIKit in Frameworks */ = {isa = PBXBuildFile; productRef = B03F8D602BADC88C00B38395 /* MIDIKit */; };
 		B03F8D632BADC88C00B38395 /* MIDIKitIO in Frameworks */ = {isa = PBXBuildFile; productRef = B03F8D622BADC88C00B38395 /* MIDIKitIO */; };
+		B0C088012BB8284600E454A0 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = B0C088002BB8284600E454A0 /* InfoPlist.xcstrings */; };
 		B0C8EFDB2BB37838005874C3 /* Tonic in Frameworks */ = {isa = PBXBuildFile; productRef = B0C8EFDA2BB37838005874C3 /* Tonic */; };
 		B0E6937A2BB3774400A584B4 /* Tonic in Frameworks */ = {isa = PBXBuildFile; productRef = B0E693792BB3774400A584B4 /* Tonic */; };
 		B0E6937C2BB3778500A584B4 /* Tonic in Frameworks */ = {isa = PBXBuildFile; productRef = B0E6937B2BB3778500A584B4 /* Tonic */; };
@@ -30,6 +31,7 @@
 		B03F8D592BADC82700B38395 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B03F8D5A2BADC82700B38395 /* MIDIHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MIDIHelper.swift; sourceTree = "<group>"; };
 		B03F8D5B2BADC82700B38395 /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		B0C088002BB8284600E454A0 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +54,7 @@
 		B03F8D3E2BADC80700B38395 = {
 			isa = PBXGroup;
 			children = (
+				B0C088002BB8284600E454A0 /* InfoPlist.xcstrings */,
 				B03F8D492BADC80700B38395 /* HomeyVisuals */,
 				B03F8D482BADC80700B38395 /* Products */,
 			);
@@ -157,6 +160,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B0C088012BB8284600E454A0 /* InfoPlist.xcstrings in Resources */,
 				B03F8D522BADC80900B38395 /* Preview Assets.xcassets in Resources */,
 				B03F8D4F2BADC80900B38395 /* Assets.xcassets in Resources */,
 			);
@@ -312,6 +316,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(PRODUCT_NAME)";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -340,6 +345,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(PRODUCT_NAME)";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

@@ -66,15 +66,28 @@ struct ContentView: View {
                 ForEach(midiHelper.paletteOfNotes.sorted(by: <), id: \.self) {
                     let interval = modulo(Int8(Int($0 - midiHelper.tonicNote)), 12)
                     let emojiName = IntervalEmoji.homey[Int(interval)]
+                    @State var isRotating = midiHelper.turnedOnPitches.contains($0)
+                    var foreverAnimation: Animation {
+                           Animation.linear(duration: 2.0)
+                               .repeatForever(autoreverses: false)
+                       }
                     Image(emojiName)
                         .resizable()
                         .scaledToFit()
                         .offset(y: midiHelper.turnedOnPitches.contains($0) ? -300 : 0 )
                         .animation(.spring(), value: midiHelper.turnedOnPitches.contains($0))
                         .scaleEffect(x: $0 < tritoneNote ? -1 : 1)
+                        .rotationEffect(Angle(degrees: isRotating ? 360 : 0.0), anchor: UnitPoint(x: 0.0, y: 0.0))
+                        .animation(isRotating ? foreverAnimation : .default)
+                        .onAppear {
+                            withAnimation(.linear(duration: 1)
+                                .speed(0.1).repeatForever(autoreverses: false)) {
+                                    isRotating = isRotating
+                                }
+                        }
                 }
             }
-            .animation(.easeInOut)
+//            .animation    (.easeInOut)
             .frame(height: 75)
 
             Spacer()
