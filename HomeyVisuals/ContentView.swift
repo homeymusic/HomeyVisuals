@@ -110,13 +110,13 @@ struct ContentView: View {
         if midiHelper.upwardPitchDirection {
             ["home",
              "stone_blue", "stone_gold", "diamond_blue", "diamond_gold",
-             "tent", "stone_orange", "tent_far",
+             "tent", "stone", "tent_far",
              "diamond_blue_far", "diamond_gold_far", "stone_blue_far", "stone_gold_far",
             ]
         } else {
             ["home",
              "stone_blue_far", "stone_gold_far", "diamond_blue_far", "diamond_gold_far",
-             "tent_far", "stone_orange", "tent",
+             "tent_far", "stone", "tent",
              "diamond_blue", "diamond_gold", "stone_blue", "stone_gold",
             ]
         }

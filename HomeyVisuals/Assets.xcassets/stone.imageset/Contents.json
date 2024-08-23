@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "castle_blue.svg",
+      "filename" : "stone.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },
@@ -19,8 +19,6 @@
     "version" : 1
   },
   "properties" : {
-    "compression-type" : "lossless",
-    "preserves-vector-representation" : true,
-    "template-rendering-intent" : "original"
+    "preserves-vector-representation" : true
   }
 }

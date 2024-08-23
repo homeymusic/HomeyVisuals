@@ -1,44 +1,80 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xl="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="900 1121 136 113" width="136" height="113">
+<svg xmlns:xl="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="1660 708 256 256" width="256" height="256">
   <defs/>
-  <g id="Diamond_Gold" stroke-dasharray="none" fill="none" fill-opacity="1" stroke-opacity="1" stroke="none">
-    <title>Diamond Gold</title>
-    <g id="Diamond_Gold_Layer_3">
-      <title>Layer 3</title>
-      <g id="Group_24">
-        <g id="Group_31">
-          <g id="Graphic_36">
-            <path d="M 949.75 1121.0792 L 927.25 1121.0792 L 901 1154.8292 L 938.5 1154.8292 Z" fill="white"/>
+  <g id="Canvas_1" fill-opacity="1" stroke-dasharray="none" stroke-opacity="1" stroke="none" fill="none">
+    <title>Canvas 1</title>
+    <g id="Canvas_1_Layer_1">
+      <title>Layer 1</title>
+      <g id="Graphic_62">
+        <path d="M 1788 923.425 C 1694.965 923.425 1673 940.915 1673 949 C 1673 957.085 1684.4424 964 1698.5556 964 L 1877.4444 964 C 1891.5576 964 1903 957.0587 1903 949 C 1903 940.9412 1881.035 923.425 1788 923.425 Z" fill="#5c913b"/>
+      </g>
+      <g id="Group_98">
+        <title>Group_24</title>
+        <g id="Group_110">
+          <title>Group_31</title>
+          <g id="Group_119">
+            <title>Graphic_36</title>
+            <g id="Graphic_120">
+              <path d="M 1766.6288 815.7729 L 1740.9834 815.7729 L 1711.0637 854.241 L 1753.8061 854.241 Z" fill="white"/>
+            </g>
           </g>
-          <g id="Graphic_35">
-            <path d="M 1036 1154.8292 L 1009.75 1121.0792 L 987.25 1121.0792 L 998.5 1154.8292 Z" fill="white"/>
+          <g id="Group_117">
+            <title>Graphic_35</title>
+            <g id="Graphic_118">
+              <path d="M 1864.9363 854.241 L 1835.0166 815.7729 L 1809.3712 815.7729 L 1822.194 854.241 Z" fill="white"/>
+            </g>
           </g>
-          <g id="Graphic_34">
-            <path d="M 998.5 1154.8292 L 1036 1154.8292 L 968.5 1233.5792 Z" fill="white"/>
+          <g id="Group_115">
+            <title>Graphic_34</title>
+            <g id="Graphic_116">
+              <path d="M 1822.194 854.241 L 1864.9363 854.241 L 1788 944 Z" fill="white"/>
+            </g>
           </g>
-          <g id="Graphic_33">
-            <path d="M 938.5 1154.8292 L 901 1154.8292 L 968.5 1233.5792 Z M 949.75 1121.0792 L 938.5 1154.8292 L 998.5 1154.8292 L 987.25 1121.0792 Z" fill="white"/>
+          <g id="Group_113">
+            <title>Graphic_33</title>
+            <g id="Graphic_114">
+              <path d="M 1753.8061 854.241 L 1711.0637 854.241 L 1788 944 Z M 1766.6288 815.7729 L 1753.8061 854.241 L 1822.194 854.241 L 1809.3712 815.7729 Z" fill="white"/>
+            </g>
           </g>
-          <g id="Graphic_32">
-            <path d="M 968.5 1233.5792 L 938.5 1154.8292 L 998.5 1154.8292 Z" fill="white"/>
+          <g id="Group_111">
+            <title>Graphic_32</title>
+            <g id="Graphic_112">
+              <path d="M 1788 944 L 1753.8061 854.241 L 1822.194 854.241 Z" fill="white"/>
+            </g>
           </g>
         </g>
-        <g id="Group_25">
-          <g id="Graphic_30">
-            <path d="M 949.75 1121.0792 L 927.25 1121.0792 L 901 1154.8292 L 938.5 1154.8292 Z" fill="#ffb000" fill-opacity=".25"/>
+        <g id="Group_99">
+          <title>Group_25</title>
+          <g id="Group_108">
+            <title>Graphic_30</title>
+            <g id="Graphic_109">
+              <path d="M 1766.6288 815.7729 L 1740.9834 815.7729 L 1711.0637 854.241 L 1753.8061 854.241 Z" fill="#ffb000" fill-opacity=".25"/>
+            </g>
           </g>
-          <g id="Graphic_29">
-            <path d="M 1036 1154.8292 L 1009.75 1121.0792 L 987.25 1121.0792 L 998.5 1154.8292 Z" fill="#ffb000" fill-opacity=".7"/>
+          <g id="Group_106">
+            <title>Graphic_29</title>
+            <g id="Graphic_107">
+              <path d="M 1864.9363 854.241 L 1835.0166 815.7729 L 1809.3712 815.7729 L 1822.194 854.241 Z" fill="#ffb000" fill-opacity=".7"/>
+            </g>
           </g>
-          <g id="Graphic_28">
-            <path d="M 998.5 1154.8292 L 1036 1154.8292 L 968.5 1233.5792 Z" fill="#ffb000" fill-opacity=".9"/>
+          <g id="Group_104">
+            <title>Graphic_28</title>
+            <g id="Graphic_105">
+              <path d="M 1822.194 854.241 L 1864.9363 854.241 L 1788 944 Z" fill="#ffb000" fill-opacity=".9"/>
+            </g>
           </g>
-          <g id="Graphic_27">
-            <path d="M 938.5 1154.8292 L 901 1154.8292 L 968.5 1233.5792 Z M 949.75 1121.0792 L 938.5 1154.8292 L 998.5 1154.8292 L 987.25 1121.0792 Z" fill="#ffb000" fill-opacity=".5"/>
+          <g id="Group_102">
+            <title>Graphic_27</title>
+            <g id="Graphic_103">
+              <path d="M 1753.8061 854.241 L 1711.0637 854.241 L 1788 944 Z M 1766.6288 815.7729 L 1753.8061 854.241 L 1822.194 854.241 L 1809.3712 815.7729 Z" fill="#ffb000" fill-opacity=".5"/>
+            </g>
           </g>
-          <g id="Graphic_26">
-            <path d="M 968.5 1233.5792 L 938.5 1154.8292 L 998.5 1154.8292 Z" fill="#ffb000" fill-opacity=".6"/>
+          <g id="Group_100">
+            <title>Graphic_26</title>
+            <g id="Graphic_101">
+              <path d="M 1788 944 L 1753.8061 854.241 L 1822.194 854.241 Z" fill="#ffb000" fill-opacity=".6"/>
+            </g>
           </g>
         </g>
       </g>
