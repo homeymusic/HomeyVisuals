@@ -27,14 +27,10 @@ final class MIDIHelper: ObservableObject {
         self.turnedOnPitches = []
     }
     
-
+    
     @Published
-    public private(set) var paletteOfNotes = Set<Int>() {
-        didSet {
-            if oldValue != self.paletteOfNotes {
-            }
-        }
-    }
+    public private(set) var paletteOfNotes = Set<Int>()
+    
     public func resetPaletteOfNotes() {
         self.paletteOfNotes = []
     }
@@ -43,27 +39,76 @@ final class MIDIHelper: ObservableObject {
         resetPaletteOfNotes()
         resetTurnedOnPitches()
     }
-
+    
     @Published
     public private(set) var chordIntegerLabel: String = ""
-
+    
     @Published
     public private(set) var chordLabel: String = ""
-
+    
     @Published
     public private(set) var degreeLabel: String = ""
-
+    
     @Published
-    public private(set) var tonicNote: Int = 64 {
+    public private(set) var tonicNote: Int = 60 {
         didSet {
             if oldValue != self.tonicNote {
                 resetPaletteOfNotes()
             }
         }
     }
-
+    
     @Published
-    public private(set) var upwardPitchDirection: Bool = false
+    public private(set) var upwardPitchDirection: Bool = true
+    
+    
+    public var pitchDirectionIconName: String {
+        if upwardPitchDirection {
+            "greaterthan.square"
+        } else {
+            "lessthan.square"
+        }
+    }
+    
+    static public var majorColor: Color {
+        Color(#colorLiteral(red: 1, green: 0.6745098039, blue: 0.2, alpha: 1))
+    }
+    
+    static public var neutralColor: Color {
+        Color(#colorLiteral(red: 0.9529411765, green: 0.8666666667, blue: 0.6705882353, alpha: 1))
+    }
+    
+    static public var minorColor: Color {
+        Color(#colorLiteral(red: 0.3647058824, green: 0.6784313725, blue: 0.9254901961, alpha: 1))
+    }
+    
+    public var pitchDirectionIconColor: Color {
+        if upwardPitchDirection {
+            MIDIHelper.majorColor
+        } else {
+            MIDIHelper.minorColor
+        }
+    }
+    
+    public var chordShapeIconName: String {
+        if chordLabel.contains("Major") || chordLabel.contains("Mixolydian") {
+            "plus.square.fill"
+        } else if chordLabel.contains("Phrygian") || chordLabel.contains("Minor")  {
+            "minus.square.fill"
+        } else {
+            "plusminus"
+        }
+    }
+    
+    public var chordShapeIconColor: Color {
+        if chordLabel.contains("Major") || chordLabel.contains("Mixolydian") {
+            MIDIHelper.majorColor
+        } else if chordLabel.contains("Phrygian") || chordLabel.contains("Minor")  {
+            MIDIHelper.minorColor
+        } else {
+            Color.clear
+        }
+    }
 
     public init() { }
     
@@ -90,6 +135,7 @@ final class MIDIHelper: ObservableObject {
         } catch {
             print("Error creating MIDI connections:", error.localizedDescription)
         }
+        
     }
     
     private func trackNotesOn(event: MIDIEvent) {

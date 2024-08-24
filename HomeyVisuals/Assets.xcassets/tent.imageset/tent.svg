@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns:xl="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="1833 1927 256 256" width="256" height="256">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" version="1.1" xmlns:xl="http://www.w3.org/1999/xlink" viewBox="1833 1927 256 256" width="256" height="256">
   <defs/>
-  <g id="Canvas_1" fill-opacity="1" stroke-dasharray="none" stroke-opacity="1" stroke="none" fill="none">
+  <g id="Canvas_1" stroke-opacity="1" stroke-dasharray="none" fill-opacity="1" stroke="none" fill="none">
     <title>Canvas 1</title>
     <g id="Canvas_1_Layer_1">
       <title>Layer 1</title>
@@ -17,7 +17,7 @@
           <path d="M 1866.005 2162.9375 C 1863.3164 2162.9375 1860.8006 2161.5788 1859.3152 2159.3392 C 1857.8413 2157.0883 1857.588 2154.2443 1858.6473 2151.7686 L 1906.7076 2039.626 C 1907.9626 2036.69 1910.8642 2034.773 1914.0653 2034.773 C 1917.272 2034.773 1920.1736 2036.69 1921.4286 2039.626 L 1969.4887 2151.7686 C 1970.5482 2154.25 1970.289 2157.0883 1968.8153 2159.3392 C 1967.3414 2161.5788 1964.8255 2162.9375 1962.1313 2162.9375 Z" fill="#fff0ce"/>
         </g>
         <g id="Graphic_29">
-          <path d="M 1914.0425 2054.6628 L 1896.6787 2163 L 1931.4 2163 Z" fill="black"/>
+          <path d="M 1914.0425 2054.6628 L 1896.6787 2163 L 1931.4 2163 Z" fill="gray"/>
         </g>
         <g id="Graphic_28">
           <path d="M 1946.2878 2154.111 L 1949.8629 2163 L 1930.0527 2163 Z M 1881.791 2154.111 L 1878.2158 2163 L 1898.026 2163 Z" fill="#f50"/>

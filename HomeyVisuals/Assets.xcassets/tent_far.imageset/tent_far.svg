@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns:xl="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="2609 2376 256 256" width="256" height="256">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" version="1.1" xmlns:xl="http://www.w3.org/1999/xlink" viewBox="2609 2376 256 256" width="256" height="256">
   <defs/>
-  <g id="Canvas_1" fill-opacity="1" stroke-dasharray="none" stroke-opacity="1" stroke="none" fill="none">
+  <g id="Canvas_1" stroke-opacity="1" stroke-dasharray="none" fill-opacity="1" stroke="none" fill="none">
     <title>Canvas 1</title>
     <g id="Canvas_1_Layer_1">
       <title>Layer 1</title>
@@ -52,7 +52,7 @@
           <path d="M 2642.005 2611.9375 C 2639.3164 2611.9375 2636.8006 2610.5788 2635.3153 2608.3392 C 2633.8414 2606.0883 2633.588 2603.2443 2634.6474 2600.7686 L 2682.7076 2488.626 C 2683.9627 2485.69 2686.8642 2483.773 2690.0653 2483.773 C 2693.272 2483.773 2696.1736 2485.69 2697.4287 2488.626 L 2745.4888 2600.7686 C 2746.5482 2603.25 2746.289 2606.0883 2744.8154 2608.3392 C 2743.3415 2610.5788 2740.8255 2611.9375 2738.1314 2611.9375 Z" fill="#fff0ce"/>
         </g>
         <g id="Graphic_43">
-          <path d="M 2690.0425 2503.6628 L 2672.6787 2612 L 2707.4 2612 Z" fill="black"/>
+          <path d="M 2690.0425 2503.6628 L 2672.6787 2612 L 2707.4 2612 Z" fill="gray"/>
         </g>
         <g id="Graphic_42">
           <path d="M 2722.2878 2603.111 L 2725.863 2612 L 2706.0527 2612 Z M 2657.791 2603.111 L 2654.2158 2612 L 2674.026 2612 Z" fill="#f50"/>

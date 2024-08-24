@@ -21,74 +21,80 @@ struct ContentView: View {
     @Binding var midiInSelectedID: MIDIIdentifier?
     @Binding var midiInSelectedDisplayName: String?
     
-    
     var body: some View {
         ZStack {
             Color(#colorLiteral(red: 0.4, green: 0.2666666667, blue: 0.2, alpha: 1))
                 .ignoresSafeArea()
-            
-            VStack {
-                midiInConnectionView
-                    .padding(5)
-                
-                Text("Degree: \(midiHelper.degreeLabel)")
-                
-                Text("Chord: \(midiHelper.chordLabel)")
-                
-                Text("Tonic:   \(midiHelper.tonicNote)")
-                
-                Text("Upward:  \(midiHelper.upwardPitchDirection)")
-                
-                Text("Playing: \(midiHelper.turnedOnPitches)")
-                
-                Text("Integers: \(midiHelper.chordIntegerLabel)")
-                
-                Text("Palette: \(midiHelper.paletteOfNotes)")
-                
-                Button(action: {midiHelper.reset()}, label: {
-                    Text("Reset")
-                })
-                
-                Spacer()
-                HStack(alignment: .bottom, spacing: 9) {
-                    ForEach(midiHelper.paletteOfNotes.sorted(by: <), id: \.self) {
-                        let interval = modulo(Int8(Int($0 - midiHelper.tonicNote)), 12)
-                        let emojiName = emojiNames[Int(interval)]
-                        var foreverAnimation: Animation {
-                            Animation.linear(duration: 2.0)
-                                .repeatForever(autoreverses: false)
+            GeometryReader { geometry in
+                VStack {
+                    HStack {
+                        midiInConnectionView
+                            .padding(5)
+                        
+                        Image(systemName: midiHelper.pitchDirectionIconName)
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(midiHelper.pitchDirectionIconColor)
+                        
+                        Image(systemName: midiHelper.chordShapeIconName)
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(midiHelper.chordShapeIconColor)
+                        
+                        Text("Chord: \(midiHelper.chordLabel)")
+
+                        Text("Degree: \(midiHelper.degreeLabel)")
+
+                        Text("Tonic:   \(midiHelper.tonicNote)")
+                                                
+                        Button(action: {midiHelper.reset()}, label: {
+                            Image(systemName: "gobackward")
+                                .foregroundColor(MIDIHelper.neutralColor)
+                        })
+                        
+                    }
+                    .frame(height: geometry.size.height * 0.05)
+                    Spacer()
+                    HStack(alignment: .bottom, spacing: 9) {
+                        ForEach(midiHelper.paletteOfNotes.sorted(by: <), id: \.self) {
+                            let interval = modulo(Int8(Int($0 - midiHelper.tonicNote)), 12)
+                            let emojiName = emojiNames[Int(interval)]
+                            var foreverAnimation: Animation {
+                                Animation.linear(duration: 2.0)
+                                    .repeatForever(autoreverses: false)
+                            }
+                            Image(emojiName)
+                                .resizable()
+                                .scaledToFit()
+                                .offset(y: midiHelper.turnedOnPitches.contains($0) ? -300 : 0 )
+                                .animation(.spring(), value: midiHelper.turnedOnPitches.contains($0))
+                                .scaleEffect(x: xScaleEffect)
                         }
-                        Image(emojiName)
-                            .resizable()
-                            .scaledToFit()
-                            .offset(y: midiHelper.turnedOnPitches.contains($0) ? -300 : 0 )
-                            .animation(.spring(), value: midiHelper.turnedOnPitches.contains($0))
-                            .scaleEffect(x: xScaleEffect)
                     }
-                }
-                .frame(height: 75)
-                .animation(.easeInOut, value: midiHelper.paletteOfNotes)
-                
-                Spacer()
-                HStack(alignment: .bottom, spacing: 9) {
-                    ForEach(0...127, id: \.self) {
-                        let interval = modulo(Int8(Int($0 - midiHelper.tonicNote)), 12)
-                        let emojiName = emojiNames[Int(interval)]
-                        Image(emojiName)
-                            .resizable()
-                            .scaledToFit()
-                            .offset(y: midiHelper.turnedOnPitches.contains($0) ? -50 : 0 )
-                            .animation(.spring(), value: midiHelper.turnedOnPitches.contains($0))
-                            .scaleEffect(x: xScaleEffect)
+                    .frame(height: geometry.size.height * 0.9)
+                    .animation(.easeInOut, value: midiHelper.paletteOfNotes)
+                    
+                    Spacer()
+                    HStack(alignment: .bottom, spacing: 9) {
+                        ForEach(0...127, id: \.self) {
+                            let interval = modulo(Int8(Int($0 - midiHelper.tonicNote)), 12)
+                            let emojiName = emojiNames[Int(interval)]
+                            Image(emojiName)
+                                .resizable()
+                                .scaledToFit()
+                                .offset(y: midiHelper.turnedOnPitches.contains($0) ? -50 : 0 )
+                                .animation(.spring(), value: midiHelper.turnedOnPitches.contains($0))
+                                .scaleEffect(x: xScaleEffect)
+                        }
                     }
+                    .frame(height: geometry.size.height * 0.05)
                 }
-                .frame(height: 75)
             }
+            .multilineTextAlignment(.center)
+            .lineLimit(nil)
+            .padding()
+            .frame(minWidth: 700, minHeight: 660)
         }
-        .multilineTextAlignment(.center)
-        .lineLimit(nil)
-        .padding()
-        .frame(minWidth: 700, minHeight: 660)
     }
     
     private var midiInConnectionView: some View {
@@ -110,13 +116,13 @@ struct ContentView: View {
         if midiHelper.upwardPitchDirection {
             ["home",
              "stone_blue", "stone_gold", "diamond_blue", "diamond_gold",
-             "tent", "stone", "tent_far",
+             "tent", "disco", "tent_far",
              "diamond_blue_far", "diamond_gold_far", "stone_blue_far", "stone_gold_far",
             ]
         } else {
             ["home",
              "stone_blue_far", "stone_gold_far", "diamond_blue_far", "diamond_gold_far",
-             "tent_far", "stone", "tent",
+             "tent_far", "disco", "tent",
              "diamond_blue", "diamond_gold", "stone_blue", "stone_gold",
             ]
         }
