@@ -8,18 +8,21 @@ import MIDIKitUI
 import SwiftUI
 import Tonic
 
-func modulo(_ a: Int8, _ n: Int8) -> Int8 {
-    precondition(n > 0, "modulus must be positive")
-    let r = a % n
-    return r >= 0 ? r : r + n
-}
-
+//func modulo(_ a: Int8, _ n: Int8) -> Int8 {
+//    precondition(n > 0, "modulus must be positive")
+//    let r = a % n
+//    return r >= 0 ? r : r + n
+//}
+//
 struct ContentView: View {
     @EnvironmentObject var midiManager: ObservableMIDIManager
     @EnvironmentObject var midiHelper: MIDIHelper
     
     @Binding var midiInSelectedID: MIDIIdentifier?
     @Binding var midiInSelectedDisplayName: String?
+
+    @State private var imageOffset: CGSize = .zero
+    @State private var imageSize: CGSize = .zero
     
     var body: some View {
         ZStack {
@@ -57,29 +60,40 @@ struct ContentView: View {
                     Spacer()
                     HStack(alignment: .bottom, spacing: 9) {
                         ForEach(midiHelper.paletteOfNotes.sorted(by: <), id: \.self) {
-                            let interval = modulo(Int8(Int($0 - midiHelper.tonicNote)), 12)
-                            let emojiName = emojiNames[Int(interval)]
                             var foreverAnimation: Animation {
                                 Animation.linear(duration: 2.0)
                                     .repeatForever(autoreverses: false)
                             }
-                            Image(emojiName)
+                            Image(emojiFileName(Int8($0)))
                                 .resizable()
                                 .scaledToFit()
-                                .offset(y: midiHelper.turnedOnPitches.contains($0) ? -300 : 0 )
+                                .offset(midiHelper.turnedOnPitches.contains($0) ? imageOffset : .zero )
                                 .animation(.spring(), value: midiHelper.turnedOnPitches.contains($0))
                                 .scaleEffect(x: xScaleEffect)
+                                .background(
+                                    GeometryReader { imageGeometry in
+                                        Color.clear.onAppear {
+                                            imageSize = imageGeometry.size
+                                        }
+                                    }
+                                )
+                                .onAppear {
+                                    withAnimation(.spring()) {
+                                        // Calculate a safe offset to keep the image within bounds
+                                        let maxY = min(300, (geometry.size.height - imageSize.height) / 2)
+
+                                        imageOffset = CGSize(width: 0, height: -maxY)
+                                    }
+                                }
                         }
                     }
                     .frame(height: geometry.size.height * 0.9)
                     .animation(.easeInOut, value: midiHelper.paletteOfNotes)
                     
                     Spacer()
-                    HStack(alignment: .bottom, spacing: 9) {
+                    HStack(spacing: 9) {
                         ForEach(0...127, id: \.self) {
-                            let interval = modulo(Int8(Int($0 - midiHelper.tonicNote)), 12)
-                            let emojiName = emojiNames[Int(interval)]
-                            Image(emojiName)
+                            Image(emojiFileName(Int8($0)))
                                 .resizable()
                                 .scaledToFit()
                                 .offset(y: midiHelper.turnedOnPitches.contains($0) ? -50 : 0 )
@@ -112,19 +126,22 @@ struct ContentView: View {
         }
     }
     
-    public var emojiNames: [String] {
-        if midiHelper.upwardPitchDirection {
-            ["home",
+    public func emojiFileName(_ note: Int8) -> String {
+        let interval = MIDIHelper.mod(Int(note) - Int(midiHelper.tonicNote), 12)
+        if midiHelper.tonicNote == note {
+            return "home"
+        } else if midiHelper.upwardPitchDirection {
+            return ["home_far",
              "stone_blue", "stone_gold", "diamond_blue", "diamond_gold",
              "tent", "disco", "tent_far",
              "diamond_blue_far", "diamond_gold_far", "stone_blue_far", "stone_gold_far",
-            ]
+            ][Int(interval)]
         } else {
-            ["home",
+            return ["home_far",
              "stone_blue_far", "stone_gold_far", "diamond_blue_far", "diamond_gold_far",
              "tent_far", "disco", "tent",
              "diamond_blue", "diamond_gold", "stone_blue", "stone_gold",
-            ]
+            ][Int(interval)]
         }
     }
     

@@ -50,7 +50,7 @@ final class MIDIHelper: ObservableObject {
     public private(set) var degreeLabel: String = ""
     
     @Published
-    public private(set) var tonicNote: Int = 60 {
+    public private(set) var tonicNote: Int8 = 60 {
         didSet {
             if oldValue != self.tonicNote {
                 resetPaletteOfNotes()
@@ -91,7 +91,11 @@ final class MIDIHelper: ObservableObject {
     }
     
     public var chordShapeIconName: String {
-        if chordLabel.contains("Major") || chordLabel.contains("Mixolydian") {
+        if chordLabel.contains("Major Inverted") || chordLabel.contains("Mixolydian Inverted") {
+            "xmark.square.fill"
+        } else if chordLabel.contains("Phrygian Inverted") || chordLabel.contains("Minor Inverted")  {
+            "i.square.fill"
+        } else if chordLabel.contains("Major") || chordLabel.contains("Mixolydian") {
             "plus.square.fill"
         } else if chordLabel.contains("Phrygian") || chordLabel.contains("Minor")  {
             "minus.square.fill"
@@ -147,7 +151,7 @@ final class MIDIHelper: ObservableObject {
             DispatchQueue.main.async {
                 switch payload.controller {
                 case MIDIEvent.CC.Controller.generalPurpose1:
-                    self.tonicNote = payload.value.midi1Value.intValue
+                    self.tonicNote = Int8(payload.value.midi1Value.intValue)
                 case MIDIEvent.CC.Controller.generalPurpose2:
                     self.upwardPitchDirection = payload.value.midi1Value.intValue == 1 ? true : false
                 default:
@@ -202,25 +206,12 @@ final class MIDIHelper: ObservableObject {
         }
     }
     
-    private func extraInterval(chord: Array<Int>) -> String {
-        return if chord.contains(8) || chord.contains(9) ||
-                    chord.contains(-8) || chord.contains(-9) {
-            "6"
-        } else if chord.contains(10) || chord.contains(11) ||
-                    chord.contains(-10) || chord.contains(-11) {
-            "7"
-        } else {
-            ""
-        }
-    }
-    
     public func updateChordLabel() {
         if !turnedOnPitches.isEmpty {
             
-            let chordRoot: Int = self.upwardPitchDirection ? self.turnedOnPitches.sorted(by: <).first! : self.turnedOnPitches.sorted(by: <).last!
             let chord = integerNotes()
-            
-            let majorMinor: String = if (chord.contains(4) && chord.contains(7)) ||
+
+            var majorMinor: String = if (chord.contains(4) && chord.contains(7)) ||
             (chord.contains(3) && chord.contains(8)) ||
             (chord.contains(5) && chord.contains(9)) {
                 "Major"
@@ -239,17 +230,23 @@ final class MIDIHelper: ObservableObject {
             } else {
                 ""
             }
+            majorMinor = majorMinor + (span(of: self.turnedOnPitches) > 7 ? " Inverted" : "")
             DispatchQueue.main.async {
-                // TODO: figure out 6th and 7th chords
-                // self.chordLabel = "\(chordRoot) \(majorMinor) \(self.extraInterval(chord: chord))"
-                self.chordLabel = "\(chordRoot) \(majorMinor) \(self.extraInterval(chord: chord))"
+                self.chordLabel = "\(majorMinor)"
             }
         } else {
             DispatchQueue.main.async {
                 self.chordLabel = ""
             }
         }
-            
+        
+    }
+    
+    public func span(of set: Set<Int>) -> Int {
+        guard let minValue = set.min(), let maxValue = set.max() else {
+            return 0
+        }
+        return maxValue - minValue
     }
     
     public func updateDegreeLabel() {
@@ -262,14 +259,14 @@ final class MIDIHelper: ObservableObject {
             let tritone = self.upwardPitchDirection ? "\(prefix)♭5\(caret)" : "\(prefix)♯5\(caret)"
             let turnedOnNotes = self.turnedOnPitches.sorted(by: <)
             print("turnedOnNotes.last!", turnedOnNotes.last!)
-            let rootToTonicDistance = self.upwardPitchDirection ? (turnedOnNotes.first!  - self.tonicNote) : (self.tonicNote - turnedOnNotes.last!)
+            let rootToTonicDistance = self.upwardPitchDirection ? (Int(turnedOnNotes.first!)  - Int(self.tonicNote)) : (Int(self.tonicNote) - Int(turnedOnNotes.last!))
             
             print("rootToTonicDistance", rootToTonicDistance)
             
             scaleDegree = if (rootToTonicDistance == 0) {
                 "\(prefix)1\(caret)"
             } else {
-                switch mod(rootToTonicDistance, 12) {
+                switch MIDIHelper.mod(rootToTonicDistance, 12) {
                 case 1:
                     "\(prefix)\(accidental)2\(caret)"
                 case 2:
@@ -304,7 +301,7 @@ final class MIDIHelper: ObservableObject {
     }
 
     
-    private func mod(_ a: Int, _ n: Int) -> Int {
+    public static func mod(_ a: Int, _ n: Int) -> Int {
         precondition(n > 0, "modulus must be positive")
         let r = a % n
         return r >= 0 ? r : r + n
