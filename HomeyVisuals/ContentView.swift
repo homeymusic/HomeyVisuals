@@ -131,16 +131,16 @@ struct ContentView: View {
         if midiHelper.tonicNote == note {
             return "home"
         } else if midiHelper.upwardPitchDirection {
-            return ["home_far",
-             "stone_blue", "stone_gold", "diamond_blue", "diamond_gold",
-             "tent", "disco", "tent_far",
-             "diamond_blue_far", "diamond_gold_far", "stone_blue_far", "stone_gold_far",
+            return ["home_tree",
+                    "stone_blue_tree", "stone_gold", "diamond_blue_tree", "diamond_gold",
+                    "tent_tree", "disco", "tent",
+                    "diamond_blue", "diamond_gold_tree", "stone_blue", "stone_gold_tree",
             ][Int(interval)]
         } else {
-            return ["home_far",
-             "stone_blue_far", "stone_gold_far", "diamond_blue_far", "diamond_gold_far",
-             "tent_far", "disco", "tent",
-             "diamond_blue", "diamond_gold", "stone_blue", "stone_gold",
+            return ["home_tree",
+                    "stone_blue_tree", "stone_gold", "diamond_blue_tree", "diamond_gold",
+                    "tent", "disco", "tent_tree",
+                    "diamond_blue", "diamond_gold_tree", "stone_blue", "stone_gold_tree",
             ][Int(interval)]
         }
     }
