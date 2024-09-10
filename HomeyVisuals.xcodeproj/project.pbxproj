@@ -17,6 +17,7 @@
 		B03F8D632BADC88C00B38395 /* MIDIKitIO in Frameworks */ = {isa = PBXBuildFile; productRef = B03F8D622BADC88C00B38395 /* MIDIKitIO */; };
 		B0C088012BB8284600E454A0 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = B0C088002BB8284600E454A0 /* InfoPlist.xcstrings */; };
 		B0C8EFDB2BB37838005874C3 /* Tonic in Frameworks */ = {isa = PBXBuildFile; productRef = B0C8EFDA2BB37838005874C3 /* Tonic */; };
+		B0E055A82C90C89A00A99DFC /* Tonic in Frameworks */ = {isa = PBXBuildFile; productRef = B0E055A72C90C89A00A99DFC /* Tonic */; };
 		B0E6937A2BB3774400A584B4 /* Tonic in Frameworks */ = {isa = PBXBuildFile; productRef = B0E693792BB3774400A584B4 /* Tonic */; };
 		B0E6937C2BB3778500A584B4 /* Tonic in Frameworks */ = {isa = PBXBuildFile; productRef = B0E6937B2BB3778500A584B4 /* Tonic */; };
 		B0E6937F2BB377C800A584B4 /* Tonic in Frameworks */ = {isa = PBXBuildFile; productRef = B0E6937E2BB377C800A584B4 /* Tonic */; };
@@ -39,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B0E055A82C90C89A00A99DFC /* Tonic in Frameworks */,
 				B0C8EFDB2BB37838005874C3 /* Tonic in Frameworks */,
 				B0E6937A2BB3774400A584B4 /* Tonic in Frameworks */,
 				B03F8D632BADC88C00B38395 /* MIDIKitIO in Frameworks */,
@@ -113,6 +115,7 @@
 				B0E6937B2BB3778500A584B4 /* Tonic */,
 				B0E6937E2BB377C800A584B4 /* Tonic */,
 				B0C8EFDA2BB37838005874C3 /* Tonic */,
+				B0E055A72C90C89A00A99DFC /* Tonic */,
 			);
 			productName = HomeyVisuals;
 			productReference = B03F8D472BADC80700B38395 /* HomeyVisuals.app */;
@@ -412,6 +415,10 @@
 			productName = MIDIKitIO;
 		};
 		B0C8EFDA2BB37838005874C3 /* Tonic */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Tonic;
+		};
+		B0E055A72C90C89A00A99DFC /* Tonic */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Tonic;
 		};
