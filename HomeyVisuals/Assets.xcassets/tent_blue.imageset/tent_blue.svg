@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns:xl="http://www.w3.org/1999/xlink" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="2609 2376 256 256" width="256" height="256">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xl="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" version="1.1" viewBox="2609 2376 256 256" width="256" height="256">
   <defs/>
-  <g id="Canvas_1" stroke-opacity="1" stroke-dasharray="none" fill="none" fill-opacity="1" stroke="none">
-    <title>Canvas 1</title>
-    <g id="Canvas_1_Layer_1">
+  <g id="Canvas_2" stroke-opacity="1" stroke="none" fill="none" fill-opacity="1" stroke-dasharray="none">
+    <title>Canvas 2</title>
+    <g id="Canvas_2_Layer_1">
       <title>Layer 1</title>
       <g id="Graphic_48">
         <path d="M 2737 2591.425 C 2643.965 2591.425 2622 2608.915 2622 2617 C 2622 2625.085 2633.4424 2632 2647.5556 2632 L 2826.4444 2632 C 2840.5576 2632 2852 2625.0587 2852 2617 C 2852 2608.9412 2830.035 2591.425 2737 2591.425 Z" fill="#5c913b"/>
       </g>
     </g>
-    <g id="Canvas_1_Layer_2">
+    <g id="Canvas_2_Layer_2">
       <title>Layer 2</title>
       <g id="Group_40">
         <g id="Graphic_45">
@@ -26,7 +26,7 @@
           <path d="M 2722.2878 2603.111 L 2725.863 2612 L 2706.0527 2612 Z M 2657.791 2603.111 L 2654.2158 2612 L 2674.026 2612 Z" fill="#5dadec"/>
         </g>
         <g id="Graphic_41">
-          <path d="M 2706.0527 2612 C 2706.0527 2612 2720.6125 2608.2868 2727.734 2601.7177 L 2690.0423 2503.6628 Z M 2674.026 2612 C 2674.026 2612 2659.4662 2608.2868 2652.3448 2601.7177 L 2690.0307 2503.6686 Z" fill="#5dadec"/>
+          <path d="M 2706.0527 2612 C 2706.0527 2612 2720.6125 2608.2868 2727.734 2601.7177 L 2690.0423 2503.6628 Z M 2674.026 2612 C 2674.026 2612 2659.4662 2608.2868 2652.3448 2601.7177 L 2690.0307 2503.6686 Z" fill="#f50"/>
         </g>
       </g>
     </g>
