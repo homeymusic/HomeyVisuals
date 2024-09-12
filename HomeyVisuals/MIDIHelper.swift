@@ -95,13 +95,13 @@ final class MIDIHelper: ObservableObject {
     }
     
     public var chordShapeIconName: String {
-        if chordLabel.contains("Major Inverted") || chordLabel.contains("Mixolydian Inverted") {
+        if chordLabel == "Major Inverted" || chordLabel == "Mixolydian Inverted" {
             "xmark.circle.fill"
-        } else if chordLabel.contains("Phrygian Inverted") || chordLabel.contains("Minor Inverted")  {
+        } else if chordLabel == "Phrygian Inverted" || chordLabel == "Minor Inverted" {
             "i.circle.fill"
-        } else if chordLabel.contains("Major") || chordLabel.contains("Mixolydian") {
+        } else if chordLabel == "Major" || chordLabel == "Mixolydian" {
             "plus.circle.fill"
-        } else if chordLabel.contains("Phrygian") || chordLabel.contains("Minor")  {
+        } else if chordLabel == "Phrygian" || chordLabel == "Minor"  {
             "minus.circle.fill"
         } else if chordLabel.contains("Diminished") {
             "asterisk.circle.fill"
@@ -115,7 +115,7 @@ final class MIDIHelper: ObservableObject {
             MIDIHelper.majorColor
         } else if chordLabel.contains("Phrygian") || chordLabel.contains("Minor")  {
             MIDIHelper.minorColor
-        } else if chordLabel.contains("Diminished") {
+        } else if chordLabel == "Diminished" {
             MIDIHelper.neutralColor
         } else {
             NSColor.clear
@@ -236,7 +236,9 @@ final class MIDIHelper: ObservableObject {
                 "Phrygian"
             } else if chord == [0,-3,-8] || chord == [0,-5,-9] {
                 "Phrygian Inverted"
-            } else if chord == [0,3,6] || chord == [0,-3,-6] {
+            } else if chord == [0,3,6] || chord == [0,-3,-6] ||
+                        chord == [0,6,9] || chord == [0,-6,-9] ||
+                        chord == [0,3,9] || chord == [0,-3,-9] {
                 "Diminished"
             } else {
                 ""
