@@ -70,19 +70,23 @@ final class MIDIHelper: ObservableObject {
         }
     }
     
-    static public var majorColor: Color {
-        Color(#colorLiteral(red: 1, green: 0.6745098039, blue: 0.2, alpha: 1))
+    static public var majorColor: NSColor {
+       #colorLiteral(red: 1, green: 0.6745098039, blue: 0.2, alpha: 1)
     }
     
-    static public var neutralColor: Color {
-        Color(#colorLiteral(red: 0.9529411765, green: 0.8666666667, blue: 0.6705882353, alpha: 1))
+    static public var neutralColor: NSColor {
+        #colorLiteral(red: 0.952941, green: 0.866667, blue: 0.670588, alpha: 1)
     }
     
-    static public var minorColor: Color {
-        Color(#colorLiteral(red: 0.3647058824, green: 0.6784313725, blue: 0.9254901961, alpha: 1))
+    static public var neutralDissonantColor: NSColor {
+        #colorLiteral(red: 1, green: 0.333333, blue: 0, alpha: 1)
+    }
+
+    static public var minorColor: NSColor {
+        #colorLiteral(red: 0.3647058824, green: 0.6784313725, blue: 0.9254901961, alpha: 1)
     }
     
-    public var pitchDirectionIconColor: Color {
+    public var pitchDirectionIconColor: NSColor {
         if upwardPitchDirection {
             MIDIHelper.majorColor
         } else {
@@ -92,25 +96,29 @@ final class MIDIHelper: ObservableObject {
     
     public var chordShapeIconName: String {
         if chordLabel.contains("Major Inverted") || chordLabel.contains("Mixolydian Inverted") {
-            "xmark.square.fill"
+            "xmark.circle.fill"
         } else if chordLabel.contains("Phrygian Inverted") || chordLabel.contains("Minor Inverted")  {
-            "i.square.fill"
+            "i.circle.fill"
         } else if chordLabel.contains("Major") || chordLabel.contains("Mixolydian") {
-            "plus.square.fill"
+            "plus.circle.fill"
         } else if chordLabel.contains("Phrygian") || chordLabel.contains("Minor")  {
-            "minus.square.fill"
+            "minus.circle.fill"
+        } else if chordLabel.contains("Diminished") {
+            "asterisk.circle.fill"
         } else {
             "plusminus"
         }
     }
     
-    public var chordShapeIconColor: Color {
+    public var chordShapeIconColor: NSColor {
         if chordLabel.contains("Major") || chordLabel.contains("Mixolydian") {
             MIDIHelper.majorColor
         } else if chordLabel.contains("Phrygian") || chordLabel.contains("Minor")  {
             MIDIHelper.minorColor
+        } else if chordLabel.contains("Diminished") {
+            MIDIHelper.neutralColor
         } else {
-            Color.clear
+            NSColor.clear
         }
     }
 
@@ -210,7 +218,7 @@ final class MIDIHelper: ObservableObject {
         if !turnedOnPitches.isEmpty {
             
             let chord = integerNotes()
-
+            print("Integer notes: \(chord)")
             var majorMinor: String = if (chord.contains(4) && chord.contains(7)) ||
             (chord.contains(3) && chord.contains(8)) ||
             (chord.contains(5) && chord.contains(9)) {
@@ -227,6 +235,9 @@ final class MIDIHelper: ObservableObject {
                         (chord.contains(-3) && chord.contains(-8)) ||
                         (chord.contains(-5) && chord.contains(-9)) {
                 "Phrygian"
+            } else if (chord.contains(3) && chord.contains(6)) ||
+                        (chord.contains(-3) && chord.contains(-6)) {
+                "Diminished"
             } else {
                 ""
             }

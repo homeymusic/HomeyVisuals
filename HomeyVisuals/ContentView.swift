@@ -37,12 +37,12 @@ struct ContentView: View {
                         Image(systemName: midiHelper.pitchDirectionIconName)
                             .resizable()
                             .scaledToFit()
-                            .foregroundColor(midiHelper.pitchDirectionIconColor)
+                            .foregroundColor(Color(midiHelper.pitchDirectionIconColor))
                         
                         Image(systemName: midiHelper.chordShapeIconName)
                             .resizable()
                             .scaledToFit()
-                            .foregroundColor(midiHelper.chordShapeIconColor)
+                            .foregroundColor(Color(midiHelper.chordShapeIconColor))
                         
                         Text("Chord: \(midiHelper.chordLabel)")
 
@@ -52,7 +52,7 @@ struct ContentView: View {
                                                 
                         Button(action: {midiHelper.reset()}, label: {
                             Image(systemName: "gobackward")
-                                .foregroundColor(MIDIHelper.neutralColor)
+                                .foregroundColor(Color(MIDIHelper.neutralColor))
                         })
                         
                     }
