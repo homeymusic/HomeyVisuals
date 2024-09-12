@@ -193,12 +193,12 @@ final class MIDIHelper: ObservableObject {
         midiManager?.managedInputConnections[Tags.midiIn]
     }
     
-    private func integerNotes() -> Array<Int> {
-        var integerNotes: Array<Int> = Array<Int>()
+    private func integerNotes() -> Set<Int> {
+        var integerNotes: Set<Int> = Set<Int>()
         let turnedOnNotes = self.turnedOnPitches.sorted(by: <)
         if !turnedOnNotes.isEmpty {
             for note in turnedOnNotes {
-                integerNotes.append((note - (self.upwardPitchDirection ? turnedOnNotes.first! : turnedOnNotes.last!)) % 12)
+                integerNotes.insert((note - (self.upwardPitchDirection ? turnedOnNotes.first! : turnedOnNotes.last!)) % 12)
             }
         }
         return integerNotes
@@ -219,31 +219,30 @@ final class MIDIHelper: ObservableObject {
             
             let chord = integerNotes()
             print("Integer notes: \(chord)")
-            var majorMinor: String = if (chord.contains(4) && chord.contains(7)) ||
-            (chord.contains(3) && chord.contains(8)) ||
-            (chord.contains(5) && chord.contains(9)) {
+            let chordLabel: String =
+            if chord == [0,4,7] {
                 "Major"
-            } else if (chord.contains(-3) && chord.contains(-7)) ||
-                        (chord.contains(-4) && chord.contains(-9)) ||
-                        (chord.contains(-5) && chord.contains(-8)) {
+            } else if chord == [0,3,8] || chord == [0,5,9] {
+                "Major Inverted"
+            } else if chord == [0,-3,-7] {
                 "Mixolydian"
-            } else if (chord.contains(3) && chord.contains(7)) ||
-                        (chord.contains(4) && chord.contains(9)) ||
-                        (chord.contains(5) && chord.contains(8)) {
+            } else if chord == [0,-4,-9] || chord == [0,-5,-8] {
+                "Mixolydian Inverted"
+            } else if chord == [0,3,7] {
                 "Minor"
-            } else if (chord.contains(-4) && chord.contains(-7)) ||
-                        (chord.contains(-3) && chord.contains(-8)) ||
-                        (chord.contains(-5) && chord.contains(-9)) {
+            } else if chord == [0,4,9] || chord == [0,5,8] {
+                "Minor Inverted"
+            } else if chord == [0,-4,-7] {
                 "Phrygian"
-            } else if (chord.contains(3) && chord.contains(6)) ||
-                        (chord.contains(-3) && chord.contains(-6)) {
+            } else if chord == [0,-3,-8] || chord == [0,-5,-9] {
+                "Phrygian Inverted"
+            } else if chord == [0,3,6] || chord == [0,-3,-6] {
                 "Diminished"
             } else {
                 ""
             }
-            majorMinor = majorMinor + (span(of: self.turnedOnPitches) > 7 ? " Inverted" : "")
             DispatchQueue.main.async {
-                self.chordLabel = "\(majorMinor)"
+                self.chordLabel = chordLabel
             }
         } else {
             DispatchQueue.main.async {
