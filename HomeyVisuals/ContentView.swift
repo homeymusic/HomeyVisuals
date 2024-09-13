@@ -129,15 +129,15 @@ struct ContentView: View {
     public func emojiFileName(_ note: Int8) -> String {
         let interval = MIDIHelper.mod(Int(note) - Int(midiHelper.tonicNote), 12)
         if midiHelper.tonicNote == note {
-            return "home_tortoise"
+            return "home_tortoise_tree"
         } else if midiHelper.upwardPitchDirection {
-            return ["home_tree_tortoise",
+            return ["home",
                     "stone_blue_hare", "stone_gold", "diamond_blue", "diamond_gold_sun",
                     "tent_blue", "disco", "tent_gold",
                     "diamond_blue_rain", "diamond_gold", "stone_blue", "stone_gold_hare",
             ][Int(interval)]
         } else {
-            return ["home_tree_tortoise",
+            return ["home",
                     "stone_blue_hare", "stone_gold", "diamond_blue", "diamond_gold_sun",
                     "tent_blue", "disco", "tent_gold",
                     "diamond_blue_rain", "diamond_gold", "stone_blue", "stone_gold_hare",

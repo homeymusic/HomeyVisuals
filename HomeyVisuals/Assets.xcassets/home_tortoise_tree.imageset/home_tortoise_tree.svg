@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xl="http://www.w3.org/1999/xlink" viewBox="1060 676 256 256" width="256" height="256">
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xl="http://www.w3.org/1999/xlink" viewBox="1060 676 256 256" width="256" height="256">
   <defs/>
-  <g id="Canvas_1" fill="none" fill-opacity="1" stroke-dasharray="none" stroke="none" stroke-opacity="1">
+  <g id="Canvas_1" stroke="none" stroke-dasharray="none" fill="none" stroke-opacity="1" fill-opacity="1">
     <title>Canvas 1</title>
     <g id="Canvas_1_Layer_3">
       <title>Layer 3</title>
       <g id="Graphic_38">
         <path d="M 1188 891.425 C 1094.965 891.425 1073 908.915 1073 917 C 1073 925.085 1084.4424 932 1098.5556 932 L 1277.4444 932 C 1291.5576 932 1303 925.0587 1303 917 C 1303 908.9412 1281.035 891.425 1188 891.425 Z" fill="#5c913b"/>
       </g>
+    </g>
+    <g id="Canvas_1_Layer_5">
+      <title>Layer 5</title>
       <g id="Graphic_37">
         <path d="M 1250.8 887.9605 C 1250.8 895.9391 1245.0665 898.8 1237.9988 898.8 C 1230.9313 898.8 1225.1977 895.9442 1225.1977 887.9605 L 1228.3968 855.4473 C 1228.3968 847.4687 1230.9266 848.2192 1237.9988 848.2192 C 1245.0665 848.2192 1247.6008 847.4636 1247.6008 855.4473 Z" fill="#643"/>
       </g>

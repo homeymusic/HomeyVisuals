@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xl="http://www.w3.org/1999/xlink" viewBox="1060 676 256 256" width="256" height="256">
+  <defs/>
+  <g id="Canvas_1" stroke="none" stroke-dasharray="none" fill="none" stroke-opacity="1" fill-opacity="1">
+    <title>Canvas 1</title>
+    <g id="Canvas_1_Layer_3">
+      <title>Layer 3</title>
+      <g id="Graphic_38">
+        <path d="M 1188 891.425 C 1094.965 891.425 1073 908.915 1073 917 C 1073 925.085 1084.4424 932 1098.5556 932 L 1277.4444 932 C 1291.5576 932 1303 925.0587 1303 917 C 1303 908.9412 1281.035 891.425 1188 891.425 Z" fill="#5c913b"/>
+      </g>
+    </g>
+    <g id="Canvas_1_Layer_2">
+      <title>Layer 2</title>
+      <g id="Group_26">
+        <g id="Graphic_14">
+          <path d="M 1272.2353 801.8463 L 1188 717.61105 L 1103.7648 801.8463 L 1103.7648 912 L 1272.2353 912 Z" fill="#f3ddab"/>
+        </g>
+        <g id="Graphic_12">
+          <path d="M 1094.8735 813.4555 C 1096.7073 813.4555 1098.5412 812.7535 1099.9382 811.3566 L 1188 723.2946 L 1276.0619 811.3566 C 1278.8629 814.1575 1283.3903 814.1575 1286.1913 811.3566 C 1288.9922 808.5556 1288.9922 804.0282 1286.1913 801.2273 L 1193.0648 708.1007 C 1190.2638 705.2997 1185.7363 705.2997 1182.9353 708.1007 L 1089.8087 801.2273 C 1087.0077 804.0282 1087.0077 808.5556 1089.8087 811.3566 C 1091.2057 812.7535 1093.0396 813.4555 1094.8735 813.4555 Z" fill="#f50"/>
+        </g>
+        <g id="Graphic_10">
+          <rect x="1170.8272" y="859.2883" width="34.3456" height="52.7117" fill="#fff0ce"/>
+        </g>
+        <g id="Graphic_19">
+          <rect x="1173.8273" y="862.2883" width="28.34554" height="49.7117" fill="gray"/>
+        </g>
+        <g id="Graphic_20">
+          <path d="M 1241.457 816.6023 L 1215.5384 816.6023 L 1215.5384 847.534 L 1241.457 847.534 Z M 1160.4617 816.6023 L 1134.5431 816.6023 L 1134.5431 847.534 L 1160.4617 847.534 Z" fill="gray"/>
+        </g>
+        <g id="Graphic_21">
+          <rect x="1214.2656" y="847.534" width="28.345583" height="3" fill="#fff0ce"/>
+        </g>
+        <g id="Graphic_22">
+          <rect x="1133.3104" y="847.534" width="28.345583" height="3" fill="#fff0ce"/>
+        </g>
+        <g id="Graphic_23">
+          <path d="M 1202.1728 862.2883 L 1178 857.8 L 1178 916.4 L 1202.1728 912 Z" fill="#f50"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
