@@ -106,7 +106,7 @@ final class MIDIHelper: ObservableObject {
         } else if chordLabel.contains("Diminished") {
             "asterisk.circle.fill"
         } else {
-            "plusminus"
+            "circle"
         }
     }
     

@@ -30,33 +30,64 @@ struct ContentView: View {
                 .ignoresSafeArea()
             GeometryReader { geometry in
                 VStack {
-                    HStack {
-                        midiInConnectionView
-                            .padding(5)
-                        
-                        Image(systemName: midiHelper.pitchDirectionIconName)
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(Color(midiHelper.pitchDirectionIconColor))
-                        
-                        Image(systemName: midiHelper.chordShapeIconName)
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(Color(midiHelper.chordShapeIconColor))
-                        
-                        Text("Chord: \(midiHelper.chordLabel)")
+                    
+                    HStack(spacing: 20) {
 
-                        Text("Degree: \(midiHelper.degreeLabel)")
+                        HStack {
+                            // Spacer to push the symbols and balance the text
+                            Spacer()
+                            
+                            // Degree Label - Left-aligned and expands to use available space
+                            Text(midiHelper.degreeLabel)
+                                .foregroundColor(Color(midiHelper.pitchDirectionIconColor))
+                                .font(.title)
+                                .multilineTextAlignment(.leading)
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                        }
+                        .frame(alignment: .leading)
 
-                        Text("Tonic:   \(midiHelper.tonicNote)")
-                                                
-                        Button(action: {midiHelper.reset()}, label: {
-                            Image(systemName: "gobackward")
-                                .foregroundColor(Color(MIDIHelper.neutralColor))
-                        })
-                        
+                        // Symbols - Centered
+                        HStack(spacing: 5) {
+                            Image(systemName: midiHelper.pitchDirectionIconName)
+                                .resizable()
+                                .scaledToFit()
+                                .foregroundColor(Color(midiHelper.pitchDirectionIconColor))
+                                .frame(width: 50, height: 50)  // Fixed size
+
+                            Image(systemName: midiHelper.chordShapeIconName)
+                                .resizable()
+                                .scaledToFit()
+                                .foregroundColor(Color(midiHelper.chordShapeIconColor))
+                                .frame(width: 50, height: 50)  // Fixed size
+                        }
+
+                        HStack {
+                            // Chord Label - Right-aligned and expands to use available space
+                            Text(midiHelper.chordLabel)
+                                .foregroundColor(Color(midiHelper.chordShapeIconColor))
+                                .font(.title)
+                                .multilineTextAlignment(.leading)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+
+                            // Spacer to balance the symbols
+                            Spacer()
+
+                            Button(action: { midiHelper.reset() }, label: {
+                                Image(systemName: "gobackward")
+                                    .foregroundColor(Color(MIDIHelper.neutralColor))
+                            })
+                            .focusable(false)
+                            
+                            midiInConnectionView
+                                .padding(5)
+                                .focusable(false)
+
+                        }
+                        .frame(alignment: .trailing)
+
                     }
                     .frame(height: geometry.size.height * 0.05)
+                    
                     Spacer()
                     HStack(alignment: .bottom, spacing: 9) {
                         ForEach(midiHelper.paletteOfNotes.sorted(by: <), id: \.self) {
@@ -121,8 +152,7 @@ struct ContentView: View {
                 hideOwned: false
             )
             .updatingInputConnection(withTag: MIDIHelper.Tags.midiIn)
-            .padding([.leading, .trailing], 60)
-            
+            .aspectRatio(5.0, contentMode: .fit)
         }
     }
     
