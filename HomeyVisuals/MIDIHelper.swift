@@ -103,9 +103,9 @@ final class MIDIHelper: ObservableObject {
     }
     
     public var chordShapeIconName: String {
-        if chordLabel == "Major Inverted" || chordLabel == "Mixolydian Inverted" {
+        if chordLabel == "Major Inverted" || chordLabel == "Major 7th" || chordLabel == "Major 6th" || chordLabel == "Dominant 7th" || chordLabel == "Mixolydian Inverted" || chordLabel == "Mixolydian 6th" || chordLabel == "Mixolydian 7th" || chordLabel == "Mixolydian Phrygian 7th"{
             "xmark.circle.fill"
-        } else if chordLabel == "Phrygian Inverted" || chordLabel == "Minor Inverted" {
+        } else if chordLabel == "Phrygian Dominant 7th" || chordLabel == "Phrygian 7th" || chordLabel == "Phrygian 6th" || chordLabel == "Phrygian Inverted" || chordLabel == "Minor Inverted" || chordLabel == "Minor 6th" || chordLabel == "Minor 7th" || chordLabel == "Minor Major 7th" {
             "i.circle.fill"
         } else if chordLabel == "Major" || chordLabel == "Mixolydian" {
             "plus.circle.fill"
@@ -119,10 +119,14 @@ final class MIDIHelper: ObservableObject {
     }
     
     public var chordShapeIconColor: NSColor {
-        if chordLabel.contains("Major") || chordLabel.contains("Mixolydian") {
+        if chordLabel.contains("Mixolydian Phrygian") {
             MIDIHelper.majorColor
+        } else if chordLabel.contains("Minor Major") {
+            MIDIHelper.minorColor
         } else if chordLabel.contains("Phrygian") || chordLabel.contains("Minor")  {
             MIDIHelper.minorColor
+        } else if chordLabel.contains("Major") || chordLabel.contains("Mixolydian") || chordLabel.contains("Dominant") {
+            MIDIHelper.majorColor
         } else if chordLabel == "Diminished" {
             MIDIHelper.neutralColor
         } else {
@@ -230,18 +234,42 @@ final class MIDIHelper: ObservableObject {
             let chordLabel: String =
             if chord == [0,4,7] {
                 "Major"
+            } else if chord == [0,4,7,9] {
+                "Major 6th"
+            } else if chord == [0,4,7,11] {
+                "Major 7th"
+            } else if chord == [0,4,7,10] {
+                "Dominant 7th"
             } else if chord == [0,3,8] || chord == [0,5,9] {
                 "Major Inverted"
             } else if chord == [0,-3,-7] {
                 "Mixolydian"
+            } else if chord == [0,-3,-7,-9] {
+                "Mixolydian 6th"
+            } else if chord == [0,-3,-7,-10] {
+                "Mixolydian 7th"
+            } else if chord == [0,-3,-7,-11] {
+                "Mixolydian Phrygian 7th"
             } else if chord == [0,-4,-9] || chord == [0,-5,-8] {
                 "Mixolydian Inverted"
             } else if chord == [0,3,7] {
                 "Minor"
+            } else if chord == [0,3,7,9] {
+                "Minor 6th"
+            } else if chord == [0,3,7,10] {
+                "Minor 7th"
+            } else if chord == [0,3,7,11] {
+                "Minor Major 7th"
             } else if chord == [0,4,9] || chord == [0,5,8] {
                 "Minor Inverted"
             } else if chord == [0,-4,-7] {
                 "Phrygian"
+            } else if chord == [0,-4,-7,-9] {
+                "Phrygian 6th"
+            } else if chord == [0,-4,-7,-11] {
+                "Phrygian 7th"
+            } else if chord == [0,-4,-7,-10] {
+                "Phrygian Dominant 7th"
             } else if chord == [0,-3,-8] || chord == [0,-5,-9] {
                 "Phrygian Inverted"
             } else if chord == [0,3,6] || chord == [0,-3,-6] ||
