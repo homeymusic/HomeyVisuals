@@ -280,36 +280,32 @@ final class MIDIHelper: ObservableObject {
             
             print("rootToTonicDistance", rootToTonicDistance)
             
-            scaleDegree = if (rootToTonicDistance == 0) {
+            scaleDegree = switch MIDIHelper.mod(rootToTonicDistance, 12) {
+            case 0:
                 "\(prefix)1\(caret)"
-            } else {
-                switch MIDIHelper.mod(rootToTonicDistance, 12) {
-                case 1:
-                    "\(prefix)\(accidental)2\(caret)"
-                case 2:
-                    "\(prefix)2\(caret)"
-                case 3:
-                    "\(prefix)\(accidental)3\(caret)"
-                case 4:
-                    "\(prefix)3\(caret)"
-                case 5:
-                    "\(prefix)4\(caret)"
-                case 6:
-                    tritone
-                case 7:
-                    "\(prefix)5\(caret)"
-                case 8:
-                    "\(prefix)\(accidental)6\(caret)"
-                case 9:
-                    "\(prefix)6\(caret)"
-                case 10:
-                    "\(prefix)\(accidental)7\(caret)"
-                case 11 :
-                    "\(prefix)7\(caret)"
-                case 0:
-                    "\(prefix)8\(caret)"
-                default: ""
-                }
+            case 1:
+                "\(prefix)\(accidental)2\(caret)"
+            case 2:
+                "\(prefix)2\(caret)"
+            case 3:
+                "\(prefix)\(accidental)3\(caret)"
+            case 4:
+                "\(prefix)3\(caret)"
+            case 5:
+                "\(prefix)4\(caret)"
+            case 6:
+                tritone
+            case 7:
+                "\(prefix)5\(caret)"
+            case 8:
+                "\(prefix)\(accidental)6\(caret)"
+            case 9:
+                "\(prefix)6\(caret)"
+            case 10:
+                "\(prefix)\(accidental)7\(caret)"
+            case 11 :
+                "\(prefix)7\(caret)"
+            default: ""
             }
         }
         DispatchQueue.main.async {
