@@ -155,6 +155,12 @@ struct ContentView: View {
                                             .transition(.opacity)
                                             .offset(midiHelper.turnedOnPitches.contains(note) ? imageOffset : .zero)  // Apply the same offset
                                             .scaleEffect(x: xScaleEffect)  // Apply the same scale effect
+                                            .onHover { hovering in
+                                                withAnimation {
+                                                    // Show the remove button when hovering
+                                                    midiHelper.hoveredNote = hovering ? note : nil
+                                                }
+                                            }
                                         }
                                     },
                                     alignment: .topTrailing
