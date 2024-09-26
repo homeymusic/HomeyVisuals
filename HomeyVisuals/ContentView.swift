@@ -111,7 +111,6 @@ struct ContentView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .offset(midiHelper.turnedOnPitches.contains(note) ? imageOffset : .zero )
-                                .animation(.spring(), value: midiHelper.turnedOnPitches.contains(note))
                                 .scaleEffect(x: xScaleEffect)
                                 .background(
                                     GeometryReader { imageGeometry in
@@ -128,12 +127,24 @@ struct ContentView: View {
                                         imageOffset = CGSize(width: 0, height: -maxY)
                                     }
                                 }
+                                .onHover { hovering in
+                                    withAnimation {
+                                        // Show the remove button when hovering
+                                        midiHelper.hoveredNote = hovering ? note : nil
+                                    }
+                                }
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(midiHelper.hoveredNote == note ? Color(MIDIHelper.neutralColor) : Color.clear, lineWidth: 1)
+                                        .offset(midiHelper.turnedOnPitches.contains(note) ? imageOffset : .zero)
+                                        .scaleEffect(x: xScaleEffect),
+                                    alignment: .center
+                                )
+                                // Apply the button in a separate overlay in the top-right corner
                                 .overlay(
                                     Group {
-                                        // Conditionally show the remove button when hovering
                                         if midiHelper.hoveredNote == note {
                                             Button(action: {
-                                                // Remove the note from the palette
                                                 midiHelper.paletteOfNotes.remove(note)
                                             }) {
                                                 Image(systemName: "minus.circle")
@@ -142,20 +153,13 @@ struct ContentView: View {
                                             }
                                             .buttonStyle(PlainButtonStyle())
                                             .transition(.opacity)
+                                            .offset(midiHelper.turnedOnPitches.contains(note) ? imageOffset : .zero)  // Apply the same offset
+                                            .scaleEffect(x: xScaleEffect)  // Apply the same scale effect
                                         }
                                     },
                                     alignment: .topTrailing
                                 )
-                                .overlay(
-                                     RoundedRectangle(cornerRadius: 10)
-                                         .stroke(midiHelper.hoveredNote == note ? Color(MIDIHelper.neutralColor) : Color.clear, lineWidth: 1)
-                                 )
-                                .onHover { hovering in
-                                    withAnimation {
-                                        // Show the remove button when hovering
-                                        midiHelper.hoveredNote = hovering ? note : nil
-                                    }
-                                }
+                                .animation(.spring(), value: midiHelper.turnedOnPitches.contains(note))
                                 .id(note)
                         }
                     }
