@@ -18,9 +18,6 @@ struct ContentView: View {
     @EnvironmentObject var midiManager: ObservableMIDIManager
     @EnvironmentObject var midiHelper: MIDIHelper
     
-    @Binding var midiInSelectedID: MIDIIdentifier?
-    @Binding var midiInSelectedDisplayName: String?
-
     @State private var imageOffset: CGSize = .zero
     @State private var imageSize: CGSize = .zero
     
@@ -156,14 +153,13 @@ struct ContentView: View {
     
     private var midiInConnectionView: some View {
         GroupBox {
-            MIDIOutputsPicker(
+            MIDIInputsPicker(
                 title: "MIDI In",
-                selectionID: $midiInSelectedID,
-                selectionDisplayName: $midiInSelectedDisplayName,
+                selectionID: $midiHelper.midiInSelectedID,
+                selectionDisplayName: $midiHelper.midiInSelectedDisplayName,
                 showIcons: true,
                 hideOwned: false
             )
-            .updatingInputConnection(withTag: MIDIHelper.Tags.midiIn)
             .aspectRatio(5.0, contentMode: .fit)
         }
     }

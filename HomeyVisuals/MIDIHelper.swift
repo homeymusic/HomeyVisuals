@@ -11,8 +11,19 @@ import SwiftUI
 /// SwiftUI view state directly. Therefore, we need a helper class that conforms to
 /// `ObservableObject` which contains `@Published` properties that SwiftUI can use to update views.
 final class MIDIHelper: ObservableObject {
-    private weak var midiManager: ObservableMIDIManager?
     
+    var midiManager: MIDIManager
+
+    init(midiManager: MIDIManager) {
+        self.midiManager = midiManager
+    }
+    
+    @AppStorage(MIDIHelper.PrefKeys.midiInID)
+    var midiInSelectedID: MIDIIdentifier?
+    
+    @AppStorage(MIDIHelper.PrefKeys.midiInDisplayName)
+    var midiInSelectedDisplayName: String?
+        
     @Published
     public private(set) var turnedOnPitches = Set<Int>() {
         didSet {
@@ -127,8 +138,6 @@ final class MIDIHelper: ObservableObject {
         }
     }
 
-    public init() { }
-    
     public func setup(midiManager: ObservableMIDIManager) {
         self.midiManager = midiManager
         
@@ -195,7 +204,7 @@ final class MIDIHelper: ObservableObject {
     // MARK: - MIDI Input Connection
     
     public var midiInputConnection: MIDIInputConnection? {
-        midiManager?.managedInputConnections[Tags.midiIn]
+        midiManager.managedInputConnections[Tags.midiIn]
     }
     
     private func integerNotes() -> Set<Int> {
@@ -319,6 +328,7 @@ final class MIDIHelper: ObservableObject {
         let r = a % n
         return r >= 0 ? r : r + n
     }
+    
 }
 
 // MARK: - String Constants
