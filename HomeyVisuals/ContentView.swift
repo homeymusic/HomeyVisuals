@@ -102,16 +102,16 @@ struct ContentView: View {
                     
                     Spacer()
                     HStack(alignment: .bottom, spacing: 9) {
-                        ForEach(midiHelper.paletteOfNotes.sorted(by: <), id: \.self) {
+                        ForEach(midiHelper.paletteOfNotes.sorted(by: <), id: \.self) { note in
                             var foreverAnimation: Animation {
                                 Animation.linear(duration: 2.0)
                                     .repeatForever(autoreverses: false)
                             }
-                            Image(emojiFileName(Int8($0)))
+                            Image(emojiFileName(Int8(note)))
                                 .resizable()
                                 .scaledToFit()
-                                .offset(midiHelper.turnedOnPitches.contains($0) ? imageOffset : .zero )
-                                .animation(.spring(), value: midiHelper.turnedOnPitches.contains($0))
+                                .offset(midiHelper.turnedOnPitches.contains(note) ? imageOffset : .zero )
+                                .animation(.spring(), value: midiHelper.turnedOnPitches.contains(note))
                                 .scaleEffect(x: xScaleEffect)
                                 .background(
                                     GeometryReader { imageGeometry in
@@ -124,10 +124,39 @@ struct ContentView: View {
                                     withAnimation(.spring()) {
                                         // Calculate a safe offset to keep the image within bounds
                                         let maxY = min(300, (geometry.size.height - imageSize.height) / 2)
-
+                                        
                                         imageOffset = CGSize(width: 0, height: -maxY)
                                     }
                                 }
+                                .overlay(
+                                    Group {
+                                        // Conditionally show the remove button when hovering
+                                        if midiHelper.hoveredNote == note {
+                                            Button(action: {
+                                                // Remove the note from the palette
+                                                midiHelper.paletteOfNotes.remove(note)
+                                            }) {
+                                                Image(systemName: "minus.circle")
+                                                    .foregroundColor(Color(MIDIHelper.neutralColor))
+                                                    .padding(4)
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
+                                            .transition(.opacity)
+                                        }
+                                    },
+                                    alignment: .topTrailing
+                                )
+                                .overlay(
+                                     RoundedRectangle(cornerRadius: 10)
+                                         .stroke(midiHelper.hoveredNote == note ? Color(MIDIHelper.neutralColor) : Color.clear, lineWidth: 1)
+                                 )
+                                .onHover { hovering in
+                                    withAnimation {
+                                        // Show the remove button when hovering
+                                        midiHelper.hoveredNote = hovering ? note : nil
+                                    }
+                                }
+                                .id(note)
                         }
                     }
                     .frame(height: geometry.size.height * 0.9)
@@ -164,7 +193,7 @@ struct ContentView: View {
                 hideOwned: false
             )
             .updatingInputConnection(withTag: MIDIHelper.Tags.midiIn)
-            .aspectRatio(5.0, contentMode: .fit)
+            .frame(maxWidth: 300)
         }
     }
     

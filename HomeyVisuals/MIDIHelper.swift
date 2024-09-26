@@ -29,7 +29,10 @@ final class MIDIHelper: ObservableObject {
     
     
     @Published
-    public private(set) var paletteOfNotes = Set<Int>()
+    public var paletteOfNotes = Set<Int>()
+
+    @Published 
+    public var hoveredNote: Int? = nil
     
     public func resetPaletteOfNotes() {
         self.paletteOfNotes = []
