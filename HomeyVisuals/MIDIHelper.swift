@@ -58,7 +58,7 @@ final class MIDIHelper: ObservableObject {
     public private(set) var degreeLabel: String = ""
     
     @Published
-    public private(set) var tonicNote: Int8 = 60 {
+    public var tonicNote: Int8 = 60 {
         didSet {
             if oldValue != self.tonicNote {
                 resetPaletteOfNotes()
@@ -89,7 +89,7 @@ final class MIDIHelper: ObservableObject {
     static public var neutralDissonantColor: NSColor {
         #colorLiteral(red: 1, green: 0.333333, blue: 0, alpha: 1)
     }
-    
+
     static public var minorColor: NSColor {
         #colorLiteral(red: 0.3647058824, green: 0.6784313725, blue: 0.9254901961, alpha: 1)
     }
@@ -103,19 +103,18 @@ final class MIDIHelper: ObservableObject {
     }
     
     public var chordShapeIconName: String {
-        if chordLabel.contains("Diminished") || chordLabel.contains("Dominant 7th") {
-            "asterisk.circle.fill"
-            
-        } else if chordLabel == "Major Inverted" || chordLabel == "Major 7th" || chordLabel == "Major 6th" || chordLabel == "Mixolydian Inverted" || chordLabel == "Mixolydian 6th" || chordLabel == "Mixolydian 7th" || chordLabel == "Mixolydian Phrygian 7th"{
-            "xmark.circle.fill"
+        if chordLabel.contains("Diminished") {
+            "asterisk"
+        } else if chordLabel == "Dominant 7th" || chordLabel == "Major Inverted" || chordLabel == "Major 7th" || chordLabel == "Major 6th" || chordLabel == "Mixolydian Inverted" || chordLabel == "Mixolydian 6th" || chordLabel == "Mixolydian 7th" || chordLabel == "Mixolydian Phrygian 7th"{
+            "xmark.square.fill"
         } else if chordLabel == "Phrygian Dominant 7th" || chordLabel == "Phrygian 7th" || chordLabel == "Phrygian 6th" || chordLabel == "Phrygian Inverted" || chordLabel == "Minor Inverted" || chordLabel == "Minor 6th" || chordLabel == "Minor 7th" || chordLabel == "Minor Major 7th" {
-            "i.circle.fill"
+            "i.square.fill"
         } else if chordLabel == "Major" || chordLabel == "Mixolydian" {
-            "plus.circle.fill"
+            "plus.square.fill"
         } else if chordLabel == "Phrygian" || chordLabel == "Minor"  {
-            "minus.circle.fill"
+            "minus.square.fill"
         } else {
-            "circle"
+            "square.dashed"
         }
     }
     
@@ -296,6 +295,15 @@ final class MIDIHelper: ObservableObject {
             return 0
         }
         return maxValue - minValue
+    }
+    
+    public func rootNote() -> String {
+        if turnedOnPitches.isEmpty {
+            return ""
+        } else {
+            let turnedOnNotes = self.turnedOnPitches.sorted(by: <)
+            return self.upwardPitchDirection ? String(turnedOnNotes.first!) : String(turnedOnNotes.last!)
+        }
     }
     
     public func updateDegreeLabel() {

@@ -23,7 +23,9 @@ struct ContentView: View {
 
     @State private var imageOffset: CGSize = .zero
     @State private var imageSize: CGSize = .zero
-    
+
+    @State private var showTonicPopover = false  // State to control the popover visibility
+
     var body: some View {
         ZStack {
             Color(#colorLiteral(red: 0.4, green: 0.2666666667, blue: 0.2, alpha: 1))
@@ -35,12 +37,41 @@ struct ContentView: View {
 
                         HStack {
                             
-                            Button(action: { midiHelper.reset() }) {
-                                Image(systemName: "gobackward")
+                            Button(action: {
+                                showTonicPopover.toggle()  // Toggle the popover visibility
+                            }) {
+                                HStack {
+                                    Image(systemName: "house.fill")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .foregroundColor(Color(MIDIHelper.neutralColor))
+                                        .frame(width: 50, height: 50)  // Fixed size
+                                    
+                                    Text(String(midiHelper.tonicNote))
+                                        .font(.title)
+                                        .foregroundColor(Color(MIDIHelper.neutralColor))
+                                }
                             }
                             .buttonStyle(PlainButtonStyle())
-                            .keyboardShortcut("r", modifiers: .command)
-                            .focusable(false)  // Remove focus ring
+                            .focusable(false)  // Remove the focus ring if needed
+                            .popover(isPresented: $showTonicPopover, arrowEdge: .bottom) {
+                                // Content for the popover
+                                VStack {
+                                    Text("Select a number")
+                                        .font(.headline)
+                                    List(0...127, id: \.self) { number in
+                                        Button(action: {
+                                            // Do something with the selected number
+                                            midiHelper.tonicNote = Int8(number)
+                                            showTonicPopover = false  // Dismiss the popover
+                                        }) {
+                                            Text("\(number)")
+                                        }
+                                    }
+                                    .frame(width: 150, height: 300)  // Adjust size as needed
+                                }
+                                .padding()
+                            }
 
                             // Spacer to push the symbols and balance the text
                             Spacer()
@@ -75,13 +106,13 @@ struct ContentView: View {
                             Image(systemName: midiHelper.chordShapeIconName)
                                 .resizable()
                                 .scaledToFit()
-                                .foregroundColor(Color(midiHelper.chordShapeIconColor))
+                                .foregroundColor(Color(midiHelper.chordShapeIconColor == NSColor.clear ? MIDIHelper.neutralColor.withAlphaComponent(0.5):  midiHelper.chordShapeIconColor))
                                 .frame(width: 50, height: 50)  // Fixed size
                         }
 
                         HStack {
                             // Chord Label - Right-aligned and expands to use available space
-                            Text(midiHelper.chordLabel)
+                            Text("\(midiHelper.rootNote()) \(midiHelper.chordLabel)")
                                 .foregroundColor(Color(midiHelper.chordShapeIconColor))
                                 .font(.title)
                                 .multilineTextAlignment(.leading)
@@ -89,6 +120,13 @@ struct ContentView: View {
 
                             // Spacer to balance the symbols
                             Spacer()
+                            
+                            Button(action: { midiHelper.reset() }) {
+                                Image(systemName: "gobackward")
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                            .keyboardShortcut("r", modifiers: .command)
+                            .focusable(false)  // Remove focus ring
 
                             midiInConnectionView
                                 .padding(5)
@@ -147,7 +185,7 @@ struct ContentView: View {
                                             Button(action: {
                                                 midiHelper.paletteOfNotes.remove(note)
                                             }) {
-                                                Image(systemName: "minus.circle")
+                                                Image(systemName: "clear.fill")
                                                     .foregroundColor(Color(MIDIHelper.neutralColor))
                                                     .padding(4)
                                             }
@@ -194,17 +232,16 @@ struct ContentView: View {
     }
     
     private var midiInConnectionView: some View {
-        GroupBox {
-            MIDIOutputsPicker(
-                title: "MIDI In",
-                selectionID: $midiInSelectedID,
-                selectionDisplayName: $midiInSelectedDisplayName,
-                showIcons: true,
-                hideOwned: false
-            )
-            .updatingInputConnection(withTag: MIDIHelper.Tags.midiIn)
-            .frame(maxWidth: 300)
-        }
+        MIDIOutputsPicker(
+            title: "",
+            selectionID: $midiInSelectedID,
+            selectionDisplayName: $midiInSelectedDisplayName,
+            showIcons: true,
+            hideOwned: false
+        )
+        .updatingInputConnection(withTag: MIDIHelper.Tags.midiIn)
+        .frame(maxWidth: 300)
+        .focusable(false)
     }
     
     public func emojiFileName(_ note: Int8) -> String {
