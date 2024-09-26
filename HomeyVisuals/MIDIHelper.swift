@@ -40,6 +40,11 @@ final class MIDIHelper: ObservableObject {
         resetTurnedOnPitches()
     }
     
+    public func togglePitchDirection() {
+        reset()
+        self.upwardPitchDirection.toggle()
+    }
+    
     @Published
     public private(set) var chordIntegerLabel: String = ""
     

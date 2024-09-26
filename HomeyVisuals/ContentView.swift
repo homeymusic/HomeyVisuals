@@ -34,6 +34,14 @@ struct ContentView: View {
                     HStack(spacing: 20) {
 
                         HStack {
+                            
+                            Button(action: { midiHelper.reset() }) {
+                                Image(systemName: "gobackward")
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                            .keyboardShortcut("r", modifiers: .command)
+                            .focusable(false)  // Remove focus ring
+
                             // Spacer to push the symbols and balance the text
                             Spacer()
                             
@@ -47,12 +55,22 @@ struct ContentView: View {
                         .frame(alignment: .leading)
 
                         // Symbols - Centered
-                        HStack(spacing: 5) {
-                            Image(systemName: midiHelper.pitchDirectionIconName)
-                                .resizable()
-                                .scaledToFit()
-                                .foregroundColor(Color(midiHelper.pitchDirectionIconColor))
-                                .frame(width: 50, height: 50)  // Fixed size
+                        HStack(spacing: 20) {
+                            
+                            Button(action: {
+                                // Toggle the upwardPitchDirection state
+                                midiHelper.togglePitchDirection()
+                            }) {
+                                Image(systemName: midiHelper.pitchDirectionIconName)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .foregroundColor(Color(midiHelper.pitchDirectionIconColor))
+                                    .frame(width: 50, height: 50)  // Fixed size
+                            }
+                            .keyboardShortcut("d", modifiers: .command)
+                            .buttonStyle(PlainButtonStyle())
+                            .focusable(false)  // Remove the focus ring if needed
+                            
 
                             Image(systemName: midiHelper.chordShapeIconName)
                                 .resizable()
@@ -72,12 +90,6 @@ struct ContentView: View {
                             // Spacer to balance the symbols
                             Spacer()
 
-                            Button(action: { midiHelper.reset() }, label: {
-                                Image(systemName: "gobackward")
-                                    .foregroundColor(Color(MIDIHelper.neutralColor))
-                            })
-                            .focusable(false)
-                            
                             midiInConnectionView
                                 .padding(5)
                                 .focusable(false)
