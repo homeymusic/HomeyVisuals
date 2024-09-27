@@ -43,7 +43,6 @@ final class MIDIHelper: ObservableObject {
     public func reset() {
         resetPaletteOfNotes()
         resetTurnedOnPitches()
-        syncHomey()
     }
     
     public func togglePitchDirection() {
@@ -81,23 +80,23 @@ final class MIDIHelper: ObservableObject {
         }
     }
     
-    static public var majorColor: NSColor {
-        #colorLiteral(red: 1, green: 0.6745098039, blue: 0.2, alpha: 1)
-    }
-    
-    static public var neutralColor: NSColor {
-        #colorLiteral(red: 0.952941, green: 0.866667, blue: 0.670588, alpha: 1)
-    }
-    
-    static public var neutralDissonantColor: NSColor {
-        #colorLiteral(red: 1, green: 0.333333, blue: 0, alpha: 1)
+    static public var majorColor: Color {
+        return Color(.sRGB, red: 1, green: 0.6745098039, blue: 0.2, opacity: 1.0)
     }
 
-    static public var minorColor: NSColor {
-        #colorLiteral(red: 0.3647058824, green: 0.6784313725, blue: 0.9254901961, alpha: 1)
+    static public var neutralColor: Color {
+        return Color(.sRGB, red: 0.952941, green: 0.866667, blue: 0.670588, opacity: 1.0)
+    }
+
+    static public var neutralDissonantColor: Color {
+        return Color(.sRGB, red: 1, green: 0.333333, blue: 0, opacity: 1.0)
+    }
+
+    static public var minorColor: Color {
+        return Color(.sRGB, red: 0.3647058824, green: 0.6784313725, blue: 0.9254901961, opacity: 1.0)
     }
     
-    public var pitchDirectionIconColor: NSColor {
+    public var pitchDirectionIconColor: Color {
         if upwardPitchDirection {
             MIDIHelper.majorColor
         } else {
@@ -121,7 +120,7 @@ final class MIDIHelper: ObservableObject {
         }
     }
     
-    public var chordShapeIconColor: NSColor {
+    public var chordShapeIconColor: Color {
         if chordLabel.contains("Mixolydian Phrygian") {
             MIDIHelper.majorColor
         } else if chordLabel.contains("Minor Major") {
@@ -133,7 +132,7 @@ final class MIDIHelper: ObservableObject {
         } else if chordLabel == "Diminished" {
             MIDIHelper.neutralColor
         } else {
-            NSColor.clear
+            Color.clear
         }
     }
     

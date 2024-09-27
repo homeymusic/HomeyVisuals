@@ -28,7 +28,8 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
-            Color(#colorLiteral(red: 0.4, green: 0.2666666667, blue: 0.2, alpha: 1))
+//            Color(#colorLiteral(red: 0.4, green: 0.2666666667, blue: 0.2, alpha: 1))
+            Color(.sRGB, red: 0.4, green: 0.2666666667, blue: 0.2, opacity: 1.0)
                 .ignoresSafeArea()
             GeometryReader { geometry in
                 VStack {
@@ -106,7 +107,7 @@ struct ContentView: View {
                             Image(systemName: midiHelper.chordShapeIconName)
                                 .resizable()
                                 .scaledToFit()
-                                .foregroundColor(Color(midiHelper.chordShapeIconColor == NSColor.clear ? MIDIHelper.neutralColor.withAlphaComponent(0.5):  midiHelper.chordShapeIconColor))
+                                .foregroundColor(Color(midiHelper.chordShapeIconColor == Color.clear ? MIDIHelper.neutralColor.opacity(0.5):  midiHelper.chordShapeIconColor))
                                 .frame(width: 50, height: 50)  // Fixed size
                         }
 
