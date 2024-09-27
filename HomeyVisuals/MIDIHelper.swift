@@ -41,6 +41,7 @@ final class MIDIHelper: ObservableObject {
     public func reset() {
         resetPaletteOfNotes()
         resetTurnedOnPitches()
+        syncHomey()
     }
     
     public func togglePitchDirection() {
@@ -156,11 +157,26 @@ final class MIDIHelper: ObservableObject {
                 }
             )
             
+            try midiManager.addOutputConnection(
+                to: .allInputs,
+                tag: "homey"
+            )
+
         } catch {
             print("Error creating MIDI connections:", error.localizedDescription)
         }
         
     }
+    
+    var outputConnection: MIDIOutputConnection? {
+        midiManager?.managedOutputConnections["homey"]
+    }
+    
+    func syncHomey() {
+        print("syncHomey")
+        try? outputConnection?.send(event: .sysEx7(rawHexString: "F07D030103F7"))
+    }
+
     
     private func trackNotesOn(event: MIDIEvent) {
         switch event {
