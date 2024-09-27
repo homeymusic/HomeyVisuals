@@ -6,13 +6,15 @@
 
 import MIDIKitIO
 import SwiftUI
+import CoreMIDI
 
 /// Receiving MIDI happens as an asynchronous background callback. That means it cannot update
 /// SwiftUI view state directly. Therefore, we need a helper class that conforms to
 /// `ObservableObject` which contains `@Published` properties that SwiftUI can use to update views.
 final class MIDIHelper: ObservableObject {
     private weak var midiManager: ObservableMIDIManager?
-    
+    var midiClient: MIDIClientRef = 0
+
     @Published
     public private(set) var turnedOnPitches = Set<Int>() {
         didSet {
@@ -135,8 +137,54 @@ final class MIDIHelper: ObservableObject {
         }
     }
     
-    public init() { }
+    public init() {
+        setupMIDIClient()
+    }
     
+    func setupMIDIClient() {
+        // Create the CoreMIDI client
+        MIDIClientCreate("MIDI Client" as CFString, midiNotifyCallback, Unmanaged.passUnretained(self).toOpaque(), &midiClient)
+    }
+
+    // This is the callback for MIDI notifications
+    let midiNotifyCallback: MIDINotifyProc = { message, refCon in
+        guard let refCon = refCon else {
+            print("Error: refCon is nil")
+            return
+        }
+
+        let helper = Unmanaged<MIDIHelper>.fromOpaque(refCon).takeUnretainedValue()
+        
+        // Print the received message pointer
+        print("Received MIDI notification, message pointer: \(message)")
+        let messageID = message.pointee.messageID
+        print("MIDI Notification ID: \(messageID)")
+        
+        switch messageID {
+        case .msgSetupChanged:
+            print("MIDI setup changed.")
+            // Handle the setup change
+        case .msgObjectAdded:
+            print("A MIDI object was added.")
+            // Handle the added object
+            helper.syncHomey()
+        case .msgObjectRemoved:
+            print("A MIDI object was removed.")
+            // Handle the removed object
+        case .msgPropertyChanged:
+            print("A MIDI object property changed.")
+            // Handle the property change
+        default:
+            print("Unhandled MIDI notification.")
+        }
+
+    }
+    
+    func syncHomey() {
+        print("syncHomey")
+        try? outputConnection?.send(event: .sysEx7(rawHexString: "F07D030103F7"))
+    }
+
     public func setup(midiManager: ObservableMIDIManager) {
         self.midiManager = midiManager
         
@@ -171,12 +219,6 @@ final class MIDIHelper: ObservableObject {
     var outputConnection: MIDIOutputConnection? {
         midiManager?.managedOutputConnections["homey"]
     }
-    
-    func syncHomey() {
-        print("syncHomey")
-        try? outputConnection?.send(event: .sysEx7(rawHexString: "F07D030103F7"))
-    }
-
     
     private func trackNotesOn(event: MIDIEvent) {
         switch event {
