@@ -116,6 +116,10 @@ struct ContentView: View {
                 midiInConnectionView
                     .padding(5)
                     .focusable(false)
+                    .onChange(of: midiInSelectedID) {
+                        print("MIDI In Selection was Changed")
+                        midiHelper.syncHomey()
+                    }
                 
             }
             .frame(alignment: .trailing)
