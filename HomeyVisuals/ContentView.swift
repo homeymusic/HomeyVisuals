@@ -19,6 +19,8 @@ struct ContentView: View {
     
     @State private var allNotes: [Int] = Array(0...127)  // Full set of notes (for the bottom tier)
 
+    @State private var isMiddleTierHovered = false  // Track whether the middle tier is hovered
+
     // Static property to store the calculated sizes for all 128 MIDI notes
     static let normalizedSizes: [CGFloat] = {
         return ContentView.calculateNormalizedSizes()
@@ -167,7 +169,7 @@ struct ContentView: View {
     func middleTier(geometry: GeometryProxy) -> some View {
         let availableHeight = geometry.size.height * 0.9  // Total height for the middle tier
         let availableWidth = geometry.size.width
-        let imageMaxHeight = availableHeight * 0.6  // Constrain the image size relative to available height
+        let imageMaxHeight = availableHeight * 0.8  // Constrain the image size relative to available height
         let paletteNotesArray = Array(midiHelper.paletteOfNotes).sorted()  // Sort the Set to maintain consistent order
         let scaledSizes = getScaledSizes(midiNotes: paletteNotesArray, availableWidth: availableWidth)
 
@@ -176,7 +178,7 @@ struct ContentView: View {
 
         return HStack(alignment: .bottom, spacing: 0) {
             Spacer()
-            
+
             ForEach(Array(paletteNotesArray.enumerated()), id: \.element) { index, note in
                 let emojiWidth = scaledSizes[index]
                 let emojiSize = min(emojiWidth, imageMaxHeight)  // Constrain both width and height to the smallest value
@@ -211,14 +213,54 @@ struct ContentView: View {
                     .animation(.spring(), value: midiHelper.turnedOnPitches.contains(note))
                     .id(note)  // Use 'note' as the identifier to ensure consistency
             }
-            
+
             Spacer()
         }
         .frame(width: availableWidth, height: availableHeight)
+        .overlay(paletteOverlay(), alignment: .center)  // Add overlay when HStack is hovered
+        .onHover { hovering in
+            if !midiHelper.paletteOfNotes.isEmpty {
+                withAnimation {
+                    isMiddleTierHovered = hovering
+                }
+            }
+        }
         .animation(.easeInOut, value: midiHelper.paletteOfNotes)
-        .border(Color.red, width: 2)  // Debugging border
     }
-    
+
+    // New paletteOverlay function for the entire HStack
+    private func paletteOverlay() -> some View {
+        Group {
+            if isMiddleTierHovered {
+                ZStack(alignment: .topTrailing) {
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color(MIDIHelper.neutralColor), lineWidth: 1)  // Border for HStack
+                        .background(Color.clear)
+                    removeButtonForHStack()  // Add a remove button for the entire HStack
+                }
+                .padding()
+                .transition(.opacity)
+            }
+        }
+    }
+
+    // New remove button for the entire HStack
+    private func removeButtonForHStack() -> some View {
+        Button(action: {
+            midiHelper.paletteOfNotes.removeAll()  // Clear the entire palette of notes
+        }) {
+            Image(systemName: "clear.fill")
+                .foregroundColor(Color(MIDIHelper.neutralColor))
+                .padding(4)
+        }
+        .buttonStyle(PlainButtonStyle())
+        .transition(.opacity)
+        .onHover { hovering in
+            withAnimation {
+                isMiddleTierHovered = hovering  // Also keep the HStack hovered state when on the remove button
+            }
+        }
+    }
     private func noteOverlay(for note: Int, offsetAmount: CGFloat) -> some View {
         RoundedRectangle(cornerRadius: 10)
             .stroke(midiHelper.hoveredNote == note ? Color(MIDIHelper.neutralColor) : Color.clear, lineWidth: 1)
