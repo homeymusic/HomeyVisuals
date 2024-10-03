@@ -31,5 +31,18 @@ struct HomeyVisualsApp: App {
             .environmentObject(midiManager)
             .environmentObject(midiHelper)
         }
+        .commands {
+            CommandMenu("Musical Context") {
+                Button("Upward Pitch Contours") {
+                    midiHelper.upwardPitchDirection = true
+                }
+                .keyboardShortcut(">", modifiers: []) // Shortcut: Cmd + S
+
+                Button("Downward Pitch Contours") {
+                    midiHelper.upwardPitchDirection = false
+                }
+                .keyboardShortcut("<", modifiers: []) // Shortcut: Cmd + Shift + D
+            }
+        }
     }
 }

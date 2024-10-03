@@ -69,7 +69,7 @@ final class MIDIHelper: ObservableObject {
     }
     
     @Published
-    public private(set) var upwardPitchDirection: Bool = true
+    public var upwardPitchDirection: Bool = true
     
     
     public var pitchDirectionIconName: String {
