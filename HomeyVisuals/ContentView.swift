@@ -298,6 +298,7 @@ struct ContentView: View {
                     .frame(width: emojiWidth, height: emojiWidth)
                     .offset(y: midiHelper.turnedOnPitches.contains(note) ? maxOffset : 0 )  // Apply the constrained offset
                     .animation(.spring(), value: midiHelper.turnedOnPitches.contains(note))
+                    .scaleEffect(x: xScaleEffect)
             }
         }
         .frame(height: availableHeight)  // Consistent height for the HStack based on availableHeight
