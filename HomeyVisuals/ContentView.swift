@@ -179,8 +179,8 @@ struct ContentView: View {
                 let emojiSize = min(emojiWidth, imageMaxHeight)  // Constrain both width and height to the smallest value
 
                 // Adjust the offset to ensure it doesn't push the emoji out of bounds
-                let maxAvailableOffset = availableHeight - emojiSize
-                let offsetAmount = midiHelper.turnedOnPitches.contains(note) ? -min(emojiSize, maxAvailableOffset) : 0
+                let maxAvailableOffset = availableHeight - emojiSize * 0.5
+                let offsetAmount = midiHelper.turnedOnPitches.contains(note) ? -min(emojiSize * 0.5, maxAvailableOffset) : 0
 
                 Image(emojiFileName(Int8(note)))  // Your image loading logic
                     .resizable()
@@ -199,8 +199,8 @@ struct ContentView: View {
                             midiHelper.hoveredNote = hovering ? note : nil
                         }
                     }
-                    .overlay(noteOverlay(for: note, imageMaxHeight: -imageMaxHeight, offsetAmount: offsetAmount), alignment: .center)
-                    .overlay(removeButton(for: note, imageMaxHeight: -imageMaxHeight, offsetAmount: offsetAmount), alignment: .topTrailing)
+                    .overlay(noteOverlay(for: note, offsetAmount: offsetAmount), alignment: .center)
+                    .overlay(removeButton(for: note, offsetAmount: offsetAmount), alignment: .topTrailing)
                     .animation(.spring(), value: midiHelper.turnedOnPitches.contains(note))
                     .id(note)  // Use 'note' as the identifier to ensure consistency
             }
@@ -211,13 +211,13 @@ struct ContentView: View {
         .animation(.easeInOut, value: midiHelper.paletteOfNotes)
     }
     
-    private func noteOverlay(for note: Int, imageMaxHeight: CGFloat, offsetAmount: CGFloat) -> some View {
+    private func noteOverlay(for note: Int, offsetAmount: CGFloat) -> some View {
         RoundedRectangle(cornerRadius: 10)
             .stroke(midiHelper.hoveredNote == note ? Color(MIDIHelper.neutralColor) : Color.clear, lineWidth: 1)
             .offset(CGSize(width: 0, height: offsetAmount))
     }
 
-    private func removeButton(for note: Int, imageMaxHeight: CGFloat, offsetAmount: CGFloat) -> some View {
+    private func removeButton(for note: Int, offsetAmount: CGFloat) -> some View {
         Group {
             if midiHelper.hoveredNote == note {
                 Button(action: {
