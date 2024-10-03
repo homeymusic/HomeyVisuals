@@ -167,9 +167,12 @@ struct ContentView: View {
     func middleTier(geometry: GeometryProxy) -> some View {
         let availableHeight = geometry.size.height * 0.9  // Total height for the middle tier
         let availableWidth = geometry.size.width
-        let imageMaxHeight = availableHeight * 0.6
+        let imageMaxHeight = availableHeight * 0.6  // Constrain the image size relative to available height
         let paletteNotesArray = Array(midiHelper.paletteOfNotes).sorted()  // Sort the Set to maintain consistent order
         let scaledSizes = getScaledSizes(midiNotes: paletteNotesArray, availableWidth: availableWidth)
+
+        // Determine the height of the largest image
+        let largestEmojiSize = min(scaledSizes.max() ?? imageMaxHeight, imageMaxHeight)
 
         return HStack(alignment: .bottom, spacing: 0) {
             Spacer()
@@ -178,9 +181,13 @@ struct ContentView: View {
                 let emojiWidth = scaledSizes[index]
                 let emojiSize = min(emojiWidth, imageMaxHeight)  // Constrain both width and height to the smallest value
 
+                // Calculate available space above the current image, relative to the largest image
+                let availableSpaceAboveImage = (largestEmojiSize - emojiSize) + (availableHeight - largestEmojiSize) / 2
+
                 // Adjust the offset to ensure it doesn't push the emoji out of bounds
-                let maxAvailableOffset = availableHeight - emojiSize * 0.5
-                let offsetAmount = midiHelper.turnedOnPitches.contains(note) ? -min(emojiSize * 0.5, maxAvailableOffset) : 0
+                let offsetAmount = midiHelper.turnedOnPitches.contains(note)
+                    ? -min(emojiSize, availableSpaceAboveImage)  // Ensure offset stays within bounds
+                    : 0
 
                 Image(emojiFileName(Int8(note)))  // Your image loading logic
                     .resizable()
@@ -207,8 +214,9 @@ struct ContentView: View {
             
             Spacer()
         }
-        .frame(height: availableHeight)
+        .frame(width: availableWidth, height: availableHeight)
         .animation(.easeInOut, value: midiHelper.paletteOfNotes)
+        .border(Color.red, width: 2)  // Debugging border
     }
     
     private func noteOverlay(for note: Int, offsetAmount: CGFloat) -> some View {
