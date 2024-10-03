@@ -19,8 +19,6 @@ struct ContentView: View {
     
     @State private var allNotes: [Int] = Array(0...127)  // Full set of notes (for the bottom tier)
 
-    @State private var isMiddleTierHovered = false  // Track whether the middle tier is hovered
-
     // Static property to store the calculated sizes for all 128 MIDI notes
     static let normalizedSizes: [CGFloat] = {
         return ContentView.calculateNormalizedSizes()
@@ -166,7 +164,9 @@ struct ContentView: View {
 
     }
     
-    func middleTier(geometry: GeometryProxy) -> some View {
+    @State private var isPaletteHovered = false  // Track whether the middle tier is hovered
+
+    func palette(geometry: GeometryProxy) -> some View {
         let availableHeight = geometry.size.height * 0.9  // Total height for the middle tier
         let availableWidth = geometry.size.width
         let imageMaxHeight = availableHeight * 0.8  // Constrain the image size relative to available height
@@ -217,50 +217,39 @@ struct ContentView: View {
             Spacer()
         }
         .frame(width: availableWidth, height: availableHeight)
-        .overlay(paletteOverlay(), alignment: .center)  // Add overlay when HStack is hovered
+        .overlay(paletteOverlay(), alignment: .center)  // Overlay for RoundedRectangle and Clear Button
         .onHover { hovering in
             if !midiHelper.paletteOfNotes.isEmpty {
                 withAnimation {
-                    isMiddleTierHovered = hovering
+                    isPaletteHovered = hovering
                 }
             }
         }
+        .keyboardShortcut("r", modifiers: .command)  // Add keyboard shortcut to clear the palette
         .animation(.easeInOut, value: midiHelper.paletteOfNotes)
     }
 
-    // New paletteOverlay function for the entire HStack
+    // Overlay for the entire HStack
     private func paletteOverlay() -> some View {
-        Group {
-            if isMiddleTierHovered {
-                ZStack(alignment: .topTrailing) {
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color(MIDIHelper.neutralColor), lineWidth: 1)  // Border for HStack
-                        .background(Color.clear)
-                    removeButtonForHStack()  // Add a remove button for the entire HStack
-                }
-                .padding()
-                .transition(.opacity)
+        ZStack(alignment: .topTrailing) {
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(isPaletteHovered && !midiHelper.paletteOfNotes.isEmpty ? Color(MIDIHelper.neutralColor) : Color.clear, lineWidth: 1)
+                .background(Color.clear)
+
+            Button(action: {
+                midiHelper.paletteOfNotes.removeAll()  // Clear the entire palette of notes
+            }) {
+                Image(systemName: "clear.fill")
+                    .foregroundColor(isPaletteHovered && !midiHelper.paletteOfNotes.isEmpty ? Color(MIDIHelper.neutralColor) : Color.clear)
+                    .padding(4)
             }
+            .buttonStyle(PlainButtonStyle())
+            .focusable(false) 
+            .transition(.opacity)
         }
+        .padding()
     }
 
-    // New remove button for the entire HStack
-    private func removeButtonForHStack() -> some View {
-        Button(action: {
-            midiHelper.paletteOfNotes.removeAll()  // Clear the entire palette of notes
-        }) {
-            Image(systemName: "clear.fill")
-                .foregroundColor(Color(MIDIHelper.neutralColor))
-                .padding(4)
-        }
-        .buttonStyle(PlainButtonStyle())
-        .transition(.opacity)
-        .onHover { hovering in
-            withAnimation {
-                isMiddleTierHovered = hovering  // Also keep the HStack hovered state when on the remove button
-            }
-        }
-    }
     private func noteOverlay(for note: Int, offsetAmount: CGFloat) -> some View {
         RoundedRectangle(cornerRadius: 10)
             .stroke(midiHelper.hoveredNote == note ? Color(MIDIHelper.neutralColor) : Color.clear, lineWidth: 1)
@@ -329,7 +318,7 @@ struct ContentView: View {
                     
                     Spacer()
                     
-                    middleTier(geometry: geometry)
+                    palette(geometry: geometry)
                     
                     Spacer()
                     
