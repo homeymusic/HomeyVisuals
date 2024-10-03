@@ -219,13 +219,10 @@ struct ContentView: View {
         .frame(width: availableWidth, height: availableHeight)
         .overlay(paletteOverlay(), alignment: .center)  // Overlay for RoundedRectangle and Clear Button
         .onHover { hovering in
-            if !midiHelper.paletteOfNotes.isEmpty {
-                withAnimation {
-                    isPaletteHovered = hovering
-                }
+            withAnimation {
+                isPaletteHovered = hovering
             }
         }
-        .keyboardShortcut("r", modifiers: .command)  // Add keyboard shortcut to clear the palette
         .animation(.easeInOut, value: midiHelper.paletteOfNotes)
     }
 
@@ -233,7 +230,7 @@ struct ContentView: View {
     private func paletteOverlay() -> some View {
         ZStack(alignment: .topTrailing) {
             RoundedRectangle(cornerRadius: 10)
-                .stroke(isPaletteHovered && !midiHelper.paletteOfNotes.isEmpty ? Color(MIDIHelper.neutralColor) : Color.clear, lineWidth: 1)
+                .stroke(isPaletteHovered ? Color(MIDIHelper.neutralColor) : Color.clear, lineWidth: 1)
                 .background(Color.clear)
 
             Button(action: {
@@ -243,11 +240,12 @@ struct ContentView: View {
                     .foregroundColor(isPaletteHovered && !midiHelper.paletteOfNotes.isEmpty ? Color(MIDIHelper.neutralColor) : Color.clear)
                     .padding(4)
             }
+            .keyboardShortcut("r", modifiers: .command)  // Add keyboard shortcut to clear the palette
             .buttonStyle(PlainButtonStyle())
             .focusable(false) 
             .transition(.opacity)
         }
-        .padding()
+        .padding(0)
     }
 
     private func noteOverlay(for note: Int, offsetAmount: CGFloat) -> some View {
