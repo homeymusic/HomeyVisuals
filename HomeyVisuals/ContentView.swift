@@ -18,40 +18,51 @@ struct ContentView: View {
     @State private var showTonicPopover = false  // State to control the popover visibility
     
     @State private var allNotes: [Int] = Array(0...127)  // Full set of notes (for the bottom tier)
-
+    
     // Static property to store the calculated sizes for all 128 MIDI notes
     static let normalizedSizes: [CGFloat] = {
         return ContentView.calculateNormalizedSizes()
     }()
-
-    // Function that dynamically generates the same values as the Python code
+    
     static func calculateNormalizedSizes() -> [CGFloat] {
-        let maxSizePercent: CGFloat = 20  // Max size for MIDI note 0 as percentage
-        let minSizePercent: CGFloat = 1   // Min size for MIDI note 127 as percentage
+        let maxSizePercent: CGFloat = 100  // Max area percentage for MIDI note 0
+        let minSizePercent: CGFloat = 1   // Min area percentage for MIDI note 127
         let midiNotes = 0...127
+        let scalingFactor: CGFloat = log(maxSizePercent / minSizePercent) / 127  // Logarithmic scaling factor
 
-        // Calculate initial sizes based on linear scaling
-        let initialSizes = midiNotes.map { note in
-            return maxSizePercent - ((maxSizePercent - minSizePercent) / 127) * CGFloat(note)
+        // Calculate areas using exponential scaling
+        let initialAreas = midiNotes.map { note in
+            return maxSizePercent * exp(-scalingFactor * CGFloat(note))
         }
 
-        // Normalize sizes to make the sum 100%
-        let totalSize = initialSizes.reduce(0, +)
-        return initialSizes.map { size in
-            return (size / totalSize) * 100
+        // Normalize areas so they sum to 100% of total available area
+        let totalArea = initialAreas.reduce(0, +)
+        let normalizedAreas = initialAreas.map { area in
+            return (area / totalArea) * 100
+        }
+
+        // Calculate corresponding side lengths (width/height) based on area = side^2
+        let sideLengths = normalizedAreas.map { area in
+            return sqrt(area)  // Side length is square root of area
+        }
+
+        // Normalize side lengths again to ensure total sum of lengths is within bounds
+        let totalSideLength = sideLengths.reduce(0, +)
+        return sideLengths.map { sideLength in
+            return (sideLength / totalSideLength) * 100  // Scale to fit within total space
         }
     }
-
+    
     // Function to get the relative sizes from the "all" row and scale them for the middle tier
     func getScaledSizes(midiNotes: [Int], availableWidth: CGFloat) -> [CGFloat] {
         // Get the relative sizes for the notes in the middle tier (palette)
         let paletteSizes = midiNotes.map { ContentView.normalizedSizes[$0] }
-
+        
         // Scale the relative sizes so they sum to 100% of available width
         let totalPaletteSize = paletteSizes.reduce(0, +)
         return paletteSizes.map { ($0 / totalPaletteSize) * availableWidth }
     }
-
+    
     func topTier(topHeight: CGFloat) -> some View {
         HStack(spacing: 20) {
             
@@ -154,36 +165,36 @@ struct ContentView: View {
             
         }
         .frame(height: topHeight)
-
+        
     }
     
     @State private var isPaletteHovered = false  // Track whether the middle tier is hovered
-
+    
     func palette(geometry: GeometryProxy) -> some View {
         let availableHeight = geometry.size.height * 0.9  // Total height for the middle tier
         let availableWidth = geometry.size.width
         let imageMaxHeight = availableHeight * 0.8  // Constrain the image size relative to available height
         let paletteNotesArray = Array(midiHelper.paletteOfNotes).sorted()  // Sort the Set to maintain consistent order
         let scaledSizes = getScaledSizes(midiNotes: paletteNotesArray, availableWidth: availableWidth)
-
+        
         // Determine the height of the largest image
         let largestEmojiSize = min(scaledSizes.max() ?? imageMaxHeight, imageMaxHeight)
-
+        
         return HStack(alignment: .bottom, spacing: 0) {
             Spacer()
-
+            
             ForEach(Array(paletteNotesArray.enumerated()), id: \.element) { index, note in
                 let emojiWidth = scaledSizes[index]
                 let emojiSize = min(emojiWidth, imageMaxHeight)  // Constrain both width and height to the smallest value
-
+                
                 // Calculate available space above the current image, relative to the largest image
                 let availableSpaceAboveImage = (largestEmojiSize - emojiSize) + (availableHeight - largestEmojiSize) / 2
-
+                
                 // Adjust the offset to ensure it doesn't push the emoji out of bounds
                 let offsetAmount = midiHelper.turnedOnPitches.contains(note)
-                    ? -availableSpaceAboveImage  // Ensure offset stays within bounds
-                    : 0
-
+                ? -availableSpaceAboveImage  // Ensure offset stays within bounds
+                : 0
+                
                 Image(emojiFileName(Int8(note)))  // Your image loading logic
                     .resizable()
                     .scaledToFit()
@@ -206,7 +217,7 @@ struct ContentView: View {
                     .animation(.spring(), value: midiHelper.turnedOnPitches.contains(note))
                     .id(note)  // Use 'note' as the identifier to ensure consistency
             }
-
+            
             Spacer()
         }
         .frame(width: availableWidth, height: availableHeight)
@@ -218,14 +229,14 @@ struct ContentView: View {
         }
         .animation(.easeInOut, value: midiHelper.paletteOfNotes)
     }
-
+    
     // Overlay for the entire HStack
     private func paletteOverlay() -> some View {
         ZStack(alignment: .topTrailing) {
             RoundedRectangle(cornerRadius: 10)
                 .stroke(isPaletteHovered ? Color(MIDIHelper.neutralColor) : Color.clear, lineWidth: 1)
                 .background(Color.clear)
-
+            
             Button(action: {
                 midiHelper.paletteOfNotes.removeAll()  // Clear the entire palette of notes
             }) {
@@ -235,18 +246,18 @@ struct ContentView: View {
             }
             .keyboardShortcut("r", modifiers: .command)  // Add keyboard shortcut to clear the palette
             .buttonStyle(PlainButtonStyle())
-            .focusable(false) 
+            .focusable(false)
             .transition(.opacity)
         }
         .padding(0)
     }
-
+    
     private func noteOverlay(for note: Int, offsetAmount: CGFloat) -> some View {
         RoundedRectangle(cornerRadius: 10)
             .stroke(midiHelper.hoveredNote == note ? Color(MIDIHelper.neutralColor) : Color.clear, lineWidth: 1)
             .offset(CGSize(width: 0, height: offsetAmount))
     }
-
+    
     private func removeButton(for note: Int, offsetAmount: CGFloat) -> some View {
         Group {
             if midiHelper.hoveredNote == note {
@@ -261,11 +272,11 @@ struct ContentView: View {
                 .transition(.opacity)
                 .offset(CGSize(width: 0, height: offsetAmount))
                 .onHover { hovering in
-                     withAnimation {
-                         // Show the remove button when hovering
-                         midiHelper.hoveredNote = hovering ? note : nil
-                     }
-                 }
+                    withAnimation {
+                        // Show the remove button when hovering
+                        midiHelper.hoveredNote = hovering ? note : nil
+                    }
+                }
             }
         }
     }
@@ -274,7 +285,7 @@ struct ContentView: View {
         let availableWidth = geometry.size.width
         let availableHeight = geometry.size.height * 0.05  // Height of the containing view
         let allSizes = ContentView.normalizedSizes  // Use the pre-calculated sizes
-
+        
         return HStack(alignment: .bottom, spacing: 0) {
             
             ForEach(allNotes, id: \.self) { note in
@@ -284,7 +295,7 @@ struct ContentView: View {
                 
                 // Calculate maximum allowable offset to stay within the view's height
                 let maxOffset = min(offsetAmount, availableHeight - emojiWidth)
-
+                
                 Image(emojiFileName(Int8(note)))  // Your image loading logic
                     .resizable()
                     .scaledToFit()
@@ -303,7 +314,7 @@ struct ContentView: View {
                 .ignoresSafeArea()
             GeometryReader { geometry in
                 let topHeight    = geometry.size.height * 0.05
-
+                
                 VStack {
                     
                     topTier(topHeight: topHeight)
