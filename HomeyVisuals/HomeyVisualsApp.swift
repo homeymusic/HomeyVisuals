@@ -33,16 +33,24 @@ struct HomeyVisualsApp: App {
         }
         .commands {
             CommandMenu("Musical Context") {
+                Button("Clear Notes") {
+                    midiHelper.reset()
+                }
+                .keyboardShortcut("r", modifiers: [])
+
                 Button("Upward Pitch Contours") {
                     midiHelper.upwardPitchDirection = true
+                    midiHelper.reset()
                 }
-                .keyboardShortcut(">", modifiers: []) // Shortcut: Cmd + S
-
+                .keyboardShortcut(".", modifiers: [])
+                
                 Button("Downward Pitch Contours") {
                     midiHelper.upwardPitchDirection = false
+                    midiHelper.reset()
                 }
-                .keyboardShortcut("<", modifiers: []) // Shortcut: Cmd + Shift + D
+                .keyboardShortcut(",", modifiers: []) 
             }
         }
     }
 }
+

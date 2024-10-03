@@ -118,7 +118,7 @@ struct ContentView: View {
                         .foregroundColor(Color(midiHelper.pitchDirectionIconColor))
                         .frame(width: 50, height: 50)  // Fixed size
                 }
-                .keyboardShortcut("d", modifiers: .command)
+                .keyboardShortcut("=", modifiers: [])
                 .buttonStyle(PlainButtonStyle())
                 .focusable(false)  // Remove the focus ring if needed
                 
@@ -140,13 +140,6 @@ struct ContentView: View {
                 
                 // Spacer to balance the symbols
                 Spacer()
-                
-                Button(action: { midiHelper.reset() }) {
-                    Image(systemName: "gobackward")
-                }
-                .buttonStyle(PlainButtonStyle())
-                .keyboardShortcut("r", modifiers: .command)
-                .focusable(false)  // Remove focus ring
                 
                 midiInConnectionView
                     .padding(5)
