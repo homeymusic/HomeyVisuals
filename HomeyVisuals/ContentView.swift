@@ -167,11 +167,11 @@ struct ContentView: View {
     func middleTier(geometry: GeometryProxy) -> some View {
         let availableHeight = geometry.size.height * 0.9  // Total height for the middle tier
         let availableWidth = geometry.size.width
-        let imageMaxHeight = availableHeight
+        let imageMaxHeight = availableHeight * 0.6
         let paletteNotesArray = Array(midiHelper.paletteOfNotes).sorted()  // Sort the Set to maintain consistent order
         let scaledSizes = getScaledSizes(midiNotes: paletteNotesArray, availableWidth: availableWidth)
 
-        return HStack(spacing: 0) {
+        return HStack(alignment: .bottom, spacing: 0) {
             Spacer()
             
             ForEach(Array(paletteNotesArray.enumerated()), id: \.element) { index, note in
@@ -179,7 +179,8 @@ struct ContentView: View {
                 let emojiSize = min(emojiWidth, imageMaxHeight)  // Constrain both width and height to the smallest value
 
                 // Adjust the offset to ensure it doesn't push the emoji out of bounds
-                let offsetAmount = midiHelper.turnedOnPitches.contains(note) ? -min(emojiSize * 0.5, availableHeight - emojiSize) : 0
+                let maxAvailableOffset = availableHeight - emojiSize
+                let offsetAmount = midiHelper.turnedOnPitches.contains(note) ? -min(emojiSize, maxAvailableOffset) : 0
 
                 Image(emojiFileName(Int8(note)))  // Your image loading logic
                     .resizable()
@@ -210,14 +211,10 @@ struct ContentView: View {
         .animation(.easeInOut, value: midiHelper.paletteOfNotes)
     }
     
-    private func imageOffset(for note: Int, imageMaxHeight: CGFloat) -> CGSize {
-        midiHelper.turnedOnPitches.contains(note) ? CGSize(width: 0, height: imageMaxHeight) : .zero
-    }
-
     private func noteOverlay(for note: Int, imageMaxHeight: CGFloat, offsetAmount: CGFloat) -> some View {
         RoundedRectangle(cornerRadius: 10)
             .stroke(midiHelper.hoveredNote == note ? Color(MIDIHelper.neutralColor) : Color.clear, lineWidth: 1)
-            .offset(midiHelper.turnedOnPitches.contains(note) ? CGSize(width: 0, height: offsetAmount) : .zero)
+            .offset(CGSize(width: 0, height: offsetAmount))
     }
 
     private func removeButton(for note: Int, imageMaxHeight: CGFloat, offsetAmount: CGFloat) -> some View {
@@ -232,7 +229,7 @@ struct ContentView: View {
                 }
                 .buttonStyle(PlainButtonStyle())
                 .transition(.opacity)
-                .offset(midiHelper.turnedOnPitches.contains(note) ? CGSize(width: 0, height: offsetAmount) : .zero)
+                .offset(CGSize(width: 0, height: offsetAmount))
                 .onHover { hovering in
                      withAnimation {
                          // Show the remove button when hovering
@@ -248,7 +245,7 @@ struct ContentView: View {
         let availableHeight = geometry.size.height * 0.05  // Height of the containing view
         let allSizes = ContentView.normalizedSizes  // Use the pre-calculated sizes
 
-        return HStack(spacing: 0) {
+        return HStack(alignment: .bottom, spacing: 0) {
             
             ForEach(allNotes, id: \.self) { note in
                 let sizePercentage = allSizes[note] / 100.0
