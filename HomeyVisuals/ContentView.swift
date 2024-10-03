@@ -171,7 +171,7 @@ struct ContentView: View {
     @State private var isPaletteHovered = false  // Track whether the middle tier is hovered
     
     func palette(geometry: GeometryProxy) -> some View {
-        let availableHeight = geometry.size.height * 0.9  // Total height for the middle tier
+        let availableHeight = geometry.size.height * 0.85  // Total height for the middle tier
         let availableWidth = geometry.size.width
         let imageMaxHeight = availableHeight * 0.8  // Constrain the image size relative to available height
         let paletteNotesArray = Array(midiHelper.paletteOfNotes).sorted()  // Sort the Set to maintain consistent order
@@ -189,13 +189,11 @@ struct ContentView: View {
                 let emojiSize = scaledSizes[index] * scalingFactor
                 
                 // Calculate available space above the current image, relative to the largest image
-//                let availableSpaceAboveImage = (largestEmojiHeight - emojiSize) + (availableHeight - largestEmojiHeight) / 2
-                
                 let availableSpaceAboveImage = (availableHeight - largestEmojiHeight) / 2
 
                 // Adjust the offset to ensure it doesn't push the emoji out of bounds
                 let offsetAmount = midiHelper.turnedOnPitches.contains(note)
-                ? -availableSpaceAboveImage  // Ensure offset stays within bounds
+                ? -min(availableSpaceAboveImage, 2.0 * largestEmojiHeight)  // Ensure offset stays within bounds
                 : 0
                 
                 Image(emojiFileName(Int8(note)))  // Your image loading logic
@@ -284,31 +282,47 @@ struct ContentView: View {
         }
     }
     
+
     func bottomTier(geometry: GeometryProxy) -> some View  {
         let availableWidth = geometry.size.width
-        let availableHeight = geometry.size.height * 0.05  // Height of the containing view
+        let availableHeight = geometry.size.height * 0.1  // Height of the containing view
+        let imageMaxHeight = availableHeight * 0.95  // Constrain the image size relative to available height
         let allSizes = ContentView.normalizedSizes  // Use the pre-calculated sizes
         
+        // Scale sizes proportionally to fill the available width
+        let totalRelativeSize = allSizes.reduce(0, +)
+        let scaledSizes = allNotes.map { note in (allSizes[note] / totalRelativeSize) * availableWidth }
+        
+        // Determine the largest image size
+        let scaleMax = scaledSizes.max() ?? imageMaxHeight
+        let scalingFactor = scaleMax > imageMaxHeight ? imageMaxHeight / scaleMax : 1.0
+        let largestEmojiHeight = scaleMax * scalingFactor
+        
+        let bottomPadding = 10.0
+
         return HStack(alignment: .bottom, spacing: 0) {
-            
             ForEach(allNotes, id: \.self) { note in
-                let sizePercentage = allSizes[note] / 100.0
-                let emojiWidth = sizePercentage * availableWidth
-                let offsetAmount = midiHelper.turnedOnPitches.contains(note) ? -emojiWidth * 1.0 : 0
+                let emojiSize = scaledSizes[note] * scalingFactor
                 
-                // Calculate maximum allowable offset to stay within the view's height
-                let maxOffset = min(offsetAmount, availableHeight - emojiWidth)
+                // Calculate available space above the current emoji, relative to the largest emoji
+                let availableSpaceAboveEmoji = (availableHeight - largestEmojiHeight - bottomPadding)
+                
+                // Adjust the offset to ensure it doesn't push the emoji out of bounds
+                let offsetAmount = midiHelper.turnedOnPitches.contains(note)
+                    ? -availableSpaceAboveEmoji  // Ensure offset stays within bounds
+                    : 0
                 
                 Image(emojiFileName(Int8(note)))  // Your image loading logic
                     .resizable()
                     .scaledToFit()
-                    .frame(width: emojiWidth, height: emojiWidth)
-                    .offset(y: midiHelper.turnedOnPitches.contains(note) ? maxOffset : 0 )  // Apply the constrained offset
-                    .animation(.spring(), value: midiHelper.turnedOnPitches.contains(note))
+                    .frame(width: emojiSize, height: emojiSize)
+                    .offset(y: offsetAmount)  // Apply the constrained offset
                     .scaleEffect(x: xScaleEffect)
+                    .animation(.spring(), value: midiHelper.turnedOnPitches.contains(note))
             }
         }
-        .frame(height: availableHeight)  // Consistent height for the HStack based on availableHeight
+        .padding(.bottom, bottomPadding)
+        .frame(width: availableWidth, height: availableHeight, alignment: .bottom)
     }
     
     var body: some View {
