@@ -186,7 +186,7 @@ struct ContentView: View {
 
                 // Adjust the offset to ensure it doesn't push the emoji out of bounds
                 let offsetAmount = midiHelper.turnedOnPitches.contains(note)
-                    ? -min(emojiSize, availableSpaceAboveImage)  // Ensure offset stays within bounds
+                    ? -availableSpaceAboveImage  // Ensure offset stays within bounds
                     : 0
 
                 Image(emojiFileName(Int8(note)))  // Your image loading logic
