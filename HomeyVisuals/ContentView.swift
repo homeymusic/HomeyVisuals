@@ -178,9 +178,10 @@ struct ContentView: View {
         let scaledSizes = getScaledSizes(midiNotes: paletteNotesArray, availableWidth: availableWidth)
         
         // Determine the height of the largest image
-        let largestEmojiHeight = scaledSizes.max() ?? imageMaxHeight
-        let scalingFactor = largestEmojiHeight > imageMaxHeight ? imageMaxHeight / largestEmojiHeight : 1.0
-        
+        let scaleMax = scaledSizes.max() ?? imageMaxHeight
+        let scalingFactor = scaleMax > imageMaxHeight ? imageMaxHeight / scaleMax : 1.0
+        let largestEmojiHeight = scaleMax * scalingFactor
+
         return HStack(alignment: .bottom, spacing: 0) {
             Spacer()
             
@@ -188,8 +189,10 @@ struct ContentView: View {
                 let emojiSize = scaledSizes[index] * scalingFactor
                 
                 // Calculate available space above the current image, relative to the largest image
-                let availableSpaceAboveImage = (largestEmojiHeight - emojiSize) + (availableHeight - largestEmojiHeight) / 2
+//                let availableSpaceAboveImage = (largestEmojiHeight - emojiSize) + (availableHeight - largestEmojiHeight) / 2
                 
+                let availableSpaceAboveImage = (availableHeight - largestEmojiHeight) / 2
+
                 // Adjust the offset to ensure it doesn't push the emoji out of bounds
                 let offsetAmount = midiHelper.turnedOnPitches.contains(note)
                 ? -availableSpaceAboveImage  // Ensure offset stays within bounds
