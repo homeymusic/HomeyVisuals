@@ -16,20 +16,23 @@ struct ContentView: View {
     @Binding var midiInSelectedID: MIDIIdentifier?
     @Binding var midiInSelectedDisplayName: String?
     
-    @State private var showTonicPopover = false  // State to control the popover visibility
-    
-    @State private var allNotes: [Int] = Array(0...127)  // Full set of notes (for the bottom tier)
-    
-    @State private var isWebcamOn = false  // State to track webcam on/off
+    @State private var showTonicPopover = false
+    @State private var allNotes: [Int] = Array(0...127)
+    @State private var isWebcamOn = false
     @State private var availableWebcams: [AVCaptureDevice] = []
     @State private var selectedWebcam: AVCaptureDevice?
-    
-    // Set the minimum and maximum bounds for webcam and palette heights
-    let webcamMinHeightPercentage: CGFloat = 0.15  // 15% min height
-    let webcamMaxHeightPercentage: CGFloat = 0.60  // 60% max height
-    let paletteMinHeightPercentage: CGFloat = 0.20  // 20% min height
     @State private var webcamHeightPercentage: CGFloat = 0.3  // Webcam occupies 30% of screen height by default
-    @State private var isDragging = false  // Track whether the user is dragging the grabber
+    @State private var dragOffset: CGFloat = 0.0
+    @State private var isDragging = false
+    
+    // Palette and Webcam height limits
+    @State private var paletteMaxHeightPercentage: CGFloat = 0.8  // Max height for the palette view
+    @State private var paletteMinHeightPercentage: CGFloat = 0.2  // Min height for the palette view
+    @State private var webcamMaxHeightPercentage: CGFloat = 0.5   // Max height for the webcam view
+    @State private var webcamMinHeightPercentage: CGFloat = 0.2   // Min height for the webcam view
+    
+    static let topTierHeightPercentage = 0.05
+    static let bottomTierHeightPercentage = 0.1
 
     // Static property to store the calculated sizes for all 128 MIDI notes
     static let normalizedSizes: [CGFloat] = {
@@ -201,7 +204,7 @@ struct ContentView: View {
     @State private var isPaletteHovered = false  // Track whether the middle tier is hovered
     
     func palette(geometry: GeometryProxy, remainingHeight: CGFloat) -> some View {
-        let availableHeight = remainingHeight * 0.45  // Shrinks as webcam grows
+        let availableHeight = remainingHeight // Shrinks as webcam grows
         let availableWidth = geometry.size.width
         let imageMaxHeight = availableHeight * 0.8  // Constrain the image size relative to available height
         let paletteNotesArray = Array(midiHelper.paletteOfNotes).sorted()  // Sort the Set to maintain consistent order
@@ -315,7 +318,7 @@ struct ContentView: View {
     
     func bottomTier(geometry: GeometryProxy) -> some View  {
         let availableWidth = geometry.size.width
-        let availableHeight = geometry.size.height * 0.1  // Height of the containing view
+        let availableHeight = geometry.size.height * ContentView.bottomTierHeightPercentage  // Height of the containing view
         let imageMaxHeight = availableHeight * 0.95  // Constrain the image size relative to available height
         let allSizes = ContentView.normalizedSizes  // Use the pre-calculated sizes
         
@@ -324,7 +327,7 @@ struct ContentView: View {
         let scaledSizes = allNotes.map { note in (allSizes[note] / totalRelativeSize) * availableWidth }
         
         // Determine the largest image size
-        let scaleMax = scaledSizes.max() ?? imageMaxHeight
+        let scaleMax = scaledSizes.max() ?? 0  // Safely unwrap by providing a default value (0) if the array is empty
         let scalingFactor = scaleMax > imageMaxHeight ? imageMaxHeight / scaleMax : 1.0
         let largestEmojiHeight = scaleMax * scalingFactor
         
@@ -400,14 +403,14 @@ struct ContentView: View {
         @Binding var isWebcamOn: Bool
         @Binding var selectedWebcam: AVCaptureDevice?
         var availableWebcams: [AVCaptureDevice]
-
+        
         var body: some View {
             VStack {
                 if isWebcamOn, let selectedWebcam = selectedWebcam {
                     let formatDescription = selectedWebcam.activeFormat.formatDescription
                     let dimensions = CMVideoFormatDescriptionGetDimensions(formatDescription)
                     let aspectRatio = CGFloat(dimensions.width) / CGFloat(dimensions.height)
-
+                    
                     WebcamView(isWebcamOn: $isWebcamOn, selectedWebcam: $selectedWebcam)
                         .aspectRatio(aspectRatio, contentMode: .fit)
                         .border(Color(MIDIHelper.neutralColor), width: 2)
@@ -425,12 +428,19 @@ struct ContentView: View {
             
             GeometryReader { geometry in
                 VStack(spacing: 0) {
-                    topTier(topHeight: geometry.size.height * 0.05)
+                    topTier(topHeight: geometry.size.height * ContentView.topTierHeightPercentage)
                     
                     Spacer()
                     
-                    // Adjust the palette height based on the remaining space after webcam adjustment
-                    palette(geometry: geometry, remainingHeight: isWebcamOn ? geometry.size.height * (1 - webcamHeightPercentage - 0.1) : geometry.size.height * 0.85)
+                    let paletteHeightPercentage = isWebcamOn
+                    ? min(max((1.0 - webcamHeightPercentage), paletteMinHeightPercentage), paletteMaxHeightPercentage)
+                    : paletteMaxHeightPercentage + 0.1 // Add a bit more height to the palette when webcam is off
+                    
+                    // Then in your `palette` view:
+                    palette(geometry: geometry, remainingHeight: geometry.size.height * (paletteHeightPercentage - ContentView.topTierHeightPercentage - ContentView.bottomTierHeightPercentage))
+                        .frame(height: geometry.size.height * paletteHeightPercentage)
+                        .frame(minHeight: geometry.size.height * paletteMinHeightPercentage)  // Ensure minimum height
+                        .frame(maxHeight: geometry.size.height * paletteMaxHeightPercentage + 0.1)  // Ensure maximum height
                     
                     Spacer()
                     
@@ -463,7 +473,7 @@ struct ContentView: View {
                         }
                         .frame(height: 20)
                         .background(Color.clear)
-                    
+                        
                         WebcamContainerView(
                             isWebcamOn: $isWebcamOn,
                             selectedWebcam: $selectedWebcam,
@@ -482,7 +492,7 @@ struct ContentView: View {
             .frame(minWidth: 700, minHeight: 660)
         }
     }
-
+    
     private var midiInConnectionView: some View {
         MIDIOutputsPicker(
             title: "",
