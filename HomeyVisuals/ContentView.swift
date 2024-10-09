@@ -24,6 +24,13 @@ struct ContentView: View {
     @State private var availableWebcams: [AVCaptureDevice] = []
     @State private var selectedWebcam: AVCaptureDevice?
     
+    // Set the minimum and maximum bounds for webcam and palette heights
+    let webcamMinHeightPercentage: CGFloat = 0.15  // 15% min height
+    let webcamMaxHeightPercentage: CGFloat = 0.60  // 60% max height
+    let paletteMinHeightPercentage: CGFloat = 0.20  // 20% min height
+    @State private var webcamHeightPercentage: CGFloat = 0.3  // Webcam occupies 30% of screen height by default
+    @State private var isDragging = false  // Track whether the user is dragging the grabber
+
     // Static property to store the calculated sizes for all 128 MIDI notes
     static let normalizedSizes: [CGFloat] = {
         return ContentView.calculateNormalizedSizes()
@@ -193,8 +200,8 @@ struct ContentView: View {
     
     @State private var isPaletteHovered = false  // Track whether the middle tier is hovered
     
-    func palette(geometry: GeometryProxy) -> some View {
-        let availableHeight = geometry.size.height * 0.45  // Total height for the middle tier
+    func palette(geometry: GeometryProxy, remainingHeight: CGFloat) -> some View {
+        let availableHeight = remainingHeight * 0.45  // Shrinks as webcam grows
         let availableWidth = geometry.size.width
         let imageMaxHeight = availableHeight * 0.8  // Constrain the image size relative to available height
         let paletteNotesArray = Array(midiHelper.paletteOfNotes).sorted()  // Sort the Set to maintain consistent order
@@ -410,30 +417,62 @@ struct ContentView: View {
             }
         }
     }
+    
     var body: some View {
         ZStack {
             Color(.sRGB, red: 0.4, green: 0.2666666667, blue: 0.2, opacity: 1.0)
                 .ignoresSafeArea()
+            
             GeometryReader { geometry in
-                let topHeight = geometry.size.height * 0.05
-
-                VStack {
-                    topTier(topHeight: topHeight)
+                VStack(spacing: 0) {
+                    topTier(topHeight: geometry.size.height * 0.05)
                     
                     Spacer()
-
-                    palette(geometry: geometry)
-
+                    
+                    // Adjust the palette height based on the remaining space after webcam adjustment
+                    palette(geometry: geometry, remainingHeight: isWebcamOn ? geometry.size.height * (1 - webcamHeightPercentage - 0.1) : geometry.size.height * 0.85)
+                    
                     Spacer()
-
+                    
                     bottomTier(geometry: geometry)
-
-                    // Webcam Section
+                    
+                    // Webcam Section with resizable height
                     if isWebcamOn {
-                        WebcamContainerView(isWebcamOn: $isWebcamOn, selectedWebcam: $selectedWebcam, availableWebcams: availableWebcams)
-                            .padding(.top)
+                        VStack {
+                            Rectangle()
+                                .fill(isDragging ? Color.gray.opacity(0.7) : Color.gray.opacity(0.4))
+                                .frame(width: 60, height: 5)
+                                .cornerRadius(2.5)
+                                .padding(.top, 4)
+                                .onHover { hover in
+                                    if hover { NSCursor.resizeUpDown.push() } else { NSCursor.pop() }
+                                }
+                                .gesture(
+                                    DragGesture()
+                                        .onChanged { value in
+                                            isDragging = true
+                                            // Adjust the webcam height percentage based on the drag
+                                            let newHeight = webcamHeightPercentage - (value.translation.height / geometry.size.height)
+                                            // Ensure it stays within reasonable limits
+                                            webcamHeightPercentage = min(max(newHeight, webcamMinHeightPercentage), webcamMaxHeightPercentage)
+                                        }
+                                        .onEnded { _ in
+                                            isDragging = false
+                                        }
+                                )
+                        }
+                        .frame(height: 20)
+                        .background(Color.clear)
+                    
+                        WebcamContainerView(
+                            isWebcamOn: $isWebcamOn,
+                            selectedWebcam: $selectedWebcam,
+                            availableWebcams: availableWebcams
+                        )
+                        .frame(height: geometry.size.height * webcamHeightPercentage)
+                        .padding(.horizontal)
                     }
-
+                    
                     Spacer()
                 }
             }
@@ -443,7 +482,7 @@ struct ContentView: View {
             .frame(minWidth: 700, minHeight: 660)
         }
     }
-    
+
     private var midiInConnectionView: some View {
         MIDIOutputsPicker(
             title: "",
