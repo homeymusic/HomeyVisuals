@@ -7,6 +7,7 @@ import MIDIKitIO
 import MIDIKitUI
 import SwiftUI
 import Tonic
+import AVFoundation
 
 struct ContentView: View {
     @EnvironmentObject var midiManager: ObservableMIDIManager
@@ -19,6 +20,10 @@ struct ContentView: View {
     
     @State private var allNotes: [Int] = Array(0...127)  // Full set of notes (for the bottom tier)
     
+    @State private var isWebcamOn = false  // State to track webcam on/off
+    @State private var availableWebcams: [AVCaptureDevice] = []
+    @State private var selectedWebcam: AVCaptureDevice?
+    
     // Static property to store the calculated sizes for all 128 MIDI notes
     static let normalizedSizes: [CGFloat] = {
         return ContentView.calculateNormalizedSizes()
@@ -29,23 +34,23 @@ struct ContentView: View {
         let minSizePercent: CGFloat = 1   // Min area percentage for MIDI note 127
         let midiNotes = 0...127
         let scalingFactor: CGFloat = log(maxSizePercent / minSizePercent) / 127  // Logarithmic scaling factor
-
+        
         // Calculate areas using exponential scaling
         let initialAreas = midiNotes.map { note in
             return maxSizePercent * exp(-scalingFactor * CGFloat(note))
         }
-
+        
         // Normalize areas so they sum to 100% of total available area
         let totalArea = initialAreas.reduce(0, +)
         let normalizedAreas = initialAreas.map { area in
             return (area / totalArea) * 100
         }
-
+        
         // Calculate corresponding side lengths (width/height) based on area = side^2
         let sideLengths = normalizedAreas.map { area in
             return sqrt(area)  // Side length is square root of area
         }
-
+        
         // Normalize side lengths again to ensure total sum of lengths is within bounds
         let totalSideLength = sideLengths.reduce(0, +)
         return sideLengths.map { sideLength in
@@ -152,6 +157,24 @@ struct ContentView: View {
                 // Spacer to balance the symbols
                 Spacer()
                 
+                // Webcam Toggle
+                Toggle("Webcam", isOn: $isWebcamOn)
+                    .padding()
+                
+                Picker("", selection: $selectedWebcam) {
+                    ForEach(availableWebcams, id: \.self) { webcam in
+                        Text(webcam.localizedName)
+                            .tag(webcam as AVCaptureDevice?)
+                    }
+                }
+                .onAppear {
+                    Task {
+                        await setUpCaptureSession()
+                    }
+                }
+                .disabled(!isWebcamOn)  // Disable picker when webcam is off
+                .padding()
+                
                 midiInConnectionView
                     .padding(5)
                     .focusable(false)
@@ -171,7 +194,7 @@ struct ContentView: View {
     @State private var isPaletteHovered = false  // Track whether the middle tier is hovered
     
     func palette(geometry: GeometryProxy) -> some View {
-        let availableHeight = geometry.size.height * 0.85  // Total height for the middle tier
+        let availableHeight = geometry.size.height * 0.45  // Total height for the middle tier
         let availableWidth = geometry.size.width
         let imageMaxHeight = availableHeight * 0.8  // Constrain the image size relative to available height
         let paletteNotesArray = Array(midiHelper.paletteOfNotes).sorted()  // Sort the Set to maintain consistent order
@@ -181,7 +204,7 @@ struct ContentView: View {
         let scaleMax = scaledSizes.max() ?? imageMaxHeight
         let scalingFactor = scaleMax > imageMaxHeight ? imageMaxHeight / scaleMax : 1.0
         let largestEmojiHeight = scaleMax * scalingFactor
-
+        
         return HStack(alignment: .bottom, spacing: 0) {
             Spacer()
             
@@ -190,7 +213,7 @@ struct ContentView: View {
                 
                 // Calculate available space above the current image, relative to the largest image
                 let availableSpaceAboveImage = (availableHeight - largestEmojiHeight) / 2
-
+                
                 // Adjust the offset to ensure it doesn't push the emoji out of bounds
                 let offsetAmount = midiHelper.turnedOnPitches.contains(note)
                 ? -min(availableSpaceAboveImage, 2.0 * largestEmojiHeight)  // Ensure offset stays within bounds
@@ -210,6 +233,7 @@ struct ContentView: View {
                     }
                     .onHover { hovering in
                         withAnimation {
+                            isPaletteHovered = hovering
                             midiHelper.hoveredNote = hovering ? note : nil
                         }
                     }
@@ -282,7 +306,6 @@ struct ContentView: View {
         }
     }
     
-
     func bottomTier(geometry: GeometryProxy) -> some View  {
         let availableWidth = geometry.size.width
         let availableHeight = geometry.size.height * 0.1  // Height of the containing view
@@ -299,7 +322,7 @@ struct ContentView: View {
         let largestEmojiHeight = scaleMax * scalingFactor
         
         let bottomPadding = 10.0
-
+        
         return HStack(alignment: .bottom, spacing: 0) {
             ForEach(allNotes, id: \.self) { note in
                 let emojiSize = scaledSizes[note] * scalingFactor
@@ -309,8 +332,8 @@ struct ContentView: View {
                 
                 // Adjust the offset to ensure it doesn't push the emoji out of bounds
                 let offsetAmount = midiHelper.turnedOnPitches.contains(note)
-                    ? -availableSpaceAboveEmoji  // Ensure offset stays within bounds
-                    : 0
+                ? -availableSpaceAboveEmoji  // Ensure offset stays within bounds
+                : 0
                 
                 Image(emojiFileName(Int8(note)))  // Your image loading logic
                     .resizable()
@@ -325,25 +348,93 @@ struct ContentView: View {
         .frame(width: availableWidth, height: availableHeight, alignment: .bottom)
     }
     
+    // Function to fetch available webcams (including external cameras)
+    func fetchAvailableWebcams() -> [AVCaptureDevice] {
+        let discoverySession = AVCaptureDevice.DiscoverySession(
+            deviceTypes: [.builtInWideAngleCamera, AVCaptureDevice.DeviceType.external],
+            mediaType: .video,
+            position: .unspecified
+        )
+        
+        return discoverySession.devices
+    }
+    
+    // Async function to set up capture session based on authorization
+    func setUpCaptureSession() async {
+        guard await isAuthorized else {
+            print("Camera access not authorized.")
+            return
+        }
+        
+        // Fetch available webcams
+        availableWebcams = fetchAvailableWebcams()
+        selectedWebcam = availableWebcams.first // Select the first webcam by default
+    }
+    
+    // Async property to check if the app is authorized to access the camera
+    var isAuthorized: Bool {
+        get async {
+            let status = AVCaptureDevice.authorizationStatus(for: .video)
+            
+            // Determine if the user previously authorized camera access.
+            var isAuthorized = status == .authorized
+            
+            // If the system hasn't determined the user's authorization status,
+            // explicitly prompt them for approval.
+            if status == .notDetermined {
+                isAuthorized = await AVCaptureDevice.requestAccess(for: .video)
+            }
+            
+            return isAuthorized
+        }
+    }
+    
+    struct WebcamContainerView: View {
+        @Binding var isWebcamOn: Bool
+        @Binding var selectedWebcam: AVCaptureDevice?
+        var availableWebcams: [AVCaptureDevice]
+
+        var body: some View {
+            VStack {
+                if isWebcamOn, let selectedWebcam = selectedWebcam {
+                    let formatDescription = selectedWebcam.activeFormat.formatDescription
+                    let dimensions = CMVideoFormatDescriptionGetDimensions(formatDescription)
+                    let aspectRatio = CGFloat(dimensions.width) / CGFloat(dimensions.height)
+
+                    WebcamView(isWebcamOn: $isWebcamOn, selectedWebcam: $selectedWebcam)
+                        .aspectRatio(aspectRatio, contentMode: .fit)
+                        .border(Color(MIDIHelper.neutralColor), width: 2)
+                        .padding()
+                        .id(selectedWebcam.uniqueID)
+                }
+            }
+        }
+    }
     var body: some View {
         ZStack {
             Color(.sRGB, red: 0.4, green: 0.2666666667, blue: 0.2, opacity: 1.0)
                 .ignoresSafeArea()
             GeometryReader { geometry in
-                let topHeight    = geometry.size.height * 0.05
-                
+                let topHeight = geometry.size.height * 0.05
+
                 VStack {
-                    
                     topTier(topHeight: topHeight)
                     
                     Spacer()
-                    
+
                     palette(geometry: geometry)
-                    
+
                     Spacer()
-                    
+
                     bottomTier(geometry: geometry)
-                    
+
+                    // Webcam Section
+                    if isWebcamOn {
+                        WebcamContainerView(isWebcamOn: $isWebcamOn, selectedWebcam: $selectedWebcam, availableWebcams: availableWebcams)
+                            .padding(.top)
+                    }
+
+                    Spacer()
                 }
             }
             .multilineTextAlignment(.center)

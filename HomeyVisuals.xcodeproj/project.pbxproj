@@ -15,6 +15,7 @@
 		B03F8D5E2BADC82700B38395 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03F8D5B2BADC82700B38395 /* Utilities.swift */; };
 		B03F8D612BADC88C00B38395 /* MIDIKit in Frameworks */ = {isa = PBXBuildFile; productRef = B03F8D602BADC88C00B38395 /* MIDIKit */; };
 		B03F8D632BADC88C00B38395 /* MIDIKitIO in Frameworks */ = {isa = PBXBuildFile; productRef = B03F8D622BADC88C00B38395 /* MIDIKitIO */; };
+		B07333142CB721DF0040DAE7 /* WebcamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B07333132CB721DF0040DAE7 /* WebcamView.swift */; };
 		B0C088012BB8284600E454A0 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = B0C088002BB8284600E454A0 /* InfoPlist.xcstrings */; };
 		B0C8EFDB2BB37838005874C3 /* Tonic in Frameworks */ = {isa = PBXBuildFile; productRef = B0C8EFDA2BB37838005874C3 /* Tonic */; };
 		B0E055A82C90C89A00A99DFC /* Tonic in Frameworks */ = {isa = PBXBuildFile; productRef = B0E055A72C90C89A00A99DFC /* Tonic */; };
@@ -32,6 +33,7 @@
 		B03F8D592BADC82700B38395 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B03F8D5A2BADC82700B38395 /* MIDIHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MIDIHelper.swift; sourceTree = "<group>"; };
 		B03F8D5B2BADC82700B38395 /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		B07333132CB721DF0040DAE7 /* WebcamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebcamView.swift; sourceTree = "<group>"; };
 		B0C088002BB8284600E454A0 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		B0C70D502CAAD8E400267BC4 /* HomeyMusicKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = HomeyMusicKit; path = ../HomeyMusicKit; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -77,6 +79,7 @@
 			children = (
 				B03F8D4A2BADC80700B38395 /* HomeyVisualsApp.swift */,
 				B03F8D592BADC82700B38395 /* ContentView.swift */,
+				B07333132CB721DF0040DAE7 /* WebcamView.swift */,
 				B03F8D5A2BADC82700B38395 /* MIDIHelper.swift */,
 				B03F8D5B2BADC82700B38395 /* Utilities.swift */,
 				B03F8D4E2BADC80900B38395 /* Assets.xcassets */,
@@ -178,6 +181,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B07333142CB721DF0040DAE7 /* WebcamView.swift in Sources */,
 				B03F8D5D2BADC82700B38395 /* MIDIHelper.swift in Sources */,
 				B03F8D5C2BADC82700B38395 /* ContentView.swift in Sources */,
 				B03F8D5E2BADC82700B38395 /* Utilities.swift in Sources */,
@@ -325,7 +329,8 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "$(PRODUCT_NAME)";
+				INFOPLIST_KEY_CFBundleDisplayName = HomeyVisuals;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Homey Visuals allows you to share your camera in the app so that your audience can see what you are playing.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -356,7 +361,8 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "$(PRODUCT_NAME)";
+				INFOPLIST_KEY_CFBundleDisplayName = HomeyVisuals;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Homey Visuals allows you to share your camera in the app so that your audience can see what you are playing.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
