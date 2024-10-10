@@ -30,10 +30,10 @@ struct ContentView: View {
     @State private var paletteMinHeightPercentage: CGFloat = 0.2  // Min height for the palette view
     @State private var webcamMaxHeightPercentage: CGFloat = 0.5   // Max height for the webcam view
     @State private var webcamMinHeightPercentage: CGFloat = 0.2   // Min height for the webcam view
-    
+    @State private var showSettingsPopover = false
     static let topTierHeightPercentage = 0.05
     static let bottomTierHeightPercentage = 0.1
-
+    
     // Static property to store the calculated sizes for all 128 MIDI notes
     static let normalizedSizes: [CGFloat] = {
         return ContentView.calculateNormalizedSizes()
@@ -167,32 +167,64 @@ struct ContentView: View {
                 // Spacer to balance the symbols
                 Spacer()
                 
-                // Webcam Toggle
-                Toggle("Webcam", isOn: $isWebcamOn)
+                Button(action: {
+                    showSettingsPopover.toggle()
+                }) {
+                    Image(systemName: "gearshape")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)  // Make the gear icon much smaller
+                        .padding()
+                }
+                .buttonStyle(PlainButtonStyle())  // This removes any default button styling
+                .focusable(false)  // Turn off the blue outline
+                .popover(isPresented: $showSettingsPopover) {
+                    VStack {
+                        midiInConnectionView
+                            .padding(5)
+                            .focusable(false)
+                            .onChange(of: midiInSelectedID) {
+                                print("MIDI In Selection was Changed")
+                                midiHelper.syncHomey()
+                            }
+                        
+                        
+                        // Webcam Toggle with Icon, Label, and Slider
+                        HStack {
+                            Image(systemName: "camera.fill")  // SF Symbol for the webcam icon
+                                .resizable()
+                                .frame(width: 20, height: 20)
+                                .foregroundColor(.white)  // Change color if needed
+                            
+                            Text("Webcam")
+                                .font(.system(size: 18))
+                                .foregroundColor(.white)  // Change color if needed
+                            
+                            Spacer()
+                            
+                            Toggle("", isOn: $isWebcamOn)
+                                .toggleStyle(SwitchToggleStyle(tint: Color.blue))  // Slider style
+                        }
+                        .padding()
+                        
+                        Picker("", selection: $selectedWebcam) {
+                            ForEach(availableWebcams, id: \.self) { webcam in
+                                Text(webcam.localizedName)
+                                    .tag(webcam as AVCaptureDevice?)
+                            }
+                        }
+                        .onAppear {
+                            Task {
+                                await setUpCaptureSession()
+                            }
+                        }
+                        .disabled(!isWebcamOn)
+                        .padding()
+                        
+                    }
+                    .frame(width: 300)
                     .padding()
-                
-                Picker("", selection: $selectedWebcam) {
-                    ForEach(availableWebcams, id: \.self) { webcam in
-                        Text(webcam.localizedName)
-                            .tag(webcam as AVCaptureDevice?)
-                    }
                 }
-                .onAppear {
-                    Task {
-                        await setUpCaptureSession()
-                    }
-                }
-                .disabled(!isWebcamOn)  // Disable picker when webcam is off
-                .padding()
-                
-                midiInConnectionView
-                    .padding(5)
-                    .focusable(false)
-                    .onChange(of: midiInSelectedID) {
-                        print("MIDI In Selection was Changed")
-                        midiHelper.syncHomey()
-                    }
-                
             }
             .frame(alignment: .trailing)
             
@@ -413,7 +445,7 @@ struct ContentView: View {
                     
                     WebcamView(isWebcamOn: $isWebcamOn, selectedWebcam: $selectedWebcam)
                         .aspectRatio(aspectRatio, contentMode: .fit)
-                        .border(Color(MIDIHelper.neutralColor), width: 2)
+                        .border(MIDIHelper.darkBrownColor, width: 5)
                         .padding()
                         .id(selectedWebcam.uniqueID)
                 }
@@ -447,7 +479,11 @@ struct ContentView: View {
                     bottomTier(geometry: geometry)
                     
                     // Webcam Section with resizable height
+                    // Webcam Section with resizable height
                     if isWebcamOn {
+                        // Webcam Section with resizable height
+                        
+                        // Webcam Section with resizable height
                         VStack {
                             Rectangle()
                                 .fill(isDragging ? Color.gray.opacity(0.7) : Color.gray.opacity(0.4))
@@ -474,13 +510,16 @@ struct ContentView: View {
                         .frame(height: 20)
                         .background(Color.clear)
                         
-                        WebcamContainerView(
-                            isWebcamOn: $isWebcamOn,
-                            selectedWebcam: $selectedWebcam,
-                            availableWebcams: availableWebcams
-                        )
-                        .frame(height: geometry.size.height * webcamHeightPercentage)
-                        .padding(.horizontal)
+                        if isWebcamOn {
+                            WebcamContainerView(
+                                isWebcamOn: $isWebcamOn,
+                                selectedWebcam: $selectedWebcam,
+                                availableWebcams: availableWebcams
+                            )
+                            .transition(.opacity)  // Apply the fade effect
+                            .frame(height: geometry.size.height * webcamHeightPercentage)
+                            .padding(.horizontal)
+                        }
                     }
                     
                     Spacer()

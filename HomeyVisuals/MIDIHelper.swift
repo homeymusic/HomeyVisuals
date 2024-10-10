@@ -96,6 +96,10 @@ final class MIDIHelper: ObservableObject {
         return Color(.sRGB, red: 0.3647058824, green: 0.6784313725, blue: 0.9254901961, opacity: 1.0)
     }
     
+    static public var darkBrownColor: Color {
+        Color(.sRGB, red: 0.3, green: 0.2, blue: 0.15, opacity: 1.0)
+    }
+    
     public var pitchDirectionIconColor: Color {
         if upwardPitchDirection {
             MIDIHelper.majorColor
