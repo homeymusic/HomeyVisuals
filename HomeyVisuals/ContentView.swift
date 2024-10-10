@@ -437,7 +437,7 @@ struct ContentView: View {
                     : paletteMaxHeightPercentage + 0.1 // Add a bit more height to the palette when webcam is off
                     
                     // Then in your `palette` view:
-                    palette(geometry: geometry, remainingHeight: geometry.size.height * (paletteHeightPercentage - ContentView.topTierHeightPercentage - ContentView.bottomTierHeightPercentage))
+                    palette(geometry: geometry, remainingHeight: geometry.size.height * (paletteHeightPercentage - ContentView.topTierHeightPercentage - ContentView.bottomTierHeightPercentage - 0.01))
                         .frame(height: geometry.size.height * paletteHeightPercentage)
                         .frame(minHeight: geometry.size.height * paletteMinHeightPercentage)  // Ensure minimum height
                         .frame(maxHeight: geometry.size.height * paletteMaxHeightPercentage + 0.1)  // Ensure maximum height
