@@ -11,7 +11,7 @@ import CoreMIDI
 /// Receiving MIDI happens as an asynchronous background callback. That means it cannot update
 /// SwiftUI view state directly. Therefore, we need a helper class that conforms to
 /// `ObservableObject` which contains `@Published` properties that SwiftUI can use to update views.
-final class MIDIHelper: ObservableObject {
+final class MIDIConductor: ObservableObject {
     private weak var midiManager: ObservableMIDIManager?
     var midiClient: MIDIClientRef = 0
 
@@ -102,9 +102,9 @@ final class MIDIHelper: ObservableObject {
     
     public var pitchDirectionIconColor: Color {
         if upwardPitchDirection {
-            MIDIHelper.majorColor
+            MIDIConductor.majorColor
         } else {
-            MIDIHelper.minorColor
+            MIDIConductor.minorColor
         }
     }
     
@@ -126,15 +126,15 @@ final class MIDIHelper: ObservableObject {
     
     public var chordShapeIconColor: Color {
         if chordLabel.contains("Mixolydian Phrygian") {
-            MIDIHelper.majorColor
+            MIDIConductor.majorColor
         } else if chordLabel.contains("Minor Major") {
-            MIDIHelper.minorColor
+            MIDIConductor.minorColor
         } else if chordLabel.contains("Phrygian") || chordLabel.contains("Minor")  {
-            MIDIHelper.minorColor
+            MIDIConductor.minorColor
         } else if chordLabel.contains("Major") || chordLabel.contains("Mixolydian") || chordLabel.contains("Dominant") {
-            MIDIHelper.majorColor
+            MIDIConductor.majorColor
         } else if chordLabel == "Diminished" {
-            MIDIHelper.neutralColor
+            MIDIConductor.neutralColor
         } else {
             Color.clear
         }
@@ -156,7 +156,7 @@ final class MIDIHelper: ObservableObject {
             return
         }
 
-        let helper = Unmanaged<MIDIHelper>.fromOpaque(refCon).takeUnretainedValue()
+        let helper = Unmanaged<MIDIConductor>.fromOpaque(refCon).takeUnretainedValue()
         
         // Print the received message pointer
         print("Received MIDI notification, message pointer: \(message)")
@@ -381,7 +381,7 @@ final class MIDIHelper: ObservableObject {
             
             print("rootToTonicDistance", rootToTonicDistance)
             
-            scaleDegree = switch MIDIHelper.mod(rootToTonicDistance, 12) {
+            scaleDegree = switch MIDIConductor.mod(rootToTonicDistance, 12) {
             case 0:
                 "\(prefix)1\(caret)"
             case 1:
@@ -424,7 +424,7 @@ final class MIDIHelper: ObservableObject {
 
 // MARK: - String Constants
 
-extension MIDIHelper {
+extension MIDIConductor {
     enum Tags {
         static let midiIn = "SelectedInputConnection"
     }
@@ -436,5 +436,30 @@ extension MIDIHelper {
     
     enum Defaults {
         static let selectedDisplayName = "None"
+    }
+}
+
+/// Allow use with `@AppStorage` by conforming to a supported `RawRepresentable` type.
+extension MIDIIdentifier: @retroactive RawRepresentable {
+    public typealias RawValue = Int
+    
+    public init?(rawValue: RawValue) {
+        self = Self(rawValue)
+    }
+    
+    public var rawValue: RawValue {
+        Int(self)
+    }
+}
+
+extension UInt7 {
+    public static func random() -> Self {
+        UInt7(UInt.random(in: 0 ... 127))
+    }
+    
+    public static func random(in range: ClosedRange<Self>) -> Self {
+        let lb = UInt(range.lowerBound)
+        let ub = UInt(range.upperBound)
+        return UInt7(UInt.random(in: lb ... ub))
     }
 }

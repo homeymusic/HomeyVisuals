@@ -11,8 +11,7 @@
 		B03F8D4F2BADC80900B38395 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B03F8D4E2BADC80900B38395 /* Assets.xcassets */; };
 		B03F8D522BADC80900B38395 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B03F8D512BADC80900B38395 /* Preview Assets.xcassets */; };
 		B03F8D5C2BADC82700B38395 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03F8D592BADC82700B38395 /* ContentView.swift */; };
-		B03F8D5D2BADC82700B38395 /* MIDIHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03F8D5A2BADC82700B38395 /* MIDIHelper.swift */; };
-		B03F8D5E2BADC82700B38395 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03F8D5B2BADC82700B38395 /* Utilities.swift */; };
+		B03F8D5D2BADC82700B38395 /* MIDIConductor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03F8D5A2BADC82700B38395 /* MIDIConductor.swift */; };
 		B03F8D612BADC88C00B38395 /* MIDIKit in Frameworks */ = {isa = PBXBuildFile; productRef = B03F8D602BADC88C00B38395 /* MIDIKit */; };
 		B03F8D632BADC88C00B38395 /* MIDIKitIO in Frameworks */ = {isa = PBXBuildFile; productRef = B03F8D622BADC88C00B38395 /* MIDIKitIO */; };
 		B07333142CB721DF0040DAE7 /* WebcamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B07333132CB721DF0040DAE7 /* WebcamView.swift */; };
@@ -31,8 +30,7 @@
 		B03F8D512BADC80900B38395 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		B03F8D532BADC80900B38395 /* HomeyVisuals.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HomeyVisuals.entitlements; sourceTree = "<group>"; };
 		B03F8D592BADC82700B38395 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		B03F8D5A2BADC82700B38395 /* MIDIHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MIDIHelper.swift; sourceTree = "<group>"; };
-		B03F8D5B2BADC82700B38395 /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		B03F8D5A2BADC82700B38395 /* MIDIConductor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MIDIConductor.swift; sourceTree = "<group>"; };
 		B07333132CB721DF0040DAE7 /* WebcamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebcamView.swift; sourceTree = "<group>"; };
 		B0C088002BB8284600E454A0 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		B0C70D502CAAD8E400267BC4 /* HomeyMusicKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = HomeyMusicKit; path = ../HomeyMusicKit; sourceTree = SOURCE_ROOT; };
@@ -77,11 +75,10 @@
 		B03F8D492BADC80700B38395 /* HomeyVisuals */ = {
 			isa = PBXGroup;
 			children = (
+				B093E15C2CBD2FCA00130B06 /* Conductors */,
+				B093E15B2CBD2FC300130B06 /* Views */,
 				B03F8D4A2BADC80700B38395 /* HomeyVisualsApp.swift */,
 				B03F8D592BADC82700B38395 /* ContentView.swift */,
-				B07333132CB721DF0040DAE7 /* WebcamView.swift */,
-				B03F8D5A2BADC82700B38395 /* MIDIHelper.swift */,
-				B03F8D5B2BADC82700B38395 /* Utilities.swift */,
 				B03F8D4E2BADC80900B38395 /* Assets.xcassets */,
 				B03F8D532BADC80900B38395 /* HomeyVisuals.entitlements */,
 				B03F8D502BADC80900B38395 /* Preview Content */,
@@ -95,6 +92,22 @@
 				B03F8D512BADC80900B38395 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		B093E15B2CBD2FC300130B06 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B07333132CB721DF0040DAE7 /* WebcamView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		B093E15C2CBD2FCA00130B06 /* Conductors */ = {
+			isa = PBXGroup;
+			children = (
+				B03F8D5A2BADC82700B38395 /* MIDIConductor.swift */,
+			);
+			path = Conductors;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -182,9 +195,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				B07333142CB721DF0040DAE7 /* WebcamView.swift in Sources */,
-				B03F8D5D2BADC82700B38395 /* MIDIHelper.swift in Sources */,
+				B03F8D5D2BADC82700B38395 /* MIDIConductor.swift in Sources */,
 				B03F8D5C2BADC82700B38395 /* ContentView.swift in Sources */,
-				B03F8D5E2BADC82700B38395 /* Utilities.swift in Sources */,
 				B03F8D4B2BADC80700B38395 /* HomeyVisualsApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

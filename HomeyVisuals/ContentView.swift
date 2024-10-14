@@ -11,7 +11,7 @@ import AVFoundation
 
 struct ContentView: View {
     @EnvironmentObject var midiManager: ObservableMIDIManager
-    @EnvironmentObject var midiHelper: MIDIHelper
+    @EnvironmentObject var midiHelper: MIDIConductor
     
     @Binding var midiInSelectedID: MIDIIdentifier?
     @Binding var midiInSelectedDisplayName: String?
@@ -90,12 +90,12 @@ struct ContentView: View {
                         Image(systemName: "house.fill")
                             .resizable()
                             .scaledToFit()
-                            .foregroundColor(Color(MIDIHelper.neutralColor))
+                            .foregroundColor(Color(MIDIConductor.neutralColor))
                             .frame(width: 50, height: 50)  // Fixed size
                         
                         Text(String(midiHelper.tonicNote))
                             .font(.title)
-                            .foregroundColor(Color(MIDIHelper.neutralColor))
+                            .foregroundColor(Color(MIDIConductor.neutralColor))
                     }
                 }
                 .buttonStyle(PlainButtonStyle())
@@ -152,7 +152,7 @@ struct ContentView: View {
                 Image(systemName: midiHelper.chordShapeIconName)
                     .resizable()
                     .scaledToFit()
-                    .foregroundColor(Color(midiHelper.chordShapeIconColor == Color.clear ? MIDIHelper.neutralColor.opacity(0.5):  midiHelper.chordShapeIconColor))
+                    .foregroundColor(Color(midiHelper.chordShapeIconColor == Color.clear ? MIDIConductor.neutralColor.opacity(0.5):  midiHelper.chordShapeIconColor))
                     .frame(width: 50, height: 50)  // Fixed size
             }
             
@@ -301,14 +301,14 @@ struct ContentView: View {
     private func paletteOverlay() -> some View {
         ZStack(alignment: .topTrailing) {
             RoundedRectangle(cornerRadius: 10)
-                .stroke(isPaletteHovered ? Color(MIDIHelper.neutralColor) : Color.clear, lineWidth: 1)
+                .stroke(isPaletteHovered ? Color(MIDIConductor.neutralColor) : Color.clear, lineWidth: 1)
                 .background(Color.clear)
             
             Button(action: {
                 midiHelper.paletteOfNotes.removeAll()  // Clear the entire palette of notes
             }) {
                 Image(systemName: "clear.fill")
-                    .foregroundColor(isPaletteHovered && !midiHelper.paletteOfNotes.isEmpty ? Color(MIDIHelper.neutralColor) : Color.clear)
+                    .foregroundColor(isPaletteHovered && !midiHelper.paletteOfNotes.isEmpty ? Color(MIDIConductor.neutralColor) : Color.clear)
                     .padding(4)
             }
             .keyboardShortcut("r", modifiers: .command)  // Add keyboard shortcut to clear the palette
@@ -321,7 +321,7 @@ struct ContentView: View {
     
     private func noteOverlay(for note: Int, offsetAmount: CGFloat) -> some View {
         RoundedRectangle(cornerRadius: 10)
-            .stroke(midiHelper.hoveredNote == note ? Color(MIDIHelper.neutralColor) : Color.clear, lineWidth: 1)
+            .stroke(midiHelper.hoveredNote == note ? Color(MIDIConductor.neutralColor) : Color.clear, lineWidth: 1)
             .offset(CGSize(width: 0, height: offsetAmount))
     }
     
@@ -332,7 +332,7 @@ struct ContentView: View {
                     midiHelper.paletteOfNotes.remove(note)
                 }) {
                     Image(systemName: "clear.fill")
-                        .foregroundColor(Color(MIDIHelper.neutralColor))
+                        .foregroundColor(Color(MIDIConductor.neutralColor))
                         .padding(4)
                 }
                 .buttonStyle(PlainButtonStyle())
@@ -445,7 +445,7 @@ struct ContentView: View {
                     
                     WebcamView(isWebcamOn: $isWebcamOn, selectedWebcam: $selectedWebcam)
                         .aspectRatio(aspectRatio, contentMode: .fit)
-                        .border(MIDIHelper.darkBrownColor, width: 5)
+                        .border(MIDIConductor.darkBrownColor, width: 5)
                         .padding()
                         .id(selectedWebcam.uniqueID)
                 }
@@ -540,13 +540,13 @@ struct ContentView: View {
             showIcons: true,
             hideOwned: false
         )
-        .updatingInputConnection(withTag: MIDIHelper.Tags.midiIn)
+        .updatingInputConnection(withTag: MIDIConductor.Tags.midiIn)
         .frame(maxWidth: 300)
         .focusable(false)
     }
     
     public func emojiFileName(_ note: Int8) -> String {
-        let interval = MIDIHelper.mod(Int(note) - Int(midiHelper.tonicNote), 12)
+        let interval = MIDIConductor.mod(Int(note) - Int(midiHelper.tonicNote), 12)
         if midiHelper.tonicNote == note {
             return "home_tortoise_tree"
         } else if midiHelper.upwardPitchDirection {
