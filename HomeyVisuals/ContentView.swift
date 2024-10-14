@@ -10,6 +10,8 @@ import Tonic
 import AVFoundation
 
 struct ContentView: View {
+    @StateObject private var viewConductor = ViewConductor()
+    
     @EnvironmentObject var midiManager: ObservableMIDIManager
     @EnvironmentObject var midiHelper: MIDIConductor
     
