@@ -19,7 +19,6 @@ struct ContentView: View {
     @Binding var midiInSelectedDisplayName: String?
     
     @State private var showTonicPopover = false
-    @State private var allNotes: [Int] = Array(0...127)
     @State private var isWebcamOn = false
     @State private var availableWebcams: [AVCaptureDevice] = []
     @State private var selectedWebcam: AVCaptureDevice?
@@ -169,6 +168,14 @@ struct ContentView: View {
                 // Spacer to balance the symbols
                 Spacer()
                 
+                midiInConnectionView
+                    .padding(5)
+                    .focusable(false)
+                    .onChange(of: midiInSelectedID) {
+                        print("MIDI In Selection was Changed")
+                        midiHelper.syncHomey()
+                    }                            
+
                 Button(action: {
                     showSettingsPopover.toggle()
                 }) {
@@ -182,15 +189,6 @@ struct ContentView: View {
                 .focusable(false)  // Turn off the blue outline
                 .popover(isPresented: $showSettingsPopover) {
                     VStack {
-                        midiInConnectionView
-                            .padding(5)
-                            .focusable(false)
-                            .onChange(of: midiInSelectedID) {
-                                print("MIDI In Selection was Changed")
-                                midiHelper.syncHomey()
-                            }
-                        
-                        
                         // Webcam Toggle with Icon, Label, and Slider
                         HStack {
                             Image(systemName: "camera.fill")  // SF Symbol for the webcam icon
@@ -358,7 +356,7 @@ struct ContentView: View {
         
         // Scale sizes proportionally to fill the available width
         let totalRelativeSize = allSizes.reduce(0, +)
-        let scaledSizes = allNotes.map { note in (allSizes[note] / totalRelativeSize) * availableWidth }
+        let scaledSizes = viewConductor.allIntervals.map { interval in (allSizes[Int(interval.pitch.midi)] / totalRelativeSize) * availableWidth }
         
         // Determine the largest image size
         let scaleMax = scaledSizes.max() ?? 0  // Safely unwrap by providing a default value (0) if the array is empty
@@ -368,24 +366,24 @@ struct ContentView: View {
         let bottomPadding = 10.0
         
         return HStack(alignment: .bottom, spacing: 0) {
-            ForEach(allNotes, id: \.self) { note in
-                let emojiSize = scaledSizes[note] * scalingFactor
+            ForEach(viewConductor.allIntervals, id: \.self) { interval in
+                let emojiSize = scaledSizes[Int(interval.pitch.midi)] * scalingFactor
                 
                 // Calculate available space above the current emoji, relative to the largest emoji
                 let availableSpaceAboveEmoji = (availableHeight - largestEmojiHeight - bottomPadding)
                 
                 // Adjust the offset to ensure it doesn't push the emoji out of bounds
-                let offsetAmount = midiHelper.turnedOnPitches.contains(note)
+                let offsetAmount = midiHelper.turnedOnPitches.contains(Int(interval.pitch.midi))
                 ? -availableSpaceAboveEmoji  // Ensure offset stays within bounds
                 : 0
                 
-                Image(emojiFileName(Int8(note)))  // Your image loading logic
+                Image(emojiFileName(Int8(interval.pitch.midi)))  // Your image loading logic
                     .resizable()
                     .scaledToFit()
                     .frame(width: emojiSize, height: emojiSize)
                     .offset(y: offsetAmount)  // Apply the constrained offset
                     .scaleEffect(x: xScaleEffect)
-                    .animation(.spring(), value: midiHelper.turnedOnPitches.contains(note))
+                    .animation(.spring(), value: midiHelper.turnedOnPitches.contains(Int(interval.pitch.midi)))
             }
         }
         .padding(.bottom, bottomPadding)
