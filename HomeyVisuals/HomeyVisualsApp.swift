@@ -10,12 +10,12 @@ struct HomeyVisualsApp: App {
         manufacturer: "Homey Music"
     )
     
-    @ObservedObject var midiHelper = MIDIConductor()
+    @ObservedObject var midiHelper = MIDIHelper()
     
-    @AppStorage(MIDIConductor.PrefKeys.midiInID)
+    @AppStorage(MIDIHelper.PrefKeys.midiInID)
     var midiInSelectedID: MIDIIdentifier?
     
-    @AppStorage(MIDIConductor.PrefKeys.midiInDisplayName)
+    @AppStorage(MIDIHelper.PrefKeys.midiInDisplayName)
     var midiInSelectedDisplayName: String?
     
     init() {
