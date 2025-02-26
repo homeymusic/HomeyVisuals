@@ -4,7 +4,7 @@ import Combine
 
 @main
 struct HomeyVisualsApp: App {
-    @ObservedObject var midiManager = ObservableMIDIManager(
+    @State var midiManager = ObservableMIDIManager(
         clientName: "HomeyVisuals",
         model: "macOS",
         manufacturer: "Homey Music"
@@ -28,7 +28,7 @@ struct HomeyVisualsApp: App {
                 midiInSelectedID: $midiInSelectedID,
                 midiInSelectedDisplayName: $midiInSelectedDisplayName
             )
-            .environmentObject(midiManager)
+            .environment(midiManager)
             .environmentObject(midiHelper)
         }
         .commands {
@@ -39,13 +39,19 @@ struct HomeyVisualsApp: App {
                 .keyboardShortcut("r", modifiers: [])
 
                 Button("Upward Pitch Contours") {
-                    midiHelper.upwardPitchDirection = true
+                    midiHelper.pitchDirection = .upward
                     midiHelper.reset()
                 }
                 .keyboardShortcut(".", modifiers: [])
                 
+                Button("Mixed Pitch Contours") {
+                    midiHelper.pitchDirection = .mixed
+                    midiHelper.reset()
+                }
+                .keyboardShortcut("=", modifiers: [])
+
                 Button("Downward Pitch Contours") {
-                    midiHelper.upwardPitchDirection = false
+                    midiHelper.pitchDirection = .downward
                     midiHelper.reset()
                 }
                 .keyboardShortcut(",", modifiers: []) 

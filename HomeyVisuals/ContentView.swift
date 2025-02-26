@@ -6,11 +6,11 @@
 import MIDIKitIO
 import MIDIKitUI
 import SwiftUI
-import Tonic
 import AVFoundation
+import HomeyMusicKit
 
 struct ContentView: View {
-    @EnvironmentObject var midiManager: ObservableMIDIManager
+    @Environment(ObservableMIDIManager.self) private var midiManager
     @EnvironmentObject var midiHelper: MIDIHelper
     
     @Binding var midiInSelectedID: MIDIIdentifier?
@@ -124,7 +124,7 @@ struct ContentView: View {
                 
                 // Degree Label - Left-aligned and expands to use available space
                 Text(midiHelper.degreeLabel)
-                    .foregroundColor(Color(midiHelper.pitchDirectionIconColor))
+                    .foregroundColor(Color(midiHelper.pitchDirection.majorMinor.color))
                     .font(.title)
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .trailing)
@@ -132,30 +132,39 @@ struct ContentView: View {
             .frame(alignment: .leading)
             
             // Symbols - Centered
-            HStack(spacing: 20) {
-                
-                Button(action: {
-                    // Toggle the upwardPitchDirection state
-                    midiHelper.togglePitchDirection()
-                }) {
-                    Image(systemName: midiHelper.pitchDirectionIconName)
+            VStack {
+                HStack(spacing: 20) {
+                    
+                    Button(action: {
+                        // Toggle the upwardPitchDirection state
+                        midiHelper.nextPitchDirection()
+                    }) {
+                        Image(systemName: midiHelper.pitchDirection.icon)
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(Color(midiHelper.pitchDirection.majorMinor.color))
+                            .frame(width: 50, height: 50)  // Fixed size
+                    }
+                    .keyboardShortcut("=", modifiers: [])
+                    .buttonStyle(PlainButtonStyle())
+                    .focusable(false)  // Remove the focus ring if needed
+                    
+                    
+                    Image(systemName: midiHelper.chordShapeIconName)
                         .resizable()
                         .scaledToFit()
-                        .foregroundColor(Color(midiHelper.pitchDirectionIconColor))
+                        .foregroundColor(Color(midiHelper.chordShapeIconColor == Color.clear ? MIDIHelper.neutralColor.opacity(0.5):  midiHelper.chordShapeIconColor))
                         .frame(width: 50, height: 50)  // Fixed size
                 }
-                .keyboardShortcut("=", modifiers: [])
-                .buttonStyle(PlainButtonStyle())
-                .focusable(false)  // Remove the focus ring if needed
                 
-                
-                Image(systemName: midiHelper.chordShapeIconName)
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundColor(Color(midiHelper.chordShapeIconColor == Color.clear ? MIDIHelper.neutralColor.opacity(0.5):  midiHelper.chordShapeIconColor))
-                    .frame(width: 50, height: 50)  // Fixed size
+                HStack {
+                    Text("\(midiHelper.mode.label)")
+                        .foregroundColor(Color(midiHelper.mode.majorMinor.color))
+                        .font(.title)
+                        .frame(maxWidth: .infinity)
+
+                }
             }
-            
             HStack {
                 // Chord Label - Right-aligned and expands to use available space
                 Text("\(midiHelper.rootNote()) \(midiHelper.chordLabel)")
@@ -167,6 +176,8 @@ struct ContentView: View {
                 // Spacer to balance the symbols
                 Spacer()
                 
+                
+                // upper right corner
                 Button(action: {
                     showSettingsPopover.toggle()
                 }) {
@@ -549,12 +560,6 @@ struct ContentView: View {
         let interval = MIDIHelper.mod(Int(note) - Int(midiHelper.tonicNote), 12)
         if midiHelper.tonicNote == note {
             return "home_tortoise_tree"
-        } else if midiHelper.upwardPitchDirection {
-            return ["home",
-                    "stone_blue_hare", "stone_gold", "diamond_blue", "diamond_gold_sun",
-                    "tent_blue", "disco", "tent_gold",
-                    "diamond_blue_rain", "diamond_gold", "stone_blue", "stone_gold_hare",
-            ][Int(interval)]
         } else {
             return ["home",
                     "stone_blue_hare", "stone_gold", "diamond_blue", "diamond_gold_sun",
@@ -565,7 +570,7 @@ struct ContentView: View {
     }
     
     private var xScaleEffect: CGFloat {
-        midiHelper.upwardPitchDirection ? -1.0 : 1.0
+        midiHelper.pitchDirection == .upward ? -1.0 : 1.0
     }
     
 }

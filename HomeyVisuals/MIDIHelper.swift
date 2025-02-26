@@ -7,6 +7,7 @@
 import MIDIKitIO
 import SwiftUI
 import CoreMIDI
+import HomeyMusicKit
 
 /// Receiving MIDI happens as an asynchronous background callback. That means it cannot update
 /// SwiftUI view state directly. Therefore, we need a helper class that conforms to
@@ -45,9 +46,9 @@ final class MIDIHelper: ObservableObject {
         resetTurnedOnPitches()
     }
     
-    public func togglePitchDirection() {
+    public func nextPitchDirection() {
         reset()
-        self.upwardPitchDirection.toggle()
+        self.pitchDirection = self.pitchDirection.next
     }
     
     @Published
@@ -69,17 +70,11 @@ final class MIDIHelper: ObservableObject {
     }
     
     @Published
-    public var upwardPitchDirection: Bool = true
+    public var pitchDirection: PitchDirection = .mixed
     
-    
-    public var pitchDirectionIconName: String {
-        if upwardPitchDirection {
-            "greaterthan.square"
-        } else {
-            "lessthan.square"
-        }
-    }
-    
+    @Published
+    public var mode: Mode = .ionian
+
     static public var majorColor: Color {
         return Color(.sRGB, red: 1, green: 0.6745098039, blue: 0.2, opacity: 1.0)
     }
@@ -98,14 +93,6 @@ final class MIDIHelper: ObservableObject {
     
     static public var darkBrownColor: Color {
         Color(.sRGB, red: 0.3, green: 0.2, blue: 0.15, opacity: 1.0)
-    }
-    
-    public var pitchDirectionIconColor: Color {
-        if upwardPitchDirection {
-            MIDIHelper.majorColor
-        } else {
-            MIDIHelper.minorColor
-        }
     }
     
     public var chordShapeIconName: String {
@@ -234,7 +221,9 @@ final class MIDIHelper: ObservableObject {
                 case MIDIEvent.CC.Controller.generalPurpose1:
                     self.tonicNote = Int8(payload.value.midi1Value.intValue)
                 case MIDIEvent.CC.Controller.generalPurpose2:
-                    self.upwardPitchDirection = payload.value.midi1Value.intValue == 1 ? true : false
+                    self.pitchDirection = PitchDirection(rawValue: payload.value.midi1Value.intValue)!
+                case MIDIEvent.CC.Controller.generalPurpose3:
+                    self.mode = Mode(rawValue: payload.value.midi1Value.intValue)!
                 default:
                     print("ignoring cc \(payload.channel.intValue)")
                 }
@@ -271,7 +260,7 @@ final class MIDIHelper: ObservableObject {
         let turnedOnNotes = self.turnedOnPitches.sorted(by: <)
         if !turnedOnNotes.isEmpty {
             for note in turnedOnNotes {
-                integerNotes.insert((note - (self.upwardPitchDirection ? turnedOnNotes.first! : turnedOnNotes.last!)) % 12)
+                integerNotes.insert((note - (self.pitchDirection == .upward ? turnedOnNotes.first! : turnedOnNotes.last!)) % 12)
             }
         }
         return integerNotes
@@ -363,7 +352,7 @@ final class MIDIHelper: ObservableObject {
             return ""
         } else {
             let turnedOnNotes = self.turnedOnPitches.sorted(by: <)
-            return self.upwardPitchDirection ? String(turnedOnNotes.first!) : String(turnedOnNotes.last!)
+            return self.pitchDirection == .upward ? String(turnedOnNotes.first!) : String(turnedOnNotes.last!)
         }
     }
     
@@ -371,13 +360,13 @@ final class MIDIHelper: ObservableObject {
         var scaleDegree: String = ""
         if !turnedOnPitches.isEmpty {
             
-            let accidental = self.upwardPitchDirection ? "♭" : "♯"
-            let prefix = self.upwardPitchDirection ? "" : "<"
+            let accidental = self.pitchDirection == .upward ? "♭" : "♯"
+            let prefix = self.pitchDirection == .upward ? "" : "<"
             let caret = "\u{0302}"
-            let tritone = self.upwardPitchDirection ? "\(prefix)♭5\(caret)" : "\(prefix)♯5\(caret)"
+            let tritone = self.pitchDirection == .upward ? "\(prefix)♭5\(caret)" : "\(prefix)♯5\(caret)"
             let turnedOnNotes = self.turnedOnPitches.sorted(by: <)
             print("turnedOnNotes.last!", turnedOnNotes.last!)
-            let rootToTonicDistance = self.upwardPitchDirection ? (Int(turnedOnNotes.first!)  - Int(self.tonicNote)) : (Int(self.tonicNote) - Int(turnedOnNotes.last!))
+            let rootToTonicDistance = self.pitchDirection == .upward ? (Int(turnedOnNotes.first!)  - Int(self.tonicNote)) : (Int(self.tonicNote) - Int(turnedOnNotes.last!))
             
             print("rootToTonicDistance", rootToTonicDistance)
             
