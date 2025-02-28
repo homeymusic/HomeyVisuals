@@ -70,7 +70,7 @@ final class MIDIHelper: ObservableObject {
     }
     
     @Published
-    public var pitchDirection: PitchDirection = .mixed
+    public var pitchDirection: PitchDirection = .ambiguous
     
     @Published
     public var mode: Mode = .ionian
@@ -220,6 +220,7 @@ final class MIDIHelper: ObservableObject {
                 switch payload.controller {
                 case MIDIEvent.CC.Controller.generalPurpose1:
                     self.tonicNote = Int8(payload.value.midi1Value.intValue)
+                    TonalContext.shared.tonicPitch = Pitch.pitch(for: MIDINoteNumber(payload.value.midi1Value.intValue))
                 case MIDIEvent.CC.Controller.generalPurpose2:
                     self.pitchDirection = PitchDirection(rawValue: payload.value.midi1Value.intValue)!
                 case MIDIEvent.CC.Controller.generalPurpose3:

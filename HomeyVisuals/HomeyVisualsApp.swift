@@ -44,12 +44,6 @@ struct HomeyVisualsApp: App {
                 }
                 .keyboardShortcut(".", modifiers: [])
                 
-                Button("Mixed Pitch Contours") {
-                    midiHelper.pitchDirection = .mixed
-                    midiHelper.reset()
-                }
-                .keyboardShortcut("=", modifiers: [])
-
                 Button("Downward Pitch Contours") {
                     midiHelper.pitchDirection = .downward
                     midiHelper.reset()

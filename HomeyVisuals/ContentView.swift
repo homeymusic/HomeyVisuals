@@ -42,12 +42,11 @@ struct ContentView: View {
     static func calculateNormalizedSizes() -> [CGFloat] {
         let maxSizePercent: CGFloat = 100  // Max area percentage for MIDI note 0
         let minSizePercent: CGFloat = 1   // Min area percentage for MIDI note 127
-        let midiNotes = 0...127
         let scalingFactor: CGFloat = log(maxSizePercent / minSizePercent) / 127  // Logarithmic scaling factor
         
         // Calculate areas using exponential scaling
-        let initialAreas = midiNotes.map { note in
-            return maxSizePercent * exp(-scalingFactor * CGFloat(note))
+        let initialAreas = MIDINote.allNotes().map { note in
+            return maxSizePercent * exp(-scalingFactor * CGFloat(note.number))
         }
         
         // Normalize areas so they sum to 100% of total available area
@@ -93,7 +92,7 @@ struct ContentView: View {
                             .foregroundColor(Color(MIDIHelper.neutralColor))
                             .frame(width: 50, height: 50)  // Fixed size
                         
-                        Text(String(midiHelper.tonicNote))
+                        Text("\(TonalContext.shared.tonicPitch.letter(.default))\(TonalContext.shared.tonicPitch.octave)")
                             .font(.title)
                             .foregroundColor(Color(MIDIHelper.neutralColor))
                     }
@@ -103,15 +102,15 @@ struct ContentView: View {
                 .popover(isPresented: $showTonicPopover, arrowEdge: .bottom) {
                     // Content for the popover
                     VStack {
-                        Text("Select a number")
+                        Text("Select the tonic pitch")
                             .font(.headline)
-                        List(0...127, id: \.self) { number in
+                        List(Pitch.allPitches, id: \.self) { pitch in
                             Button(action: {
                                 // Do something with the selected number
-                                midiHelper.tonicNote = Int8(number)
+                                TonalContext.shared.tonicPitch = pitch
                                 showTonicPopover = false  // Dismiss the popover
                             }) {
-                                Text("\(number)")
+                                Text("\(pitch.letter(.default))\(pitch.octave)")
                             }
                         }
                         .frame(width: 150, height: 300)  // Adjust size as needed
