@@ -89,12 +89,12 @@ struct ContentView: View {
                         Image(systemName: "house.fill")
                             .resizable()
                             .scaledToFit()
-                            .foregroundColor(Color(MIDIHelper.neutralColor))
+                            .foregroundColor(Color(MajorMinor.neutral.color))
                             .frame(width: 50, height: 50)  // Fixed size
                         
                         Text("\(TonalContext.shared.tonicPitch.letter(.default))\(TonalContext.shared.tonicPitch.octave)")
                             .font(.title)
-                            .foregroundColor(Color(MIDIHelper.neutralColor))
+                            .foregroundColor(Color(MajorMinor.neutral.color))
                     }
                 }
                 .buttonStyle(PlainButtonStyle())
@@ -152,7 +152,7 @@ struct ContentView: View {
                     Image(systemName: midiHelper.chordShapeIconName)
                         .resizable()
                         .scaledToFit()
-                        .foregroundColor(Color(midiHelper.chordShapeIconColor == Color.clear ? MIDIHelper.neutralColor.opacity(0.5):  midiHelper.chordShapeIconColor))
+                        .foregroundColor(Color(midiHelper.chordShapeIconColor == Color.clear ? MajorMinor.neutral.color.opacity(0.5):  midiHelper.chordShapeIconColor))
                         .frame(width: 50, height: 50)  // Fixed size
                 }
                 
@@ -311,14 +311,14 @@ struct ContentView: View {
     private func paletteOverlay() -> some View {
         ZStack(alignment: .topTrailing) {
             RoundedRectangle(cornerRadius: 10)
-                .stroke(isPaletteHovered ? Color(MIDIHelper.neutralColor) : Color.clear, lineWidth: 1)
+                .stroke(isPaletteHovered ? Color(MajorMinor.neutral.color) : Color.clear, lineWidth: 1)
                 .background(Color.clear)
             
             Button(action: {
                 midiHelper.paletteOfNotes.removeAll()  // Clear the entire palette of notes
             }) {
                 Image(systemName: "clear.fill")
-                    .foregroundColor(isPaletteHovered && !midiHelper.paletteOfNotes.isEmpty ? Color(MIDIHelper.neutralColor) : Color.clear)
+                    .foregroundColor(isPaletteHovered && !midiHelper.paletteOfNotes.isEmpty ? Color(MajorMinor.neutral.color) : Color.clear)
                     .padding(4)
             }
             .keyboardShortcut("r", modifiers: .command)  // Add keyboard shortcut to clear the palette
@@ -331,7 +331,7 @@ struct ContentView: View {
     
     private func noteOverlay(for note: Int, offsetAmount: CGFloat) -> some View {
         RoundedRectangle(cornerRadius: 10)
-            .stroke(midiHelper.hoveredNote == note ? Color(MIDIHelper.neutralColor) : Color.clear, lineWidth: 1)
+            .stroke(midiHelper.hoveredNote == note ? Color(MajorMinor.neutral.color) : Color.clear, lineWidth: 1)
             .offset(CGSize(width: 0, height: offsetAmount))
     }
     
@@ -342,7 +342,7 @@ struct ContentView: View {
                     midiHelper.paletteOfNotes.remove(note)
                 }) {
                     Image(systemName: "clear.fill")
-                        .foregroundColor(Color(MIDIHelper.neutralColor))
+                        .foregroundColor(Color(MajorMinor.neutral.color))
                         .padding(4)
                 }
                 .buttonStyle(PlainButtonStyle())

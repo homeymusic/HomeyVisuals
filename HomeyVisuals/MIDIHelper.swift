@@ -70,27 +70,15 @@ final class MIDIHelper: ObservableObject {
     }
     
     @Published
-    public var pitchDirection: PitchDirection = .mixed
+    public var pitchDirection: PitchDirection = .upward
     
     @Published
     public var mode: Mode = .ionian
-
-    static public var majorColor: Color {
-        return Color(.sRGB, red: 1, green: 0.6745098039, blue: 0.2, opacity: 1.0)
-    }
-
-    static public var neutralColor: Color {
-        return Color(.sRGB, red: 0.952941, green: 0.866667, blue: 0.670588, opacity: 1.0)
-    }
 
     static public var neutralDissonantColor: Color {
         return Color(.sRGB, red: 1, green: 0.333333, blue: 0, opacity: 1.0)
     }
 
-    static public var minorColor: Color {
-        return Color(.sRGB, red: 0.3647058824, green: 0.6784313725, blue: 0.9254901961, opacity: 1.0)
-    }
-    
     static public var darkBrownColor: Color {
         Color(.sRGB, red: 0.3, green: 0.2, blue: 0.15, opacity: 1.0)
     }
@@ -113,15 +101,15 @@ final class MIDIHelper: ObservableObject {
     
     public var chordShapeIconColor: Color {
         if chordLabel.contains("Mixolydian Phrygian") {
-            MIDIHelper.majorColor
+            MajorMinor.major.color
         } else if chordLabel.contains("Minor Major") {
-            MIDIHelper.minorColor
+            MajorMinor.minor.color
         } else if chordLabel.contains("Phrygian") || chordLabel.contains("Minor")  {
-            MIDIHelper.minorColor
+            MajorMinor.minor.color
         } else if chordLabel.contains("Major") || chordLabel.contains("Mixolydian") || chordLabel.contains("Dominant") {
-            MIDIHelper.majorColor
+            MajorMinor.major.color
         } else if chordLabel == "Diminished" {
-            MIDIHelper.neutralColor
+            MajorMinor.neutral.color
         } else {
             Color.clear
         }
