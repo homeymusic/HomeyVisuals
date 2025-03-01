@@ -123,7 +123,7 @@ struct ContentView: View {
                 
                 // Degree Label - Left-aligned and expands to use available space
                 Text(midiHelper.degreeLabel)
-                    .foregroundColor(Color(midiHelper.pitchDirection.majorMinor.color))
+                    .foregroundColor(Color(TonalContext.shared.pitchDirection.majorMinor.color))
                     .font(.title)
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .trailing)
@@ -138,10 +138,10 @@ struct ContentView: View {
                         // Toggle the upwardPitchDirection state
                         midiHelper.nextPitchDirection()
                     }) {
-                        Image(systemName: midiHelper.pitchDirection.icon)
+                        Image(systemName: TonalContext.shared.pitchDirection.icon)
                             .resizable()
                             .scaledToFit()
-                            .foregroundColor(Color(midiHelper.pitchDirection.majorMinor.color))
+                            .foregroundColor(Color(TonalContext.shared.pitchDirection.majorMinor.color))
                             .frame(width: 50, height: 50)  // Fixed size
                     }
                     .keyboardShortcut("=", modifiers: [])
@@ -569,7 +569,7 @@ struct ContentView: View {
     }
     
     private var xScaleEffect: CGFloat {
-        midiHelper.pitchDirection == .upward ? -1.0 : 1.0
+        TonalContext.shared.pitchDirection == .upward ? -1.0 : 1.0
     }
     
 }

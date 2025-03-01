@@ -2,6 +2,8 @@ import MIDIKitIO
 import SwiftUI
 import Combine
 
+import HomeyMusicKit
+
 @main
 struct HomeyVisualsApp: App {
     @State var midiManager = ObservableMIDIManager(
@@ -39,13 +41,13 @@ struct HomeyVisualsApp: App {
                 .keyboardShortcut("r", modifiers: [])
 
                 Button("Upward Pitch Contours") {
-                    midiHelper.pitchDirection = .upward
+                    TonalContext.shared.pitchDirection = .upward
                     midiHelper.reset()
                 }
                 .keyboardShortcut(".", modifiers: [])
                 
                 Button("Downward Pitch Contours") {
-                    midiHelper.pitchDirection = .downward
+                    TonalContext.shared.pitchDirection = .downward
                     midiHelper.reset()
                 }
                 .keyboardShortcut(",", modifiers: []) 
