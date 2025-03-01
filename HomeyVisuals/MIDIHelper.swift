@@ -70,7 +70,7 @@ final class MIDIHelper: ObservableObject {
     }
     
     @Published
-    public var pitchDirection: PitchDirection = .ambiguous
+    public var pitchDirection: PitchDirection = .mixed
     
     @Published
     public var mode: Mode = .ionian
