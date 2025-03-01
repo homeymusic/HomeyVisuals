@@ -230,6 +230,9 @@ final class MIDIHelper: ObservableObject {
                 }
             }
         case let .noteOn(payload):
+            DispatchQueue.main.async {
+                Pitch.pitch(for: MIDINoteNumber(payload.note.number.intValue)).activate()
+            }
             if (!turnedOnPitches.contains(payload.note.number.intValue)) {
                 DispatchQueue.main.async {
                     self.turnedOnPitches.insert(payload.note.number.intValue)
@@ -241,6 +244,9 @@ final class MIDIHelper: ObservableObject {
                 }
             }
         case let .noteOff(payload):
+            DispatchQueue.main.async {
+                Pitch.pitch(for: MIDINoteNumber(payload.note.number.intValue)).deactivate()
+            }
             DispatchQueue.main.async {
                 self.turnedOnPitches.remove(payload.note.number.intValue)
             }

@@ -267,7 +267,7 @@ struct ContentView: View {
                 let availableSpaceAboveImage = (availableHeight - largestEmojiHeight) / 2
                 
                 // Adjust the offset to ensure it doesn't push the emoji out of bounds
-                let offsetAmount = midiHelper.turnedOnPitches.contains(note)
+                let offsetAmount = Pitch.pitch(for: MIDINoteNumber(note)).isActivated
                 ? -min(availableSpaceAboveImage, 2.0 * largestEmojiHeight)  // Ensure offset stays within bounds
                 : 0
                 
@@ -278,7 +278,7 @@ struct ContentView: View {
                     .offset(y: offsetAmount)  // Apply the constrained offset
                     .scaleEffect(x: xScaleEffect)
                     .background(Color.clear)
-                    .onChange(of: midiHelper.turnedOnPitches) {
+                    .onChange(of: TonalContext.shared.activatedPitches) {
                         withAnimation(.spring()) {
                             // Handle update if needed
                         }
@@ -291,7 +291,7 @@ struct ContentView: View {
                     }
                     .overlay(noteOverlay(for: note, offsetAmount: offsetAmount), alignment: .center)
                     .overlay(removeButton(for: note, offsetAmount: offsetAmount), alignment: .topTrailing)
-                    .animation(.spring(), value: midiHelper.turnedOnPitches.contains(note))
+                    .animation(.spring(), value: Pitch.pitch(for: MIDINoteNumber(note)).isActivated)
                     .id(note)  // Use 'note' as the identifier to ensure consistency
             }
             
@@ -383,7 +383,7 @@ struct ContentView: View {
                 let availableSpaceAboveEmoji = (availableHeight - largestEmojiHeight - bottomPadding)
                 
                 // Adjust the offset to ensure it doesn't push the emoji out of bounds
-                let offsetAmount = midiHelper.turnedOnPitches.contains(note)
+                let offsetAmount = Pitch.pitch(for: MIDINoteNumber(note)).isActivated
                 ? -availableSpaceAboveEmoji  // Ensure offset stays within bounds
                 : 0
                 
@@ -393,7 +393,7 @@ struct ContentView: View {
                     .frame(width: emojiSize, height: emojiSize)
                     .offset(y: offsetAmount)  // Apply the constrained offset
                     .scaleEffect(x: xScaleEffect)
-                    .animation(.spring(), value: midiHelper.turnedOnPitches.contains(note))
+                    .animation(.spring(), value: Pitch.pitch(for: MIDINoteNumber(note)).isActivated)
             }
         }
         .padding(.bottom, bottomPadding)
