@@ -196,6 +196,7 @@ struct ContentView: View {
                             .onChange(of: midiInSelectedID) {
                                 print("MIDI In Selection was Changed")
                                 midiHelper.syncHomey()
+                                TonalContext.shared.midiConductor.statusRequest()
                             }
                         
                         
