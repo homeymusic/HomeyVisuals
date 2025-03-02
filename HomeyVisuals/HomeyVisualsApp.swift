@@ -21,6 +21,12 @@ struct HomeyVisualsApp: App {
     var midiInSelectedDisplayName: String?
     
     init() {
+        TonalContext.configure(
+            clientName: "HomeyVisuals",
+            model: "Homey Visuals macOS",
+            manufacturer: "Homey Music"
+        )
+        
         midiHelper.setup(midiManager: midiManager)
     }
     
@@ -39,7 +45,7 @@ struct HomeyVisualsApp: App {
                     midiHelper.reset()
                 }
                 .keyboardShortcut("r", modifiers: [])
-
+                
                 Button("Upward Pitch Contours") {
                     TonalContext.shared.pitchDirection = .upward
                     midiHelper.reset()
@@ -50,7 +56,7 @@ struct HomeyVisualsApp: App {
                     TonalContext.shared.pitchDirection = .downward
                     midiHelper.reset()
                 }
-                .keyboardShortcut(",", modifiers: []) 
+                .keyboardShortcut(",", modifiers: [])
             }
         }
     }
