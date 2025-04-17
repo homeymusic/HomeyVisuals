@@ -17,18 +17,19 @@ struct ContentView: View {
                     selection: $selection,
                     onAddSlide: addSlide(after:)
                 )
+                .navigationDestination(for: Slide.ID.self) { id in
+                    if let slide = slide(for: id) {
+                        SlideEdit(slide: slide)
+                    }
+                }
             }
-        } detail: {
+        }
+        detail: {
             if let slide = slide(for: selection) {
                 SlideEdit(slide: slide)
             } else {
                 ContentUnavailableView("Create a slide",
                                        systemImage: "rectangle.on.rectangle.slash")
-            }
-        }
-        .navigationDestination(for: Slide.ID.self) { id in
-            if let slide = slide(for: id) {
-                SlideEdit(slide: slide)
             }
         }
         .onDeleteCommand(perform: deleteSelectedSlide)

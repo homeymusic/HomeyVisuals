@@ -27,7 +27,6 @@ struct SlideList: View {
                 presentation.slides.move(fromOffsets: from, toOffset: to)
             }
         }
-        .navigationSplitViewColumnWidth(min: 180, ideal: 220)
         .toolbar {
             ToolbarItem {
                 Button { onAddSlide(selection) } label: {
@@ -36,5 +35,6 @@ struct SlideList: View {
                 .keyboardShortcut("n")
             }
         }
+        .navigationSplitViewColumnWidth(min: 180, ideal: 220)
     }
 }
