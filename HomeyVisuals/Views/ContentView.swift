@@ -22,7 +22,7 @@ struct ContentView: View {
             if let slide = slide(for: selection) {
                 SlideEdit(slide: slide)
             } else {
-                ContentUnavailableView("Select a slide",
+                ContentUnavailableView("Create a slide",
                                        systemImage: "rectangle.on.rectangle.slash")
             }
         }
