@@ -12,3 +12,14 @@ final class Slide: Identifiable {
         self.id        = UUID()
     }
 }
+
+extension Slide {
+  var record: SlideRecord {
+    SlideRecord(isSkipped: isSkipped)
+  }
+
+  convenience init(record: SlideRecord) {
+    self.init()
+    self.isSkipped = record.isSkipped
+  }
+}

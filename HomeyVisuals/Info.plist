@@ -27,6 +27,22 @@
       <string>application/vnd.homeymusic.presentation</string>
     </dict>
   </dict>
+  <dict>
+    <key>UTTypeIdentifier</key>
+    <string>com.homeymusic.visuals.slide</string>
+    <key>UTTypeDescription</key>
+    <string>Homey Visuals Slide</string>
+    <key>UTTypeConformsTo</key>
+    <array>
+      <string>public.data</string>
+    </array>
+    <key>UTTypeTagSpecification</key>
+    <dict>
+      <!-- slides don’t live as standalone files, so no filename‑extension is needed -->
+      <key>public.mime-type</key>
+      <string>application/vnd.homeymusic.slide</string>
+    </dict>
+  </dict>
 </array>
 <key>CFBundleDocumentTypes</key>
 <array>
