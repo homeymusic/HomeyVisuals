@@ -1,5 +1,3 @@
-// SlideList.swift
-
 import SwiftUI
 import SwiftData
 import CoreTransferable
@@ -7,9 +5,10 @@ import CoreTransferable
 struct SlideList: View {
     @Bindable var presentation: Presentation
     @Binding   var selection: Slide.ID?
-    var onAddSlide: (Slide.ID?) -> Void
+    var onAddSlide:   (Slide.ID?) -> Void
+    var onDeleteSlide:()         -> Void
 
-    // 1) Build the raw list by itself
+    // Build the raw List by itself
     @ViewBuilder
     private var rawList: some View {
         List(selection: $selection) {
@@ -30,39 +29,47 @@ struct SlideList: View {
         }
     }
 
-    // 2) Compute which SlideRecord(s) should be copied
+    // Which SlideRecord(s) to copy
     private var copyableRecords: [SlideRecord] {
         guard
-            let sel = selection,
+            let sel   = selection,
             let slide = presentation.slides.first(where: { $0.id == sel })
-        else {
-            return []
-        }
+        else { return [] }
         return [slide.record]
     }
 
     var body: some View {
         rawList
-            // Enable ⌘C for the selected slide
+            // Copy-only for ⌘C
             .copyable(copyableRecords)
-            // Handle ⌘V or drag‑drop of SlideRecord
+
+            // Cut (⌘X): you must return the items to place on the clipboard,
+            // and then perform your delete logic. No parameters allowed.
+            .cuttable(for: SlideRecord.self) {
+                // 1️⃣ capture what should go on the pasteboard
+                let items = copyableRecords
+                // 2️⃣ delete the slide
+                onDeleteSlide()
+                // 3️⃣ return them for the system
+                return items
+            }
+
+            // Paste (⌘V)
             .pasteDestination(for: SlideRecord.self) { records in
                 for rec in records {
                     let newSlide = Slide(record: rec)
                     if
                         let sel = selection,
-                        let currentIndex = presentation.slides.firstIndex(where: { $0.id == sel })
+                        let idx = presentation.slides.firstIndex(where: { $0.id == sel })
                     {
-                        // insert after the currently selected slide
-                        presentation.slides.insert(newSlide, at: currentIndex + 1)
+                        presentation.slides.insert(newSlide, at: idx + 1)
                     } else {
-                        // no selection, append to the end
                         presentation.slides.append(newSlide)
                     }
-                    // select the newly pasted slide
                     selection = newSlide.id
                 }
             }
+
             .toolbar {
                 ToolbarItem {
                     Button { onAddSlide(selection) } label: {
