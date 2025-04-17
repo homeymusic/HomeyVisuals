@@ -5,53 +5,37 @@ import SwiftData
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var presentations: [Presentation]
+    @State private var selection: Slide.ID?
     
     var body: some View {
-        let presentation = thePresentation()
+        let presentation = presentations.first ?? createPresentation()
         
         NavigationSplitView {
-            List {
-                ForEach(presentation.slides) { slide in
-                    NavigationLink {
-                        Text("Slide: \(slide.title)")
-                    } label: {
-                        Text("Slide Label: \(slide.createdAt)")
-                    }
-                }                
-                .onMove { from, to in
-                    presentation.slides.move(fromOffsets: from, toOffset: to)
-                }
-            }
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-            .toolbar {
-                ToolbarItem {
-                    Button(action: { addSlide(to: presentation) }) {
-                        Label("New Slide", systemImage: "plus")
-                    }
-                    .keyboardShortcut("n", modifiers: .command)
-                }
-            }
+            SlideList(
+                presentation: presentation,
+                selection: $selection
+            )
         } detail: {
-            Text("Select an item")
+            if let slide = selectedSlide(in: presentation) {
+                SlideEdit(slide: slide)
+            } else {
+                ContentUnavailableView(
+                    "Select a slide",
+                    systemImage: "rectangle.on.rectangle.slash"
+                )
+            }
         }
     }
     
-    // MARK: - Helpers
-    private func thePresentation() -> Presentation {
-        if let existing = presentations.first {
-            return existing
-        } else {
-            let fresh = Presentation()
-            modelContext.insert(fresh)
-            return fresh
-        }
+    private func createPresentation() -> Presentation {
+        let fresh = Presentation()
+        modelContext.insert(fresh)
+        return fresh
     }
     
-    private func addSlide(to presentation: Presentation) {
-        withAnimation {
-            let slide = Slide()
-            presentation.slides.append(slide)
-        }
+    private func selectedSlide(in pres: Presentation) -> Slide? {
+        guard let id = selection else { return nil }
+        return pres.slides.first(where: { $0.id == id })
     }
     
 }
