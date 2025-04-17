@@ -1,32 +1,33 @@
-//
-//  HomeyVisualsApp.swift
-//  HomeyVisuals
-//
-//  Created by Brian McAuliff Mulloy on 4/17/25.
-//
-
 import SwiftUI
 import SwiftData
+import UniformTypeIdentifiers
 
 @main
 struct HomeyVisualsApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
-
     var body: some Scene {
-        WindowGroup {
+        DocumentGroup(
+            editing: .visuals,
+            migrationPlan: HomeyVisualsMigrationPlan.self
+        ) {
             ContentView()
         }
-        .modelContainer(sharedModelContainer)
     }
+}
+
+struct HomeyVisualsMigrationPlan: SchemaMigrationPlan {
+    static var schemas: [VersionedSchema.Type] = [
+        HomeyVisualsVersionedSchema.self,
+    ]
+
+    static var stages: [MigrationStage] = [
+        // Stages of migration between VersionedSchema, if required.
+    ]
+}
+
+struct HomeyVisualsVersionedSchema: VersionedSchema {
+    static var versionIdentifier = Schema.Version(1, 0, 0)
+
+    static var models: [any PersistentModel.Type] = [
+        Item.self,
+    ]
 }
