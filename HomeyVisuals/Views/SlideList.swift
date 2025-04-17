@@ -1,16 +1,20 @@
-import SwiftData
 import SwiftUI
+import SwiftData
 
 struct SlideList: View {
     @Bindable var presentation: Presentation
-    @Binding  var selection: Slide.ID?
-    
+    @Binding   var selection: Slide.ID?
+    var onAddSlide: (Slide.ID?) -> Void               // callback from parent
+
+    private let dateStyle = Date.FormatStyle(date: .numeric, time: .shortened)
+
     var body: some View {
         List(selection: $selection) {
             ForEach(presentation.slides) { slide in
                 NavigationLink(value: slide.id) {
-                    Text("Item at \(slide.createdAt, format: Date.FormatStyle(date: .numeric, time: .standard))")
+                    Text("\(slide.title)  —  \(slide.createdAt)")
                 }
+                .tag(slide.id)                       // participate in selection
             }
             .onMove { from, to in
                 presentation.slides.move(fromOffsets: from, toOffset: to)
@@ -19,26 +23,12 @@ struct SlideList: View {
         .navigationSplitViewColumnWidth(min: 180, ideal: 200)
         .toolbar {
             ToolbarItem {
-                Button {
-                    addSlide()
-                } label: {
+                Button { onAddSlide(selection) }
+                label: {
                     Label("New Slide", systemImage: "plus")
                 }
-                .keyboardShortcut("n", modifiers: .command)
+                .keyboardShortcut("n")
             }
-        }
-    }
-    private func addSlide() {
-        withAnimation {
-            let newSlide = Slide()
-
-            if let id = selection,
-               let index = presentation.slides.firstIndex(where: { $0.id == id }) {
-                presentation.slides.insert(newSlide, at: index + 1)
-            } else {
-                presentation.slides.append(newSlide)
-            }
-            selection = newSlide.id                 // highlight the new slide
         }
     }
 }

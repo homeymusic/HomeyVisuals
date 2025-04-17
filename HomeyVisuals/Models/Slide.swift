@@ -7,7 +7,8 @@ final class Slide: Identifiable {
     var title: String
     var body: String
     var createdAt: Date
-
+    var isSkipped: Bool = false
+    
     init(
         title: String = "New Slide",
         body: String  = ""
