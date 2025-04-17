@@ -48,7 +48,19 @@ struct SlideList: View {
             // Handle ⌘V or drag‑drop of SlideRecord
             .pasteDestination(for: SlideRecord.self) { records in
                 for rec in records {
-                    presentation.slides.append(Slide(record: rec))
+                    let newSlide = Slide(record: rec)
+                    if
+                        let sel = selection,
+                        let currentIndex = presentation.slides.firstIndex(where: { $0.id == sel })
+                    {
+                        // insert after the currently selected slide
+                        presentation.slides.insert(newSlide, at: currentIndex + 1)
+                    } else {
+                        // no selection, append to the end
+                        presentation.slides.append(newSlide)
+                    }
+                    // select the newly pasted slide
+                    selection = newSlide.id
                 }
             }
             .toolbar {

@@ -5,12 +5,15 @@ struct SlideEdit: View {
     @Bindable var slide: Slide
 
     var body: some View {
-        let slideLabel = "id: \(slide.id)"
         Form {
-            Text(slideLabel)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            Text("Test string:")
+            TextField("Test", text: $slide.testString)
+            Divider()
+            Text("Slide ID: \(slide.id.uuidString)")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
         .padding()
-        .navigationTitle(slideLabel)
+        .navigationTitle("Edit Slide")
     }
 }
