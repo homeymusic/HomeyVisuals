@@ -39,7 +39,7 @@ struct SlideList: View {
                                 .font(.caption2)
                                 .foregroundStyle(.secondary)
                         }
-                        ViewThumbnail(
+                        SlideThumbnailView(
                             content: SlideShow(slide: slide),
                             reloadTrigger: AnyHashable("\(slide.id)-\(slide.testString)")
                         )
