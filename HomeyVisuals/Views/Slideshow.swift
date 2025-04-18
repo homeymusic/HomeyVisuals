@@ -2,25 +2,53 @@ import SwiftUI
 import HomeyMusicKit
 import AppKit
 
-/// Hosts one `SlideDetail` full‑screen, fixing window sizing.
 struct Slideshow: View {
-    let slide: Slide
+    let slides: [Slide]
+    @State private var index: Int
 
-    var body: some View {
-        SlideDetail(slide: slide)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(slide.backgroundColor))
-            .ignoresSafeArea()
+    init(slides: [Slide], startIndex: Int = 0) {
+        self.slides = slides
+        self._index = State(initialValue: startIndex)
     }
 
-    /// Presents a brand‑new full‑screen window for this slide.
-    static func present(slide: Slide) {
-        print("▶️ Slideshow.present called – creating window")
-        let view    = Slideshow(slide: slide)
+    var body: some View {
+        ZStack {
+            // 1) Letter‑boxed content
+            SlideDetail(slide: slides[index])
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color(slides[index].backgroundColor))
+                .ignoresSafeArea()
+
+            // 2) Invisible key catcher overlay
+            KeyCatcher(
+                onPrevious: previous,
+                onNext:     next,
+                onClose:    close
+            )
+            .allowsHitTesting(false)
+        }
+        // Esc (or Cmd–W) closes
+        .onExitCommand { close() }
+    }
+
+    private func next() {
+        if index < slides.count - 1 { index += 1 }
+    }
+
+    private func previous() {
+        if index > 0 { index -= 1 }
+    }
+
+    private func close() {
+        NSApp.keyWindow?.close()
+    }
+
+    /// Spins up a new full‑screen window containing this slideshow.
+    static func present(slides: [Slide], startIndex: Int) {
+        let view    = Slideshow(slides: slides, startIndex: startIndex)
         let hosting = NSHostingController(rootView: view.ignoresSafeArea())
 
-        // Use first available screen frame
-        let screenFrame = NSScreen.screens.first?.frame ?? .init(x: 0, y: 0, width: 1024, height: 768)
+        let screenFrame = NSScreen.screens.first?.frame ?? .zero
         let window = NSWindow(
             contentRect:   screenFrame,
             styleMask:     [.titled, .resizable, .fullSizeContentView, .closable],
@@ -32,16 +60,52 @@ struct Slideshow: View {
         window.titleVisibility            = .hidden
         window.contentViewController      = hosting
 
-        // Ensure window is key and can receive events
         window.makeKeyAndOrderFront(nil)
         window.makeFirstResponder(hosting)
 
-        // Show + toggle into full‑screen
         let controller = NSWindowController(window: window)
         controller.showWindow(nil)
-        DispatchQueue.main.async {
-            print("▶️ Toggling full screen")
-            window.toggleFullScreen(nil)
+        DispatchQueue.main.async { window.toggleFullScreen(nil) }
+    }
+}
+
+private struct KeyCatcher: NSViewRepresentable {
+    let onPrevious: () -> Void
+    let onNext:     () -> Void
+    let onClose:    () -> Void
+
+    func makeNSView(context: Context) -> KeyCatcherView {
+        let v = KeyCatcherView()
+        v.onPrevious = onPrevious
+        v.onNext     = onNext
+        v.onClose    = onClose
+        return v
+    }
+    func updateNSView(_ nsView: KeyCatcherView, context: Context) {}
+
+    class KeyCatcherView: NSView {
+        var onPrevious: (() -> Void)?
+        var onNext:     (() -> Void)?
+        var onClose:    (() -> Void)?
+
+        override var acceptsFirstResponder: Bool { true }
+        override func viewDidMoveToWindow() {
+            window?.makeFirstResponder(self)
+        }
+        override func keyDown(with event: NSEvent) {
+            switch event.keyCode {
+            case 123, 126, 116, 115, 51:
+                // ← ↑ PageUp Home Delete
+                onPrevious?()
+            case 124, 125, 121, 119, 49, 36:
+                // → ↓ PageDown End Space Return
+                onNext?()
+            case 53:
+                // Esc
+                onClose?()
+            default:
+                super.keyDown(with: event)
+            }
         }
     }
 }

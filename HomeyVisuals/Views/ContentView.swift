@@ -49,13 +49,10 @@ struct ContentView: View {
 
     private func launchSlideshow() {
         guard let idx = selectedIndex else { return }
-        Slideshow.present(slide: slides[idx])
+        Slideshow.present(slides: slides, startIndex: idx)
     }
 
-    // ———————————
-    // MARK: Add / Delete
-    // ———————————
-
+    // MARK: – Add a new slide immediately after the given ID
     private func addSlide(after id: Slide.ID?) {
         let newSlide = Slide()
         modelContext.insert(newSlide)
@@ -75,6 +72,7 @@ struct ContentView: View {
         selection = [ newSlide.id ]
     }
 
+    // MARK: – Delete all selected slides
     private func deleteSelectedSlides() {
         let toDelete = slides.filter { selection.contains($0.id) }
         guard !toDelete.isEmpty else { return }
