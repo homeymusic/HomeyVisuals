@@ -25,7 +25,7 @@ struct SlideList: View {
                     Button(action: { onAddSlide(selection) }) {
                         Label("New Slide", systemImage: "plus")
                     }
-                    .keyboardShortcut("n")
+                    .keyboardShortcut("n", modifiers: [.shift, .command])
                 }
             }
     }
