@@ -1,5 +1,3 @@
-// HomeyVisuals/Views/SlideShow.swift
-
 import SwiftUI
 import HomeyMusicKit
 
