@@ -16,6 +16,7 @@ struct ContentView: View {
                 onAddSlide:     addSlide(after:),
                 onDeleteSlide:  deleteSelectedSlide
             )
+            .frame(minWidth: 200)
             .navigationDestination(for: Slide.ID.self) { id in
                 if let slide = slides.first(where: { $0.id == id }) {
                     SlideEdit(slide: slide)
@@ -29,6 +30,7 @@ struct ContentView: View {
                                       systemImage: "rectangle.on.rectangle.slash")
             }
         }
+
         .onDeleteCommand(perform: deleteSelectedSlide)
     }
 
