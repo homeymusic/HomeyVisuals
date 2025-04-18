@@ -43,24 +43,32 @@ struct ContentView: View {
     }
     
     private func addSlide(after id: Slide.ID?) {
+        // 1) create & insert
         let newSlide = Slide()
         modelContext.insert(newSlide)
-        
+
+        // 2) snapshot the current slides
+        var reordered = slides
+
+        // 3) pick the insert index
         let insertIndex: Int
-        if let targetID = id,
-           let targetSlide = slide(for: targetID),
-           let targetIndex = slides.firstIndex(of: targetSlide) {
-            insertIndex = targetIndex + 1
+        if
+          let targetID = id,
+          let targetSlide = slide(for: targetID),
+          let targetIndex = reordered.firstIndex(of: targetSlide)
+        {
+          insertIndex = targetIndex + 1
         } else {
-            insertIndex = slides.count
+          insertIndex = reordered.count
         }
-        
-        // Shift all positions ≥ insertIndex
-        for slide in slides.dropFirst(insertIndex) {
-            slide.position += 1
-        }
-        
-        newSlide.position = insertIndex + 1
+
+        // 4) insert the new slide
+        reordered.insert(newSlide, at: insertIndex)
+
+        // 5) recompute positions for *all* slides
+        Slide.updatePositions(reordered)
+
+        // 6) finally, drive the UI
         selection = newSlide.id
     }
     

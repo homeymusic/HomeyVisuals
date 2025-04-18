@@ -22,15 +22,22 @@ final class Slide: Identifiable {
 extension Slide {
     var record: SlideRecord {
         SlideRecord(
-          isSkipped:  isSkipped,
-          testString: testString
+            isSkipped:  isSkipped,
+            testString: testString
         )
     }
-
+    
     convenience init(record: SlideRecord) {
         self.init()
         self.isSkipped  = record.isSkipped
         self.testString = record.testString
         // no need to set `position` here; your insertion logic will assign it
+    }
+    
+    
+    public static func updatePositions(_ slides: [Slide]) {
+        for (idx, slide) in slides.enumerated() {
+            slide.position = idx + 1
+        }
     }
 }

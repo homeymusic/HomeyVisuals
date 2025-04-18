@@ -91,7 +91,7 @@ struct SlideList: View {
             insertAt += 1
         }
 
-        updatePositions(reordered)
+        Slide.updatePositions(reordered)
 
         if let newSelection = lastInsertedID {
             selection = newSelection
@@ -106,18 +106,13 @@ struct SlideList: View {
 
         reordered.move(fromOffsets: source, toOffset: destination)
 
-        updatePositions(reordered)
+        Slide.updatePositions(reordered)
 
         if let firstMoved = movedSlides.first {
             selection = firstMoved.id
         }
     }
     
-    private func updatePositions(_ slides: [Slide]) {
-        for (idx, slide) in slides.enumerated() {
-            slide.position = idx + 1
-        }
-    }
 }
 
 
