@@ -53,7 +53,7 @@ struct ContentView: View {
                 } label: {
                     Label("Play", systemImage: "play.fill")
                 }
-                .keyboardShortcut("p", modifiers: [.command])
+                .keyboardShortcut("p", modifiers: [.command, .option])
                 .disabled(selectedSlide == nil)
             }
         }
