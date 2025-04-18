@@ -61,7 +61,7 @@ struct ContentView: View {
             slide.position += 1
         }
         
-        newSlide.position = insertIndex
+        newSlide.position = insertIndex + 1
         selection = newSlide.id
     }
     

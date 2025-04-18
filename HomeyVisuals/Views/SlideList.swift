@@ -34,55 +34,18 @@ struct SlideList: View {
 
     private func makeListView() -> some View {
         List(selection: $selection) {
-            ForEach(Array(slides.enumerated()), id: \.element.id) { index, slide in
+            ForEach(slides) { slide in
                 NavigationLink(value: slide.id) {
                     HStack(spacing: 6) {
-                        Text("\(index + 1)")
+                        Text("\(slide.position)")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                         Text(slide.testString)
                     }
                 }
                 .tag(slide.id)
-                .draggable(slide.record) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "square.on.square")
-                        Text(slide.testString)
-                    }
-                }
             }
             .onMove(perform: moveSlides)
-        }
-        .contentShape(Rectangle())
-        .dropDestination(for: SlideRecord.self) { records, _ in
-            performDrop(records: records)
-            return true
-        }
-    }
-
-    // MARK: – Drop Handling
-
-    private func performDrop(records: [SlideRecord]) {
-        var reordered = slides
-        let baseIndex = slides.firstIndex(where: { $0.id == selection })
-            .map { $0 + 1 } ?? reordered.count
-        var insertAt = baseIndex
-        var lastInsertedID: Slide.ID?
-
-        for record in records {
-            let slide = Slide(record: record)
-            modelContext.insert(slide)
-            reordered.insert(slide, at: min(insertAt, reordered.count))
-            lastInsertedID = slide.id
-            insertAt += 1
-        }
-
-        for (i, slide) in reordered.enumerated() {
-            slide.position = i
-        }
-
-        if let newSelection = lastInsertedID {
-            selection = newSelection
         }
     }
 
@@ -128,9 +91,7 @@ struct SlideList: View {
             insertAt += 1
         }
 
-        for (i, slide) in reordered.enumerated() {
-            slide.position = i
-        }
+        updatePositions(reordered)
 
         if let newSelection = lastInsertedID {
             selection = newSelection
@@ -145,15 +106,20 @@ struct SlideList: View {
 
         reordered.move(fromOffsets: source, toOffset: destination)
 
-        for (i, slide) in reordered.enumerated() {
-            slide.position = i
-        }
+        updatePositions(reordered)
 
         if let firstMoved = movedSlides.first {
             selection = firstMoved.id
         }
     }
+    
+    private func updatePositions(_ slides: [Slide]) {
+        for (idx, slide) in slides.enumerated() {
+            slide.position = idx + 1
+        }
+    }
 }
+
 
 // MARK: – Array Safe Indexing
 
