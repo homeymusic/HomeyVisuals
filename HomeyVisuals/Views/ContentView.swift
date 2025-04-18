@@ -1,28 +1,17 @@
 import SwiftUI
 import SwiftData
 import HomeyMusicKit
-#if os(macOS)
 import AppKit
-#endif
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: [SortDescriptor(\Slide.position)]) private var slides: [Slide]
 
     @State private var selection = Set<Slide.ID>()
-    @State private var isShowingSlideshow = false
-
-    #if os(macOS)
-    /// keep the window controller alive
-    @State private var slideshowWC: NSWindowController?
-    #endif
 
     private var selectedIndex: Int? {
-        guard
-            let id = selection.first,
-            let idx = slides.firstIndex(where: { $0.id == id })
-        else { return nil }
-        return idx
+        guard let id = selection.first else { return nil }
+        return slides.firstIndex(where: { $0.id == id })
     }
 
     var body: some View {
@@ -35,7 +24,7 @@ struct ContentView: View {
             .frame(minWidth: 200)
         } detail: {
             if let idx = selectedIndex {
-                SlideDetail(slide: slides[idx])
+                SlideEdit(slide: slides[idx])
             } else {
                 ContentUnavailableView(
                     "Would you look at that.",
@@ -52,18 +41,6 @@ struct ContentView: View {
                 .disabled(selectedIndex == nil)
             }
         }
-        #if os(iOS)
-        .fullScreenCover(isPresented: $isShowingSlideshow) {
-            if let start = selectedIndex {
-                Slideshow(
-                    slides: slides,
-                    startIndex: start,
-                    isPresented: $isShowingSlideshow
-                )
-                .ignoresSafeArea()
-            }
-        }
-        #endif
         .onDeleteCommand(perform: deleteSelectedSlides)
         .onAppear {
             AspectRatio.seedSystemAspectRatios(modelContext: modelContext)
@@ -71,12 +48,8 @@ struct ContentView: View {
     }
 
     private func launchSlideshow() {
-        guard let start = selectedIndex else { return }
-        #if os(macOS)
-        Slideshow.present(slides: slides, startIndex: start)
-        #else
-        isShowingSlideshow = true
-        #endif
+        guard let idx = selectedIndex else { return }
+        Slideshow.present(slide: slides[idx])
     }
 
     // ———————————
@@ -90,11 +63,10 @@ struct ContentView: View {
         var reordered = slides
         let insertIndex: Int
         if
-            let targetID = id,
-            let targetSlide = slides.first(where: { $0.id == targetID }),
-            let idx = reordered.firstIndex(of: targetSlide)
+            let target = id,
+            let pos = reordered.firstIndex(where: { $0.id == target })
         {
-            insertIndex = idx + 1
+            insertIndex = pos + 1
         } else {
             insertIndex = reordered.count
         }
@@ -107,27 +79,20 @@ struct ContentView: View {
         let toDelete = slides.filter { selection.contains($0.id) }
         guard !toDelete.isEmpty else { return }
 
-        let all = slides
-        let deletedIndices = toDelete
-            .compactMap { all.firstIndex(of: $0) }
-            .sorted()
-
-        let afterIndex = deletedIndices.last! + 1
+        let all        = slides
+        let deletedIdx = toDelete.compactMap { all.firstIndex(of: $0) }.sorted()
+        let afterIdx   = deletedIdx.last! + 1
         let nextID: Slide.ID? = {
-            if all.indices.contains(afterIndex) {
-                return all[afterIndex].id
+            if all.indices.contains(afterIdx) {
+                return all[afterIdx].id
             } else {
-                let beforeIndex = deletedIndices.first! - 1
-                return all.indices.contains(beforeIndex)
-                    ? all[beforeIndex].id
-                    : nil
+                let before = deletedIdx.first! - 1
+                return all.indices.contains(before) ? all[before].id : nil
             }
         }()
 
         withAnimation {
-            for slide in toDelete {
-                modelContext.delete(slide)
-            }
+            toDelete.forEach(modelContext.delete)
             let remaining = slides.filter { !selection.contains($0.id) }
             Slide.updatePositions(remaining)
 
