@@ -2,28 +2,27 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    // ① Live query of all slides, sorted by position
+    @Query(sort: [SortDescriptor(\Slide.position)])
+    private var slides: [Slide]
+
     @Environment(\.modelContext) private var modelContext
-    @Query private var presentations: [Presentation]
-    @State private var selection:    Slide.ID?
-    @State private var presentation: Presentation?
+    @State private var selection: Slide.ID?
 
     var body: some View {
         NavigationSplitView {
-            if let pres = presentation {
-                SlideList(
-                    presentation:   pres,
-                    selection:      $selection,
-                    onAddSlide:     addSlide(after:),
-                    onDeleteSlide:  deleteSelectedSlide
-                )
-                .navigationDestination(for: Slide.ID.self) { id in
-                    if let slide = slide(for: id) {
-                        SlideEdit(slide: slide)
-                    }
+            SlideList(
+                selection:      $selection,
+                onAddSlide:     addSlide(after:),
+                onDeleteSlide:  deleteSelectedSlide
+            )
+            .navigationDestination(for: Slide.ID.self) { id in
+                if let slide = slides.first(where: { $0.id == id }) {
+                    SlideEdit(slide: slide)
                 }
             }
         } detail: {
-            if let slide = slide(for: selection) {
+            if let slide = slides.first(where: { $0.id == selection }) {
                 SlideEdit(slide: slide)
             } else {
                 ContentUnavailableView("Create a slide",
@@ -31,64 +30,50 @@ struct ContentView: View {
             }
         }
         .onDeleteCommand(perform: deleteSelectedSlide)
-        .task {
-            if presentation == nil {
-                presentation = ensurePresentation()
-            }
-        }
     }
 
-    // MARK: – Bootstrap
-    private func ensurePresentation() -> Presentation {
-        if let first = presentations.first { return first }
-        let fresh = Presentation()
-        modelContext.insert(fresh)
-        return fresh
-    }
-
-    // MARK: – Lookup
-    private func slide(for id: Slide.ID?) -> Slide? {
-        guard let id = id, let pres = presentation else { return nil }
-        return pres.slides.first { $0.id == id }
-    }
-
-    private func indexOfSlide(for id: Slide.ID?) -> Int? {
-        guard let id = id, let pres = presentation else { return nil }
-        return pres.slides.firstIndex { $0.id == id }
-    }
-
-    // MARK: – Slide ops
     private func addSlide(after id: Slide.ID?) {
-        guard let pres = presentation else { return }
         let newSlide = Slide()
-        if let idx = indexOfSlide(for: id) {
-            pres.slides.insert(newSlide, at: idx + 1)
+        modelContext.insert(newSlide)
+
+        // compute insertion position
+        let insertPos: Int
+        if let selID = id,
+           let sel = slides.first(where: { $0.id == selID }) {
+            insertPos = sel.position + 1
         } else {
-            pres.slides.append(newSlide)
+            insertPos = (slides.map(\Slide.position).max() ?? -1) + 1
         }
+
+        // bump existing slides
+        for slide in slides where slide.position >= insertPos {
+            slide.position += 1
+        }
+
+        newSlide.position = insertPos
         selection = newSlide.id
     }
 
     private func deleteSelectedSlide() {
-        guard
-            let pres = presentation,
-            let idx = indexOfSlide(for: selection)
-        else { return }
+        guard let idx = slides.firstIndex(where: { $0.id == selection }) else { return }
 
         withAnimation {
-            pres.slides.remove(at: idx)
-            selection = nextSelection(afterRemoving: idx, in: pres)
+            modelContext.delete(slides[idx])
+
+            for slide in slides.dropFirst(idx + 1) {
+                slide.position -= 1
+            }
+
+            // pick next or previous
+            let next = slides[safe: idx]?.id ?? slides[safe: idx - 1]?.id
+            selection = next
         }
     }
+}
 
-    private func nextSelection(afterRemoving index: Int,
-                               in pres: Presentation) -> Slide.ID? {
-        if pres.slides.indices.contains(index) {
-            return pres.slides[index].id
-        } else if index > 0 {
-            return pres.slides[index - 1].id
-        } else {
-            return nil
-        }
+// safe‑index helper
+fileprivate extension Array {
+    subscript(safe index: Int) -> Element? {
+        indices.contains(index) ? self[index] : nil
     }
 }

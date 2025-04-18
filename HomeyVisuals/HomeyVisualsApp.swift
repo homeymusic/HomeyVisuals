@@ -6,7 +6,7 @@ import UniformTypeIdentifiers
 struct HomeyVisualsApp: App {
     var body: some Scene {
         DocumentGroup(
-            editing: Presentation.self,
+            editing: Slide.self,
             contentType: .visuals
         ) {
             ContentView()
