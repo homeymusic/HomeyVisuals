@@ -4,37 +4,78 @@ import Foundation
 import CoreTransferable
 import SwiftData
 import UniformTypeIdentifiers
+import HomeyMusicKit
 
 @Model
-final class Slide: Identifiable {
-    @Attribute(.unique) var id: UUID
-    var testString: String = UUID().uuidString
-    var isSkipped:   Bool   = false
+public final class Slide: Identifiable {
+    @Attribute(.unique) public var id: UUID
+    public var testString:   String
+    public var isSkipped:     Bool
+    public var position:      Int
 
-    /// ← give a default value so you get a free `init()`
-    var position: Int = 0
-
-    init() {
-        self.id = UUID()
+    public enum BackgroundType: Int, Codable, Sendable {
+        case cameraFeed, color
     }
-}
+    public var backgroundType:  BackgroundType
+    public var backgroundColor: RGBAColor
 
-extension Slide {
-    var record: SlideRecord {
+    @Relationship(deleteRule: .nullify)
+    public var aspectRatio: AspectRatio
+
+    // MARK: — Designated initializer
+    @MainActor
+    public init(
+        aspectRatio: AspectRatio,
+        backgroundType: BackgroundType = .color,
+        backgroundColor: RGBAColor = .init(red: 1, green: 1, blue: 1, alpha: 1),
+        isSkipped: Bool = false,
+        testString: String = UUID().uuidString
+    ) {
+        self.id              = UUID()
+        self.aspectRatio     = aspectRatio
+        self.backgroundType  = backgroundType
+        self.backgroundColor = backgroundColor
+        self.isSkipped       = isSkipped
+        self.testString      = testString
+        self.position        = 0
+    }
+
+    // MARK: — Convenience defaulting to Wide
+    @MainActor
+    public convenience init() {
+        self.init(aspectRatio: AspectRatio.wide)
+    }
+
+    // MARK: — Transferable record
+    public var record: SlideRecord {
         SlideRecord(
-            isSkipped:  isSkipped,
-            testString: testString
+            isSkipped:       isSkipped,
+            testString:      testString,
+            backgroundType:  backgroundType,
+            backgroundColor: backgroundColor,
+            aspectRatioID:   aspectRatio.id
         )
     }
-    
-    convenience init(record: SlideRecord) {
-        self.init()
-        self.isSkipped  = record.isSkipped
-        self.testString = record.testString
-        // no need to set `position` here; your insertion logic will assign it
+
+    // MARK: — Rehydrate from record
+    @MainActor
+    public convenience init(record: SlideRecord, in context: ModelContext) {
+        // attempt to fetch the stored AspectRatio by ID
+        let fetch = FetchDescriptor<AspectRatio>(
+            predicate: #Predicate { $0.id == record.aspectRatioID }
+        )
+        let ratio = (try? context.fetch(fetch).first) ?? AspectRatio.wide
+
+        self.init(
+            aspectRatio:     ratio,
+            backgroundType:  record.backgroundType,
+            backgroundColor: record.backgroundColor,
+            isSkipped:       record.isSkipped,
+            testString:      record.testString
+        )
     }
-    
-    
+
+    // MARK: — Helpers
     public static func updatePositions(_ slides: [Slide]) {
         for (idx, slide) in slides.enumerated() {
             slide.position = idx + 1

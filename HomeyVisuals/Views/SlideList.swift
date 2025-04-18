@@ -77,7 +77,7 @@ struct SlideList: View {
         var lastID: Slide.ID?
 
         for rec in records {
-            let newSlide = Slide(record: rec)
+            let newSlide = Slide(record: rec, in: modelContext)
             modelContext.insert(newSlide)
             reordered.insert(newSlide, at: min(cursor, reordered.count))
             lastID = newSlide.id

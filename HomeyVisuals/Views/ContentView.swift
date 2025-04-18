@@ -35,6 +35,9 @@ struct ContentView: View {
             }
         }
         .onDeleteCommand(perform: deleteSelectedSlides)
+        .onAppear {
+            AspectRatio.seedSystemAspectRatios(modelContext: modelContext)
+        }
     }
 
     // MARK: – Helpers

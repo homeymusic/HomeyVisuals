@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B0CA51EE2DB2BD4D0048EF3F /* HomeyMusicKit in Frameworks */ = {isa = PBXBuildFile; productRef = B0CA51ED2DB2BD4D0048EF3F /* HomeyMusicKit */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		B03FA5E52DB145CF00478DEE /* HomeyVisuals.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HomeyVisuals.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B0CA51EE2DB2BD4D0048EF3F /* HomeyMusicKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +83,7 @@
 			);
 			name = HomeyVisuals;
 			packageProductDependencies = (
+				B0CA51ED2DB2BD4D0048EF3F /* HomeyMusicKit */,
 			);
 			productName = HomeyVisuals;
 			productReference = B03FA5E52DB145CF00478DEE /* HomeyVisuals.app */;
@@ -107,6 +113,9 @@
 			);
 			mainGroup = B03FA5DC2DB145CF00478DEE;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				B0CA51EC2DB2BD4D0048EF3F /* XCLocalSwiftPackageReference "../HomeyMusicKit" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B03FA5E62DB145CF00478DEE /* Products */;
 			projectDirPath = "";
@@ -360,6 +369,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		B0CA51EC2DB2BD4D0048EF3F /* XCLocalSwiftPackageReference "../HomeyMusicKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../HomeyMusicKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B0CA51ED2DB2BD4D0048EF3F /* HomeyMusicKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = HomeyMusicKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B03FA5DD2DB145CF00478DEE /* Project object */;
 }

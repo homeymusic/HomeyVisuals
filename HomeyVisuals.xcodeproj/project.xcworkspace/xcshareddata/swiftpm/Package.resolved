@@ -1,0 +1,60 @@
+{
+  "originHash" : "3b832f9f7e8c789dc3316c18f8e4de3c5beb84dabd8cbb61912359b54a91cb51",
+  "pins" : [
+    {
+      "identity" : "audiokit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/AudioKit/AudioKit.git",
+      "state" : {
+        "revision" : "5b3fd238ef8ee95c9842ca4ea83ca58ee151e630",
+        "version" : "5.6.5"
+      }
+    },
+    {
+      "identity" : "audiokitex",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/AudioKit/AudioKitEX",
+      "state" : {
+        "revision" : "23e8e3bffd9fbc1dffa72f1d47c7f714dd777288",
+        "version" : "5.6.2"
+      }
+    },
+    {
+      "identity" : "dunneaudiokit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/AudioKit/DunneAudioKit.git",
+      "state" : {
+        "revision" : "dd0a417239ba345e03ca8ffe936d052d6a8239ea",
+        "version" : "5.6.1"
+      }
+    },
+    {
+      "identity" : "kissfft",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/AudioKit/KissFFT",
+      "state" : {
+        "revision" : "dd0636e151724b8ba2e0908eba4d99a6ff24d00c",
+        "version" : "1.0.0"
+      }
+    },
+    {
+      "identity" : "midikit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/orchetect/MIDIKit.git",
+      "state" : {
+        "revision" : "6902607ec98a4b8b54cac6d2a4d89fd860284819",
+        "version" : "0.10.1"
+      }
+    },
+    {
+      "identity" : "timecodekit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/orchetect/TimecodeKit",
+      "state" : {
+        "revision" : "1014b5723a7eaa93eeb2ea2f52dfd9ea6eb6be0d",
+        "version" : "2.3.3"
+      }
+    }
+  ],
+  "version" : 3
+}
