@@ -1,14 +1,14 @@
-// SlideList.swift
+// HomeyVisuals/Views/SlideList.swift
 
 import SwiftUI
 import SwiftData
 import CoreTransferable
 import UniformTypeIdentifiers
+import HomeyMusicKit
 
 struct SlideList: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: [SortDescriptor(\Slide.position)])
-    private var slides: [Slide]
+    @Query(sort: [SortDescriptor(\Slide.position)]) private var slides: [Slide]
 
     @Binding var selection: Set<Slide.ID>
     var onAddSlide: (Slide.ID?) -> Void
@@ -28,16 +28,36 @@ struct SlideList: View {
             }
     }
 
-    // break out the List + modifiers into its own computed view
     private var listWithClipboard: some View {
         List(selection: $selection) {
             ForEach(slides) { slide in
                 NavigationLink(value: slide.id) {
-                    HStack(spacing: 6) {
-                        Text("\(slide.position)")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                        Text(slide.testString)
+                    HStack(spacing: 8) {
+                        if #available(iOS 16, macOS 13, *) {
+                            ViewThumbnail(
+                                content: SlideShow(slide: slide),
+                                size: CGSize(
+                                  width: 80,
+                                  height: 80 / CGFloat(slide.aspectRatio.ratio)
+                                )
+                            )
+                        } else {
+                            Color(slide.backgroundColor)
+                                .frame(
+                                  width: 80,
+                                  height: 80 / CGFloat(slide.aspectRatio.ratio)
+                                )
+                                .cornerRadius(4)
+                        }
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("\(slide.position)")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                            Text(slide.testString)
+                                .lineLimit(1)
+                        }
+                        Spacer()
                     }
                 }
                 .tag(slide.id)
@@ -48,9 +68,7 @@ struct SlideList: View {
         .cuttable(for: SlideRecord.self) {
             performCutAndReturnRecords()
         }
-        .pasteDestination(for: SlideRecord.self) { records in
-            performPaste(records)
-        }
+        .pasteDestination(for: SlideRecord.self) { performPaste($0) }
     }
 
     // MARK: – Clipboard Actions
@@ -68,10 +86,13 @@ struct SlideList: View {
         return recs
     }
 
+    // MARK: – Paste
+
     private func performPaste(_ records: [SlideRecord]) {
         var reordered = slides
-        let insertAt = slides.firstIndex(where: { selection.contains($0.id) })
-                      .map { $0 + 1 } ?? reordered.count
+        let insertAt = slides
+            .firstIndex(where: { selection.contains($0.id) })
+            .map { $0 + 1 } ?? reordered.count
 
         var cursor = insertAt
         var lastID: Slide.ID?
@@ -98,7 +119,6 @@ struct SlideList: View {
         let moved = source.map { slides[$0] }
         reordered.move(fromOffsets: source, toOffset: destination)
         Slide.updatePositions(reordered)
-
         if let first = moved.first {
             selection = [ first.id ]
         }
