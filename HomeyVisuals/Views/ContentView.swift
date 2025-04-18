@@ -21,16 +21,15 @@ struct ContentView: View {
                 onDeleteSlide: deleteSelectedSlide
             )
             .frame(minWidth: 200)
-            .navigationDestination(for: Slide.ID.self) { id in
-                if let slide = slide(for: id) {
-                    SlideEdit(slide: slide)
-                }
-            }
         } detail: {
-            ContentUnavailableView(
-                "Would you look at that.",
-                systemImage: "eye"
-            )
+            if let slide = selectedSlide {
+                SlideEdit(slide: slide)
+            } else {
+                ContentUnavailableView(
+                    "Would you look at that.",
+                    systemImage: "eye"
+                )
+            }
         }
         .onDeleteCommand(perform: deleteSelectedSlide)
     }
