@@ -40,7 +40,7 @@ struct SlideList: View {
                                 .foregroundStyle(.secondary)
                         }
                         SlideThumbnailView(
-                            content: SlideShow(slide: slide),
+                            content: SlideDetail(slide: slide),
                             reloadTrigger: AnyHashable("\(slide.id)-\(slide.testString)")
                         )
                         .frame(maxWidth: .infinity)

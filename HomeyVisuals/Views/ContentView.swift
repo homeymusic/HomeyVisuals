@@ -137,7 +137,7 @@ struct ContentView: View {
         
         // 1) Build your SlideShow host
         let hosting = NSHostingController(rootView:
-                                            SlideShow(slide: slide)
+                                            SlideDetail(slide: slide)
             .ignoresSafeArea()
         )
         

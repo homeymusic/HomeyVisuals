@@ -3,7 +3,7 @@
 import SwiftUI
 import HomeyMusicKit
 
-struct SlideShow: View {
+struct SlideDetail: View {
     let slide: Slide
 
     var body: some View {
