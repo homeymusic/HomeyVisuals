@@ -57,24 +57,14 @@ struct ContentView: View {
     }
     
     private func deleteSelectedSlide() {
-        // 1️⃣ Find index of current selection in the live `slides` array
         guard let idx = slides.firstIndex(where: { $0.id == selection }) else { return }
-        
-        // 2️⃣ Capture the ID of the slide immediately after it (might be nil)
         let nextID = slides[safe: idx + 1]?.id
         
         withAnimation {
-            // 3️⃣ Delete the selected slide
             modelContext.delete(slides[idx])
-            
-            // 4️⃣ Renumber the remaining slides
             for slide in slides.dropFirst(idx + 1) {
                 slide.position -= 1
             }
-            
-            // 5️⃣ Set selection:
-            //    • if there was a slide after the deleted one, pick that
-            //    • otherwise (we deleted the last), pick the new last slide
             if let nid = nextID {
                 selection = nid
             } else {

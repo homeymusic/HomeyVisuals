@@ -5,22 +5,38 @@ import CoreTransferable
 struct SlideList: View {
     @Environment(\.modelContext) private var modelContext
 
-    // Live query of all slides, sorted by position
     @Query(sort: [SortDescriptor(\Slide.position)])
     private var slides: [Slide]
 
     @Binding var selection: Slide.ID?
-    var onAddSlide:    (Slide.ID?) -> Void
+    var onAddSlide: (Slide.ID?) -> Void
     var onDeleteSlide: () -> Void
 
-    // MARK: – Raw list
+    var body: some View {
+        makeListView()
+            .copyable(copyRecords())
+            .cuttable(for: SlideRecord.self) {
+                performCutAndReturnRecords()
+            }
+            .pasteDestination(for: SlideRecord.self, action: performPaste)
+            .toolbar {
+                ToolbarItem {
+                    Button(action: { onAddSlide(selection) }) {
+                        Label("New Slide", systemImage: "plus")
+                    }
+                    .keyboardShortcut("n")
+                }
+            }
+    }
 
-    private var rawList: some View {
+    // MARK: - View Builder
+
+    private func makeListView() -> some View {
         List(selection: $selection) {
-            ForEach(Array(slides.enumerated()), id: \.element.id) { idx, slide in
+            ForEach(Array(slides.enumerated()), id: \.element.id) { index, slide in
                 NavigationLink(value: slide.id) {
                     HStack(spacing: 6) {
-                        Text("\(idx + 1)")
+                        Text("\(index + 1)")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                         Text(slide.testString)
@@ -32,116 +48,70 @@ struct SlideList: View {
         }
     }
 
-    // MARK: – Copy / Cut
+    // MARK: - Clipboard Actions
 
-    private func listAfterCopy() -> some View {
-        rawList.copyable(copyRecords())
+    private func copyRecords() -> [SlideRecord] {
+        guard let selectedID = selection,
+              let slide = slides.first(where: { $0.id == selectedID }) else {
+            return []
+        }
+        return [slide.record]
     }
 
-    private func listAfterCut() -> some View {
-        listAfterCopy()
-            .cuttable(for: SlideRecord.self) {
-                // 1) What goes on the clipboard
-                let items = copyRecords()
-                
-                // 2) Find the index of the slide we’re about to cut
-                guard let idx = slides.firstIndex(where: { $0.id == selection }) else {
-                    onDeleteSlide()
-                    return items
-                }
-                
-                // 3) Compute the ID to select afterward:
-                //    - if there’s a slide at the same index (i.e. the “next” slide), pick that
-                //    - otherwise (we cut the last), pick the new last slide
-                let nextID = slides[safe: idx + 1]?.id
-                           ?? slides[safe: idx - 1]?.id
-                
-                // 4) Perform the delete (and renumber in ContentView)
-                onDeleteSlide()
-                
-                // 5) Update selection to the precomputed nextID
-                selection = nextID
-                
-                return items
-            }
-    }
-    
-    // MARK: – Paste
+    private func performCutAndReturnRecords() -> [SlideRecord] {
+        guard let selectedID = selection,
+              let index = slides.firstIndex(where: { $0.id == selectedID }),
+              let record = slides[safe: index]?.record else {
+            onDeleteSlide()
+            return []
+        }
 
-    private func listAfterPaste() -> some View {
-        listAfterCut()
-            .pasteDestination(for: SlideRecord.self) { (records: [SlideRecord]) in
-                // build a temp copy
-                var reordered = slides
+        let nextSelection = slides[safe: index + 1]?.id ?? slides[safe: index - 1]?.id
 
-                // compute insert‐after position
-                let base = slides.firstIndex { $0.id == selection }.map { $0 + 1 }
-                           ?? reordered.count
-                var insertAt = base
-                var newSel: Slide.ID?
+        onDeleteSlide()
+        selection = nextSelection
 
-                // insert the pasted slides
-                for rec in records {
-                    let slide = Slide(record: rec)
-                    modelContext.insert(slide)
-                    reordered.insert(slide, at: min(insertAt, reordered.count))
-                    newSel = slide.id
-                    insertAt += 1
-                }
-
-                // persist positions
-                for (i, slide) in reordered.enumerated() {
-                    slide.position = i
-                }
-
-                // update selection
-                if let sel = newSel {
-                    selection = sel
-                }
-            }
-    }
-    
-    // MARK: – Toolbar
-
-    private func listWithToolbar() -> some View {
-        listAfterPaste()
-            .toolbar {
-                ToolbarItem {
-                    Button { onAddSlide(selection) } label: {
-                        Label("New Slide", systemImage: "plus")
-                    }
-                    .keyboardShortcut("n")
-                }
-            }
+        return [record]
     }
 
-    // MARK: – Body
-
-    var body: some View {
-        listWithToolbar()
-    }
-
-    // MARK: – Helpers
-
-    private func moveSlides(from source: IndexSet, to dest: Int) {
+    private func performPaste(_ records: [SlideRecord]) {
         var reordered = slides
-        reordered.move(fromOffsets: source, toOffset: dest)
+        let insertIndex = slides.firstIndex { $0.id == selection }.map { $0 + 1 } ?? reordered.count
+
+        var insertAt = insertIndex
+        var lastInsertedID: Slide.ID?
+
+        for record in records {
+            let slide = Slide(record: record)
+            modelContext.insert(slide)
+            reordered.insert(slide, at: min(insertAt, reordered.count))
+            lastInsertedID = slide.id
+            insertAt += 1
+        }
+
         for (i, slide) in reordered.enumerated() {
             slide.position = i
         }
+
+        if let newSelection = lastInsertedID {
+            selection = newSelection
+        }
     }
 
-    private func copyRecords() -> [SlideRecord] {
-        guard
-            let idx = slides.firstIndex(where: { $0.id == selection }),
-            let slide = slides[safe: idx]
-        else { return [] }
-        return [slide.record]
+    // MARK: - Slide Ordering
+
+    private func moveSlides(fromOffsets source: IndexSet, toOffset destination: Int) {
+        var reordered = slides
+        reordered.move(fromOffsets: source, toOffset: destination)
+        for (index, slide) in reordered.enumerated() {
+            slide.position = index
+        }
     }
 }
 
-// safe‑index helper
-fileprivate extension Array {
+// MARK: - Array Safe Indexing
+
+private extension Array {
     subscript(safe index: Int) -> Element? {
         indices.contains(index) ? self[index] : nil
     }
