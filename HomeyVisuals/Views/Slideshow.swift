@@ -2,6 +2,7 @@ import SwiftUI
 import HomeyMusicKit
 import AppKit
 
+/// Full‑screen slideshow with key navigation (including Home/End jump).
 struct Slideshow: View {
     let slides: [Slide]
     @State private var index: Int
@@ -13,37 +14,57 @@ struct Slideshow: View {
 
     var body: some View {
         ZStack {
-            // 1) Letter‑boxed content
+            // Render the slide
             SlideDetail(slide: slides[index])
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color(slides[index].backgroundColor))
                 .ignoresSafeArea()
 
-            // 2) Invisible key catcher overlay
+            // Invisible overlay for key handling
             KeyCatcher(
                 onPrevious: previous,
                 onNext:     next,
-                onClose:    close
+                onClose:    close,
+                onFirst:    goToFirst,
+                onLast:     goToLast
             )
             .allowsHitTesting(false)
         }
-        // Esc (or Cmd–W) closes
+        // Esc or Cmd+W closes
         .onExitCommand { close() }
     }
 
+    // MARK: - Navigation Actions
+
     private func next() {
-        if index < slides.count - 1 { index += 1 }
+        if index < slides.count - 1 {
+            index += 1
+        }
     }
 
     private func previous() {
-        if index > 0 { index -= 1 }
+        if index > 0 {
+            index -= 1
+        }
     }
+
+    private func goToFirst() {
+        index = 0
+    }
+
+    private func goToLast() {
+        index = slides.count - 1
+    }
+
+    // MARK: - Close
 
     private func close() {
         NSApp.keyWindow?.close()
     }
 
-    /// Spins up a new full‑screen window containing this slideshow.
+    // MARK: - Presentation Helper
+
+    /// Spins up a new full‑screen window running this slideshow.
     static func present(slides: [Slide], startIndex: Int) {
         let view    = Slideshow(slides: slides, startIndex: startIndex)
         let hosting = NSHostingController(rootView: view.ignoresSafeArea())
@@ -69,37 +90,53 @@ struct Slideshow: View {
     }
 }
 
+// MARK: - KeyCatcher
+
 private struct KeyCatcher: NSViewRepresentable {
     let onPrevious: () -> Void
     let onNext:     () -> Void
     let onClose:    () -> Void
+    let onFirst:    () -> Void
+    let onLast:     () -> Void
 
     func makeNSView(context: Context) -> KeyCatcherView {
-        let v = KeyCatcherView()
-        v.onPrevious = onPrevious
-        v.onNext     = onNext
-        v.onClose    = onClose
-        return v
+        let view = KeyCatcherView()
+        view.onPrevious = onPrevious
+        view.onNext     = onNext
+        view.onClose    = onClose
+        view.onFirst    = onFirst
+        view.onLast     = onLast
+        return view
     }
+
     func updateNSView(_ nsView: KeyCatcherView, context: Context) {}
 
     class KeyCatcherView: NSView {
         var onPrevious: (() -> Void)?
         var onNext:     (() -> Void)?
         var onClose:    (() -> Void)?
+        var onFirst:    (() -> Void)?
+        var onLast:     (() -> Void)?
 
         override var acceptsFirstResponder: Bool { true }
         override func viewDidMoveToWindow() {
             window?.makeFirstResponder(self)
         }
+
         override func keyDown(with event: NSEvent) {
             switch event.keyCode {
-            case 123, 126, 116, 115, 51:
-                // ← ↑ PageUp Home Delete
+            case 123, 126, 116, 51:
+                // ← (123), ↑ (126), PageUp (116), Delete (51)
                 onPrevious?()
-            case 124, 125, 121, 119, 49, 36:
-                // → ↓ PageDown End Space Return
+            case 124, 125, 121, 49, 36:
+                // → (124), ↓ (125), PageDown (121), Space (49), Return (36)
                 onNext?()
+            case 115:
+                // Home
+                onFirst?()
+            case 119:
+                // End
+                onLast?()
             case 53:
                 // Esc
                 onClose?()
