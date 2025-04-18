@@ -27,14 +27,10 @@ struct ContentView: View {
                 }
             }
         } detail: {
-            if let slide = selectedSlide {
-                SlideEdit(slide: slide)
-            } else {
-                ContentUnavailableView(
-                    "Create a slide",
-                    systemImage: "rectangle.on.rectangle.slash"
-                )
-            }
+            ContentUnavailableView(
+                "Would you look at that.",
+                systemImage: "eye"
+            )
         }
         .onDeleteCommand(perform: deleteSelectedSlide)
     }
@@ -51,12 +47,11 @@ struct ContentView: View {
         let newSlide = Slide()
         modelContext.insert(newSlide)
         
-        // Determine insertion index in the `slides` array
         let insertIndex: Int
-        if let selID = id,
-           let current = slide(for: selID),
-           let idx = slides.firstIndex(of: current) {
-            insertIndex = idx + 1
+        if let targetID = id,
+           let targetSlide = slide(for: targetID),
+           let targetIndex = slides.firstIndex(of: targetSlide) {
+            insertIndex = targetIndex + 1
         } else {
             insertIndex = slides.count
         }
@@ -71,24 +66,25 @@ struct ContentView: View {
     }
     
     private func deleteSelectedSlide() {
-        guard let sel = selectedSlide,
-              let idx = slides.firstIndex(of: sel) else { return }
+        guard let currentlySelectedSlide = selectedSlide,
+              let currentlySelectedIndex = slides.firstIndex(of: currentlySelectedSlide) else { return }
         
         // Figure out what should be selected after deletion
         let nextID: Slide.ID? = {
-            let after = idx + 1
-            return slides.indices.contains(after)
-                ? slides[after].id
-            : slides.last(where: { $0.id != sel.id })?.id
+            let afterIndex = currentlySelectedIndex + 1
+            return slides.indices.contains(afterIndex)
+                ? slides[afterIndex].id
+            : slides.last(where: { $0.id != currentlySelectedSlide.id })?.id
         }()
         
         withAnimation {
-            modelContext.delete(sel)
+            modelContext.delete(currentlySelectedSlide)
             // Shift down all positions after the removed slide
-            for slide in slides.dropFirst(idx + 1) {
+            for slide in slides.dropFirst(currentlySelectedIndex + 1) {
                 slide.position -= 1
             }
             selection = nextID
         }
     }
+
 }
