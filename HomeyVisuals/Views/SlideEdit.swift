@@ -6,28 +6,18 @@ struct SlideEdit: View {
     @Bindable var slide: Slide
 
     var body: some View {
-        VStack {
-            // — Preview at the top —
+        // Exactly the same layout, but with an editable TextField:
+        ZStack {
             Color(slide.backgroundColor)
-                .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
-                .cornerRadius(8)
-                .padding()
 
-            // — Details underneath —
-            Form {
-                Section("Content") {
-                    Text("Test string:")
-                    TextField("Test", text: $slide.testString)
-                }
-
-                Section("Metadata") {
-                    Text("Slide ID: \(slide.id.uuidString)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .padding(.horizontal)
+            TextField("Title", text: $slide.testString)
+                .font(.largeTitle)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.primary)
+                .padding(16)
         }
+        .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
         .navigationTitle("Edit Slide")
+        .padding()
     }
 }

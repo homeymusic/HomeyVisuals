@@ -32,32 +32,38 @@ struct SlideList: View {
         List(selection: $selection) {
             ForEach(slides) { slide in
                 NavigationLink(value: slide.id) {
-                    HStack(spacing: 8) {
-                        if #available(iOS 16, macOS 13, *) {
-                            ViewThumbnail(
-                                content: SlideShow(slide: slide),
-                                size: CGSize(
-                                  width: 80,
-                                  height: 80 / CGFloat(slide.aspectRatio.ratio)
-                                )
-                            )
-                        } else {
+                    // Replace Text(...) with a real thumbnail of SlideShow:
+                    if #available(iOS 16, macOS 13, *) {
+                        ViewThumbnail(
+                            content: SlideShow(slide: slide),
+                            displaySize: CGSize(
+                              width: 100,
+                              height: 100 / CGFloat(slide.aspectRatio.ratio)
+                            ),
+                            reloadTrigger: AnyHashable("\(slide.id)-\(slide.testString)")
+                        )
+                        .overlay(
+                            Text("\(slide.position)")
+                              .font(.caption2)
+                              .foregroundStyle(.secondary)
+                              .padding(4),
+                            alignment: .bottomLeading
+                        )
+                        .cornerRadius(4)
+                    } else {
+                        // fallback simple view if no ImageRenderer
+                        ZStack(alignment: .bottomLeading) {
                             Color(slide.backgroundColor)
-                                .frame(
-                                  width: 80,
-                                  height: 80 / CGFloat(slide.aspectRatio.ratio)
+                                .aspectRatio(
+                                    CGFloat(slide.aspectRatio.ratio),
+                                    contentMode: .fit
                                 )
-                                .cornerRadius(4)
-                        }
-
-                        VStack(alignment: .leading, spacing: 2) {
                             Text("\(slide.position)")
                                 .font(.caption2)
                                 .foregroundStyle(.secondary)
-                            Text(slide.testString)
-                                .lineLimit(1)
+                                .padding(4)
                         }
-                        Spacer()
+                        .cornerRadius(4)
                     }
                 }
                 .tag(slide.id)
@@ -86,13 +92,10 @@ struct SlideList: View {
         return recs
     }
 
-    // MARK: – Paste
-
     private func performPaste(_ records: [SlideRecord]) {
         var reordered = slides
-        let insertAt = slides
-            .firstIndex(where: { selection.contains($0.id) })
-            .map { $0 + 1 } ?? reordered.count
+        let insertAt = slides.firstIndex(where: { selection.contains($0.id) })
+                      .map { $0 + 1 } ?? reordered.count
 
         var cursor = insertAt
         var lastID: Slide.ID?

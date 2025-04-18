@@ -27,7 +27,7 @@ public final class Slide: Identifiable {
     public init(
         aspectRatio: AspectRatio,
         backgroundType: BackgroundType = .color,
-        backgroundColor: RGBAColor = .init(red: 1, green: 1, blue: 1, alpha: 1),
+        backgroundColor: RGBAColor = .init(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0),
         isSkipped: Bool = false,
         testString: String = UUID().uuidString
     ) {
