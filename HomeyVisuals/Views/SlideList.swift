@@ -41,12 +41,31 @@ struct SlideList: View {
     private func listAfterCut() -> some View {
         listAfterCopy()
             .cuttable(for: SlideRecord.self) {
+                // 1) What goes on the clipboard
                 let items = copyRecords()
+                
+                // 2) Find the index of the slide we’re about to cut
+                guard let idx = slides.firstIndex(where: { $0.id == selection }) else {
+                    onDeleteSlide()
+                    return items
+                }
+                
+                // 3) Compute the ID to select afterward:
+                //    - if there’s a slide at the same index (i.e. the “next” slide), pick that
+                //    - otherwise (we cut the last), pick the new last slide
+                let nextID = slides[safe: idx + 1]?.id
+                           ?? slides[safe: idx - 1]?.id
+                
+                // 4) Perform the delete (and renumber in ContentView)
                 onDeleteSlide()
+                
+                // 5) Update selection to the precomputed nextID
+                selection = nextID
+                
                 return items
             }
     }
-
+    
     // MARK: – Paste
 
     private func listAfterPaste() -> some View {

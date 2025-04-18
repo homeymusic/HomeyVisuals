@@ -5,10 +5,10 @@ struct ContentView: View {
     // ① Live query of all slides, sorted by position
     @Query(sort: [SortDescriptor(\Slide.position)])
     private var slides: [Slide]
-
+    
     @Environment(\.modelContext) private var modelContext
     @State private var selection: Slide.ID?
-
+    
     var body: some View {
         NavigationSplitView {
             SlideList(
@@ -27,17 +27,17 @@ struct ContentView: View {
                 SlideEdit(slide: slide)
             } else {
                 ContentUnavailableView("Create a slide",
-                                      systemImage: "rectangle.on.rectangle.slash")
+                                       systemImage: "rectangle.on.rectangle.slash")
             }
         }
-
+        
         .onDeleteCommand(perform: deleteSelectedSlide)
     }
-
+    
     private func addSlide(after id: Slide.ID?) {
         let newSlide = Slide()
         modelContext.insert(newSlide)
-
+        
         // compute insertion position
         let insertPos: Int
         if let selID = id,
@@ -46,29 +46,40 @@ struct ContentView: View {
         } else {
             insertPos = (slides.map(\Slide.position).max() ?? -1) + 1
         }
-
+        
         // bump existing slides
         for slide in slides where slide.position >= insertPos {
             slide.position += 1
         }
-
+        
         newSlide.position = insertPos
         selection = newSlide.id
     }
-
+    
     private func deleteSelectedSlide() {
+        // 1️⃣ Find index of current selection in the live `slides` array
         guard let idx = slides.firstIndex(where: { $0.id == selection }) else { return }
-
+        
+        // 2️⃣ Capture the ID of the slide immediately after it (might be nil)
+        let nextID = slides[safe: idx + 1]?.id
+        
         withAnimation {
+            // 3️⃣ Delete the selected slide
             modelContext.delete(slides[idx])
-
+            
+            // 4️⃣ Renumber the remaining slides
             for slide in slides.dropFirst(idx + 1) {
                 slide.position -= 1
             }
-
-            // pick next or previous
-            let next = slides[safe: idx]?.id ?? slides[safe: idx - 1]?.id
-            selection = next
+            
+            // 5️⃣ Set selection:
+            //    • if there was a slide after the deleted one, pick that
+            //    • otherwise (we deleted the last), pick the new last slide
+            if let nid = nextID {
+                selection = nid
+            } else {
+                selection = slides.last?.id
+            }
         }
     }
 }
