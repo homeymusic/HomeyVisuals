@@ -1,7 +1,6 @@
 // Models/Slide.swift
 
 import Foundation
-import CoreTransferable
 import SwiftData
 import UniformTypeIdentifiers
 
