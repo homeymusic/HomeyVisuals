@@ -7,16 +7,20 @@ struct SlideDetail: View {
     var body: some View {
         ZStack {
             ZStack {
+                Color(slide.backgroundColor)
+
                 Text(slide.testString)
                     .font(.largeTitle)
                     .foregroundColor(.white)
                     .multilineTextAlignment(.center)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.5)
+                    .minimumScaleFactor(0.1)
                     .padding()
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
+            .navigationTitle("Slide Detail")
+//            .frame(maxWidth: .infinity, maxHeight: .infinity)
+//            .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
         }
     }
 }

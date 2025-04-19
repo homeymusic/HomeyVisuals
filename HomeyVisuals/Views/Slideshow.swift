@@ -17,7 +17,6 @@ struct Slideshow: View {
             // Render the slide
             SlideDetail(slide: slides[index])
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(slides[index].backgroundColor))
                 .ignoresSafeArea()
 
             // Invisible overlay for key handling

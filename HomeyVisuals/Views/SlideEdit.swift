@@ -12,12 +12,12 @@ struct SlideEdit: View {
 
             TextField("Title", text: $slide.testString)
                 .font(.largeTitle)
+                .foregroundColor(.white)
                 .multilineTextAlignment(.center)
-                .foregroundColor(.primary)
-                .padding(16)
+                .lineLimit(1)
+                .minimumScaleFactor(0.1)
         }
         .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
         .navigationTitle("Edit Slide")
-        .padding()
     }
 }
