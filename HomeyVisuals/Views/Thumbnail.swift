@@ -27,9 +27,9 @@ struct Thumbnail<Content: View>: View {
     private func render(for size: CGSize) {
         let renderSize = traditionalRenderSize(for: size)
         let renderer = ImageRenderer(content:
-            content
-              .frame(width:  renderSize.width,
-                     height: renderSize.height)
+                                        content
+            .frame(width:  renderSize.width,
+                   height: renderSize.height)
         )
         if let cgImage = renderer.cgImage {
             thumbnail = Image(decorative: cgImage, scale: 1)
@@ -37,23 +37,28 @@ struct Thumbnail<Content: View>: View {
     }
     
     private func traditionalRenderSize(for slideSize: CGSize) -> CGSize {
-        let screen4k = CGSize(width: 3840, height: 2160)
-        
-        // slide aspect ratio and screen aspect ratio
-        let slideAspect  = slideSize.width / slideSize.height
-        let screenAspect = screen4k.width    / screen4k.height
+        let screenSize = screenSize
+        let slideAspect = slideSize.width / slideSize.height
+        let screenAspect = screenSize.width / screenSize.height
         
         if slideAspect > screenAspect {
-            // slide is “wider” than screen: fill width, letter‑box vertically
-            let w = screen4k.width
-            let h = w / slideAspect
-            return CGSize(width: w, height: h)
+            let w = screenSize.width
+            return CGSize(width: w, height: w / slideAspect)
         } else {
-            // slide is “taller” than screen: fill height, pillar‑box horizontally
-            let h = screen4k.height
-            let w = h * slideAspect
-            return CGSize(width: w, height: h)
+            let h = screenSize.height
+            return CGSize(width: h * slideAspect, height: h)
         }
     }
-
+    
+    private var screenSize: CGSize {
+        guard
+            let screen = NSScreen.main,
+            screen.frame.width  > 0,
+            screen.frame.height > 0
+        else {
+            return CGSize(width: 3840, height: 2160)
+        }
+        return screen.frame.size
+    }
+    
 }
