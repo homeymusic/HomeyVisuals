@@ -7,7 +7,6 @@ struct SlideDetail: View {
     var body: some View {
         ZStack {
             ZStack {
-                Color(slide.backgroundColor)
                 Text(slide.testString)
                     .font(.largeTitle)
                     .foregroundColor(.white)

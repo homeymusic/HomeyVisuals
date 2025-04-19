@@ -27,15 +27,19 @@ extension AspectRatio {
 
         for candidate in allSystem {
             guard let sysID = candidate.systemIdentifier else { continue }
-            let fetch = FetchDescriptor<AspectRatio>(
+            let fetchDescriptor = FetchDescriptor<AspectRatio>(
                 predicate: #Predicate { $0.systemIdentifier == sysID }
             )
-            // fetch existing
-            if let existing = (try? modelContext.fetch(fetch))?.first {
+            
+            guard let results = try? modelContext.fetch(fetchDescriptor) else { continue }
+
+            if let existing = results.first {
                 // unify the static var to point at the existing object
                 switch sysID {
-                case wideSystemID:      wide     = existing
-                case standardSystemID:  standard = existing
+                case wideSystemID:
+                    AspectRatio.wide = existing
+                case standardSystemID:
+                    AspectRatio.standard = existing
                 default: break
                 }
             } else {

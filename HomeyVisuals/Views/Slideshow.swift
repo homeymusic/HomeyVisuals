@@ -40,7 +40,7 @@ struct Slideshow: View {
         if index < slides.count - 1 {
             index += 1
         } else {
-            close()
+            fancyClose()
         }
     }
 
@@ -60,7 +60,7 @@ struct Slideshow: View {
 
     // MARK: - Close
 
-    private func close() {
+    private func fancyClose() {
         guard let window = NSApp.keyWindow else { return }
         
         // pick how small you want it to get:
@@ -89,6 +89,11 @@ struct Slideshow: View {
             window.close()
         }
     }
+
+    private func close() {
+        NSApp.keyWindow?.close()
+    }
+
     // MARK: - Presentation Helper
 
     /// Spins up a new full‑screen window running this slideshow.
