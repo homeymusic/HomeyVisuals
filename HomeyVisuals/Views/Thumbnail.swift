@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct SlideThumbnailView<Content: View>: View {
+struct Thumbnail<Content: View>: View {
     let content: Content
     let reloadTrigger: AnyHashable
 

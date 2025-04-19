@@ -77,7 +77,7 @@ struct Slideshow: View {
         window.backgroundColor = .black
         
         NSAnimationContext.runAnimationGroup { context in
-            context.duration = 1.0
+            context.duration = 1/HomeyMusicKit.goldenRatio
             // simultaneously fade out…
             window.animator().alphaValue = 0
             // …and shrink to the tiny rect
