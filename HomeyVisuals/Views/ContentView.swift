@@ -44,6 +44,15 @@ struct ContentView: View {
         .onDeleteCommand(perform: deleteSelectedSlides)
         .onAppear {
             AspectRatio.seedSystemAspectRatios(modelContext: modelContext)
+            // seed initial selection:
+            if selection.isEmpty, let first = slides.first {
+                selection = [ first.id ]
+            }
+        }
+        .onChange(of: slides) { _, newSlides in
+            if selection.isEmpty, let first = newSlides.first {
+                selection = [ first.id ]
+            }
         }
     }
 

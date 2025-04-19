@@ -19,8 +19,6 @@ struct SlideDetail: View {
             }
             .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
             .navigationTitle("Slide Detail")
-//            .frame(maxWidth: .infinity, maxHeight: .infinity)
-//            .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
         }
     }
 }
