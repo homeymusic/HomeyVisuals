@@ -16,8 +16,6 @@ struct Slideshow: View {
         ZStack {
             // Render the slide
             SlideDetail(slide: slides[index])
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .ignoresSafeArea()
 
             // Invisible overlay for key handling
             KeyCatcher(
