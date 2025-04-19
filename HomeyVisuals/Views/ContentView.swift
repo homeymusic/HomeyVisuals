@@ -38,21 +38,31 @@ struct ContentView: View {
                 }
             }
             .toolbar {
-                // leading “Add Slide” button
                 ToolbarItem(placement: .principal) {
+                    // — Add Slide —
                     Button {
                         addSlide(after: selection.first)
                     } label: {
-                        Label("Add Slide", systemImage: "plus")
+                        VStack(spacing: 10) {
+                            Image(systemName: "plus.rectangle")
+                            Text("Add Slide")
+                                .font(.caption)
+                        }
                     }
+                    .buttonStyle(.borderless)
                     .keyboardShortcut("n", modifiers: [.shift, .command])
                 }
                 
-                // trailing “Play” button
-                ToolbarItem(placement: .principal) {
+                ToolbarItem(placement: .primaryAction) {
+                    // — Play —
                     Button(action: launchSlideshow) {
-                        Label("Play", systemImage: "play.fill")
+                        VStack(spacing: 10) {
+                            Image(systemName: "play.fill")
+                            Text("Play")
+                                .font(.caption)
+                        }
                     }
+                    .buttonStyle(.borderless)
                     .keyboardShortcut("p", modifiers: [.command, .option])
                     .disabled(selectedIndex == nil)
                 }
