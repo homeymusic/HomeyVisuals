@@ -16,16 +16,6 @@ struct SlideList: View {
     
     var body: some View {
         listWithClipboard
-            .toolbar {
-                ToolbarItem {
-                    Button {
-                        onAddSlide(selection.first)
-                    } label: {
-                        Label("New Slide", systemImage: "plus")
-                    }
-                    .keyboardShortcut("n", modifiers: [.shift, .command])
-                }
-            }
     }
     
     private var listWithClipboard: some View {

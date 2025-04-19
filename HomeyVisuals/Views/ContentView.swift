@@ -6,14 +6,14 @@ import AppKit
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: [SortDescriptor(\Slide.position)]) private var slides: [Slide]
-
+    
     @State private var selection = Set<Slide.ID>()
-
+    
     private var selectedIndex: Int? {
         guard let id = selection.first else { return nil }
         return slides.firstIndex(where: { $0.id == id })
     }
-
+    
     var body: some View {
         GeometryReader { geo in
             NavigationSplitView {
@@ -38,7 +38,18 @@ struct ContentView: View {
                 }
             }
             .toolbar {
-                ToolbarItem(placement: .primaryAction) {
+                // leading “Add Slide” button
+                ToolbarItem(placement: .principal) {
+                    Button {
+                        addSlide(after: selection.first)
+                    } label: {
+                        Label("Add Slide", systemImage: "plus")
+                    }
+                    .keyboardShortcut("n", modifiers: [.shift, .command])
+                }
+                
+                // trailing “Play” button
+                ToolbarItem(placement: .principal) {
                     Button(action: launchSlideshow) {
                         Label("Play", systemImage: "play.fill")
                     }
@@ -60,16 +71,16 @@ struct ContentView: View {
             }
         }
     }
-
+    
     private func launchSlideshow() {
         guard let idx = selectedIndex else { return }
         Slideshow.present(slides: slides, startIndex: idx)
     }
-
+    
     // MARK: – Add a new slide immediately after the given ID
     private func addSlide(after id: Slide.ID?) {
         let newSlide = Slide.create(in: modelContext)
-
+        
         var reordered = slides
         let insertIndex: Int
         if
@@ -84,12 +95,12 @@ struct ContentView: View {
         Slide.updatePositions(reordered)
         selection = [ newSlide.id ]
     }
-
+    
     // MARK: – Delete all selected slides
     private func deleteSelectedSlides() {
         let toDelete = slides.filter { selection.contains($0.id) }
         guard !toDelete.isEmpty else { return }
-
+        
         let all        = slides
         let deletedIdx = toDelete.compactMap { all.firstIndex(of: $0) }.sorted()
         let afterIdx   = deletedIdx.last! + 1
@@ -101,12 +112,12 @@ struct ContentView: View {
                 return all.indices.contains(before) ? all[before].id : nil
             }
         }()
-
+        
         withAnimation {
             toDelete.forEach(modelContext.delete)
             let remaining = slides.filter { !selection.contains($0.id) }
             Slide.updatePositions(remaining)
-
+            
             selection.removeAll()
             if let keep = nextID {
                 selection.insert(keep)
