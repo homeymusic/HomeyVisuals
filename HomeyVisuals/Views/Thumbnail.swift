@@ -1,11 +1,12 @@
 import SwiftUI
+import HomeyMusicKit
 
 struct Thumbnail<Content: View>: View {
     let content: Content
     let reloadTrigger: AnyHashable
-
+    
     @State private var thumbnail: Image?
-
+    
     var body: some View {
         GeometryReader { geo in
             Group {
@@ -17,25 +18,42 @@ struct Thumbnail<Content: View>: View {
                     Color.clear
                 }
             }
-            .onAppear        { render(for: geo.size) }
+            .onAppear { render(for: geo.size) }
             .onChange(of: reloadTrigger) {render(for: geo.size) }
-            .onChange(of: geo.size)       {_, newSize in render(for: newSize) }
+            .onChange(of: geo.size) {_, newSize in render(for: newSize) }
         }
     }
-
+    
     private func render(for size: CGSize) {
-        // render at 3× for sharpness
-        let renderSize = CGSize(width: size.width * 3,
-                                height: size.height * 3)
+        let renderSize = traditionalRenderSize(for: size)
         let renderer = ImageRenderer(content:
             content
-                .frame(width: renderSize.width,
-                       height: renderSize.height)
+              .frame(width:  renderSize.width,
+                     height: renderSize.height)
         )
-
-        // on macOS we'll always use the cgImage output
         if let cgImage = renderer.cgImage {
             thumbnail = Image(decorative: cgImage, scale: 1)
         }
     }
+    
+    private func traditionalRenderSize(for slideSize: CGSize) -> CGSize {
+        let screen4k = CGSize(width: 3840, height: 2160)
+        
+        // slide aspect ratio and screen aspect ratio
+        let slideAspect  = slideSize.width / slideSize.height
+        let screenAspect = screen4k.width    / screen4k.height
+        
+        if slideAspect > screenAspect {
+            // slide is “wider” than screen: fill width, letter‑box vertically
+            let w = screen4k.width
+            let h = w / slideAspect
+            return CGSize(width: w, height: h)
+        } else {
+            // slide is “taller” than screen: fill height, pillar‑box horizontally
+            let h = screen4k.height
+            let w = h * slideAspect
+            return CGSize(width: w, height: h)
+        }
+    }
+
 }

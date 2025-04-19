@@ -15,43 +15,49 @@ struct ContentView: View {
     }
 
     var body: some View {
-        NavigationSplitView {
-            SlideList(
-                selection:     $selection,
-                onAddSlide:    addSlide(after:),
-                onDeleteSlide: deleteSelectedSlides
-            )
-            .frame(minWidth: 200)
-        } detail: {
-            if let idx = selectedIndex {
-                SlideEdit(slide: slides[idx])
-            } else {
-                ContentUnavailableView(
-                    "Would you look at that.",
-                    systemImage: "eye"
+        GeometryReader { geo in
+            NavigationSplitView {
+                SlideList(
+                    selection:     $selection,
+                    onAddSlide:    addSlide(after:),
+                    onDeleteSlide: deleteSelectedSlides
                 )
-            }
-        }
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button(action: launchSlideshow) {
-                    Label("Play", systemImage: "play.fill")
+                .frame(
+                    minWidth: 200,
+                    idealWidth: geo.size.width * 0.25,
+                    maxWidth: geo.size.width * 0.5
+                )
+            } detail: {
+                if let idx = selectedIndex {
+                    SlideEdit(slide: slides[idx])
+                } else {
+                    ContentUnavailableView(
+                        "Would you look at that.",
+                        systemImage: "eye"
+                    )
                 }
-                .keyboardShortcut("p", modifiers: [.command, .option])
-                .disabled(selectedIndex == nil)
             }
-        }
-        .onDeleteCommand(perform: deleteSelectedSlides)
-        .onAppear {
-            AspectRatio.seedSystemAspectRatios(modelContext: modelContext)
-            // seed initial selection:
-            if selection.isEmpty, let first = slides.first {
-                selection = [ first.id ]
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button(action: launchSlideshow) {
+                        Label("Play", systemImage: "play.fill")
+                    }
+                    .keyboardShortcut("p", modifiers: [.command, .option])
+                    .disabled(selectedIndex == nil)
+                }
             }
-        }
-        .onChange(of: slides) { _, newSlides in
-            if selection.isEmpty, let first = newSlides.first {
-                selection = [ first.id ]
+            .onDeleteCommand(perform: deleteSelectedSlides)
+            .onAppear {
+                AspectRatio.seedSystemAspectRatios(modelContext: modelContext)
+                // seed initial selection:
+                if selection.isEmpty, let first = slides.first {
+                    selection = [ first.id ]
+                }
+            }
+            .onChange(of: slides) { _, newSlides in
+                if selection.isEmpty, let first = newSlides.first {
+                    selection = [ first.id ]
+                }
             }
         }
     }
