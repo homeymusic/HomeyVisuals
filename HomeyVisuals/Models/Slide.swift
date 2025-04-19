@@ -1,5 +1,3 @@
-// Models/Slide.swift
-
 import Foundation
 import CoreTransferable
 import SwiftData
@@ -9,9 +7,9 @@ import HomeyMusicKit
 @Model
 public final class Slide: Identifiable {
     @Attribute(.unique) public var id: UUID
-    public var testString:   String
-    public var isSkipped:     Bool
-    public var position:      Int
+    public var testString: String
+    public var isSkipped:  Bool
+    public var position:   Int
 
     public enum BackgroundType: Int, Codable, Sendable {
         case cameraFeed, color
@@ -22,12 +20,11 @@ public final class Slide: Identifiable {
     @Relationship(deleteRule: .nullify)
     public var aspectRatio: AspectRatio
 
-    // MARK: — Designated initializer
     @MainActor
     public init(
         aspectRatio: AspectRatio,
         backgroundType: BackgroundType = .color,
-        backgroundColor: RGBAColor = .init(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0),
+        backgroundColor: RGBAColor = .init(red: 0, green: 0, blue: 0, alpha: 1),
         isSkipped: Bool = false,
         testString: String = UUID().uuidString
     ) {
@@ -40,13 +37,6 @@ public final class Slide: Identifiable {
         self.position        = 0
     }
 
-    // MARK: — Convenience defaulting to Wide
-    @MainActor
-    public convenience init() {
-        self.init(aspectRatio: AspectRatio.wide)
-    }
-
-    // MARK: — Transferable record
     public var record: SlideRecord {
         SlideRecord(
             isSkipped:       isSkipped,
@@ -57,15 +47,11 @@ public final class Slide: Identifiable {
         )
     }
 
-    // MARK: — Rehydrate from record
     @MainActor
     public convenience init(record: SlideRecord, in context: ModelContext) {
-        // attempt to fetch the stored AspectRatio by ID
-        let fetch = FetchDescriptor<AspectRatio>(
-            predicate: #Predicate { $0.id == record.aspectRatioID }
-        )
-        let ratio = (try? context.fetch(fetch).first) ?? AspectRatio.wide
-
+        let fetch = AspectRatio.fetchDescriptor(id: record.aspectRatioID)
+        let ratio = (try? context.fetch(fetch).first)
+                  ?? AspectRatio.wide(in: context)
         self.init(
             aspectRatio:     ratio,
             backgroundType:  record.backgroundType,
@@ -75,7 +61,14 @@ public final class Slide: Identifiable {
         )
     }
 
-    // MARK: — Helpers
+    @MainActor
+    public static func create(in context: ModelContext) -> Slide {
+        let ratio = AspectRatio.wide(in: context)
+        let slide = Slide(aspectRatio: ratio)
+        context.insert(slide)
+        return slide
+    }
+
     public static func updatePositions(_ slides: [Slide]) {
         for (idx, slide) in slides.enumerated() {
             slide.position = idx + 1

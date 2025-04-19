@@ -32,3 +32,8 @@ public final class AspectRatio: Identifiable {
         self.position         = position
     }
 }
+extension AspectRatio {
+    public var isSystemRatio: Bool {
+        systemIdentifier != nil
+    }
+}

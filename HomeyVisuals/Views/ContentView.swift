@@ -48,8 +48,7 @@ struct ContentView: View {
             }
             .onDeleteCommand(perform: deleteSelectedSlides)
             .onAppear {
-                AspectRatio.seedSystemAspectRatios(modelContext: modelContext)
-                // seed initial selection:
+                AspectRatio.seedSystemAspectRatios(in: modelContext)
                 if selection.isEmpty, let first = slides.first {
                     selection = [ first.id ]
                 }
@@ -69,8 +68,7 @@ struct ContentView: View {
 
     // MARK: – Add a new slide immediately after the given ID
     private func addSlide(after id: Slide.ID?) {
-        let newSlide = Slide()
-        modelContext.insert(newSlide)
+        let newSlide = Slide.create(in: modelContext)
 
         var reordered = slides
         let insertIndex: Int

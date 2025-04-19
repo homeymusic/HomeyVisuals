@@ -1,51 +1,44 @@
 import Foundation
 import SwiftData
 
-@MainActor
 extension AspectRatio {
-    private static let wideSystemID      = "AspectRatio-Wide-0001"
-    private static let standardSystemID  = "AspectRatio-Standard-0002"
+    private static let wideID     = "AspectRatio‑Wide‑0001"
+    private static let standardID = "AspectRatio‑Standard‑0002"
 
-    /// The two built‑in aspect ratios
-    public static var wide = AspectRatio(
-        systemIdentifier: wideSystemID,
-        name: "Wide",
-        width: 16, height: 9,
-        position: 1
-    )
+    static func fetchDescriptor(systemID: String) -> FetchDescriptor<AspectRatio> {
+        let predicate: Predicate<AspectRatio> = #Predicate { $0.systemIdentifier == systemID }
+        return FetchDescriptor(predicate: predicate)
+    }
 
-    public static var standard = AspectRatio(
-        systemIdentifier: standardSystemID,
-        name: "Standard",
-        width: 4,  height: 3,
-        position: 2
-    )
+    static func fetchDescriptor(id: UUID) -> FetchDescriptor<AspectRatio> {
+        let predicate: Predicate<AspectRatio> = #Predicate { $0.id == id }
+        return FetchDescriptor(predicate: predicate)
+    }
 
-    /// Inserts or updates the two system ratios in your store
-    public static func seedSystemAspectRatios(modelContext: ModelContext) {
-        let allSystem = [wide, standard]
+    @MainActor
+    public static func seedSystemAspectRatios(in context: ModelContext) {
+        let definitions = [
+            (id: wideID,     name: "Wide",     w: 16, h: 9, pos: 1),
+            (id: standardID, name: "Standard", w: 4,  h: 3, pos: 2),
+        ]
 
-        for candidate in allSystem {
-            guard let sysID = candidate.systemIdentifier else { continue }
-            let fetchDescriptor = FetchDescriptor<AspectRatio>(
-                predicate: #Predicate { $0.systemIdentifier == sysID }
+        for def in definitions {
+            let fetch = fetchDescriptor(systemID: def.id)
+            if (try? context.fetch(fetch).first) != nil { continue }
+            let ratio = AspectRatio(
+                systemIdentifier: def.id,
+                name:             def.name,
+                width:            def.w,
+                height:           def.h,
+                position:         def.pos
             )
-            
-            guard let results = try? modelContext.fetch(fetchDescriptor) else { continue }
-
-            if let existing = results.first {
-                // unify the static var to point at the existing object
-                switch sysID {
-                case wideSystemID:
-                    AspectRatio.wide = existing
-                case standardSystemID:
-                    AspectRatio.standard = existing
-                default: break
-                }
-            } else {
-                // insert fresh
-                modelContext.insert(candidate)
-            }
+            context.insert(ratio)
         }
+    }
+
+    @MainActor
+    public static func wide(in context: ModelContext) -> AspectRatio {
+        let fetch = fetchDescriptor(systemID: wideID)
+        return (try! context.fetch(fetch).first)!
     }
 }
