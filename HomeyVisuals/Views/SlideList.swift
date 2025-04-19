@@ -29,35 +29,43 @@ struct SlideList: View {
     }
     
     private var listWithClipboard: some View {
-        List(selection: $selection) {
-            ForEach(slides) { slide in
-                NavigationLink(value: slide.id) {
-                    HStack(spacing: 3) {
-                        VStack {
-                            Spacer()
-                            Text("\(slide.position)")
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
+        ScrollViewReader { proxy in
+            List(selection: $selection) {
+                ForEach(slides) { slide in
+                    NavigationLink(value: slide.id) {
+                        HStack(spacing: 3) {
+                            VStack {
+                                Spacer()
+                                Text("\(slide.position)")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Thumbnail(
+                                content: SlideDetail(slide: slide),
+                                reloadTrigger: AnyHashable("\(slide.id)-\(slide.testString)")
+                            )
+                            .frame(maxWidth: .infinity)
+                            .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
                         }
-                        Thumbnail(
-                            content: SlideDetail(slide: slide),
-                            reloadTrigger: AnyHashable("\(slide.id)-\(slide.testString)")
-                        )
-                        .frame(maxWidth: .infinity)
-                        .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
                     }
+                    .tag(slide.id)
+                    // give each row a stable id for scrollTo
+                    .id(slide.id)
                 }
-                .tag(slide.id)
+                .onMove(perform: moveSlides)
             }
-            .onMove(perform: moveSlides)
+            .copyable(copyRecords())
+            .cuttable(for: SlideRecord.self) { performCutAndReturnRecords() }
+            .pasteDestination(for: SlideRecord.self) { performPaste($0) }
+            // whenever the selection Set changes, scroll the first ID into view
+            .onChange(of: selection) { _, newSelection in
+                guard let first = newSelection.first else { return }
+                withAnimation {
+                    proxy.scrollTo(first, anchor: .center)
+                }
+            }
         }
-        .copyable(copyRecords())
-        .cuttable(for: SlideRecord.self) {
-            performCutAndReturnRecords()
-        }
-        .pasteDestination(for: SlideRecord.self) { performPaste($0) }
     }
-    
     // MARK: – Clipboard Actions
     
     private func copyRecords() -> [SlideRecord] {

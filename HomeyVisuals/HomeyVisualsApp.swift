@@ -11,5 +11,6 @@ struct HomeyVisualsApp: App {
         ) {
             ContentView()
         }
+        .defaultSize(width: 1440, height: 900)
     }
 }
