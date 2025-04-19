@@ -39,6 +39,8 @@ struct Slideshow: View {
     private func next() {
         if index < slides.count - 1 {
             index += 1
+        } else {
+            close()
         }
     }
 
@@ -59,9 +61,34 @@ struct Slideshow: View {
     // MARK: - Close
 
     private func close() {
-        NSApp.keyWindow?.close()
+        guard let window = NSApp.keyWindow else { return }
+        
+        // pick how small you want it to get:
+        let finalSize: CGFloat = 20
+        
+        // compute a tiny rect centered in the window’s current frame:
+        let currentFrame = window.frame
+        let centerX = currentFrame.midX - finalSize/2
+        let centerY = currentFrame.midY - finalSize/2
+        let targetFrame = NSRect(x: centerX,
+                                 y: centerY,
+                                 width: finalSize,
+                                 height: finalSize)
+        
+        // ensure the window is layer‑backed so frame/alpha animations run smoothly:
+        window.contentView?.wantsLayer = true
+        window.backgroundColor = .black
+        
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 1.0
+            // simultaneously fade out…
+            window.animator().alphaValue = 0
+            // …and shrink to the tiny rect
+            window.animator().setFrame(targetFrame, display: true)
+        } completionHandler: {
+            window.close()
+        }
     }
-
     // MARK: - Presentation Helper
 
     /// Spins up a new full‑screen window running this slideshow.
