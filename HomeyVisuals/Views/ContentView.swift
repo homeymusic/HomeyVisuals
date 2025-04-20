@@ -60,7 +60,6 @@ struct ContentView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    // — Add Slide —
                     Button {
                         addSlide(after: slideSelection.first)
                     } label: {
@@ -71,7 +70,15 @@ struct ContentView: View {
                 }
                 
                 ToolbarItem(placement: .principal) {
-                    // — Play —
+                                    // — Add Text Widget —
+                                    Button(action: addTextWidget) {
+                                        Image(systemName: "character.textbox")
+                                    }
+                                    .buttonStyle(.borderless)
+                                    .disabled(selectedIndex == nil)
+                                }
+
+                ToolbarItem(placement: .principal) {
                     Button(action: launchSlideshow) {
                         Image(systemName: "play.fill")
                     }
@@ -98,6 +105,17 @@ struct ContentView: View {
     private func launchSlideshow() {
         guard let idx = selectedIndex else { return }
         Slideshow.present(slides: slides, startIndex: idx)
+    }
+    
+    private func addTextWidget() {
+        guard let idx = selectedIndex else { return }
+        let slide = slides[idx]
+        let nx = Double.random(in: 0.33...0.66)
+        let ny = Double.random(in: 0.33...0.66)
+        let textWidget = TextWidget(x: nx, y: ny, slide: slide)
+        withAnimation {
+            slide.textWidgets.append(textWidget)
+        }
     }
     
     // MARK: – Add a new slide immediately after the given ID

@@ -24,6 +24,9 @@ public final class Slide: Identifiable {
     @Relationship(deleteRule: .nullify)
     public var aspectRatio: AspectRatio
 
+    @Relationship(deleteRule: .cascade, inverse: \TextWidget.slide)
+        public var textWidgets: [TextWidget] = []
+    
     /// SwiftUI-friendly color binding
     public var backgroundColor: Color {
         get { Color(backgroundRGBAColor) }
@@ -97,7 +100,8 @@ public extension Slide {
             AnyHashable(testString),
             AnyHashable(backgroundType.rawValue),
             AnyHashable(backgroundRGBAColor),
-            AnyHashable(cameraDeviceID ?? "")
+            AnyHashable(cameraDeviceID ?? ""),
+            AnyHashable(textWidgets.map(\.self))
         ])
     }
 }

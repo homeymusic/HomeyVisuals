@@ -6,33 +6,44 @@ struct SlideDetail: View {
     let slide: Slide
 
     var body: some View {
-        ZStack {
-            // Background: color or camera
-            switch slide.backgroundType {
-            case .color:
-                slide.backgroundColor
-                    .ignoresSafeArea()
-
-            case .cameraFeed:
-                if let device = CameraView.device(for: slide.cameraDeviceID) {
-                    CameraView(device: device)
-                        .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fill)
-                        .clipped()
+        GeometryReader { geo in
+            ZStack {
+                // Background: color or camera
+                switch slide.backgroundType {
+                case .color:
+                    slide.backgroundColor
                         .ignoresSafeArea()
-                } else {
-                    Color.black
-                        .ignoresSafeArea()
+                    
+                case .cameraFeed:
+                    if let device = CameraView.device(for: slide.cameraDeviceID) {
+                        CameraView(device: device)
+                            .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fill)
+                            .clipped()
+                            .ignoresSafeArea()
+                    } else {
+                        Color.black
+                            .ignoresSafeArea()
+                    }
                 }
+                
+                // Foreground content
+                Text(slide.testString)
+                    .font(.largeTitle)
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.1)
+                    .padding()
+                
+                ForEach(slide.textWidgets, id: \.id) {widget in
+                    Text(widget.text)
+                        .position(
+                            x: geo.size.width  * widget.x,
+                            y: geo.size.height * widget.y
+                        )
+                }
+                
             }
-
-            // Foreground content
-            Text(slide.testString)
-                .font(.largeTitle)
-                .foregroundColor(.white)
-                .multilineTextAlignment(.center)
-                .lineLimit(1)
-                .minimumScaleFactor(0.1)
-                .padding()
         }
         .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
         .navigationTitle("Slide Detail")

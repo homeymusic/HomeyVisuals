@@ -8,31 +8,43 @@ struct SlideEdit: View {
     @Bindable var slide: Slide
 
     var body: some View {
-        ZStack {
-            switch slide.backgroundType {
-            case .color:
-                slide.backgroundColor
-                    .ignoresSafeArea()
-
-            case .cameraFeed:
-                if let device = CameraView.device(for: slide.cameraDeviceID) {
-                    CameraView(device: device)
-                        .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fill)
-                        .clipped()
+        GeometryReader { geo in
+            ZStack {
+                switch slide.backgroundType {
+                case .color:
+                    slide.backgroundColor
                         .ignoresSafeArea()
-                } else {
-                    Color.black
-                        .ignoresSafeArea()
+                    
+                case .cameraFeed:
+                    if let device = CameraView.device(for: slide.cameraDeviceID) {
+                        CameraView(device: device)
+                            .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fill)
+                            .clipped()
+                            .ignoresSafeArea()
+                    } else {
+                        Color.black
+                            .ignoresSafeArea()
+                    }
+                }
+                
+                TextField("Title", text: $slide.testString)
+                    .font(.largeTitle)
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.1)
+                    .padding()
+                
+                ForEach($slide.textWidgets, id: \.id) { $widget in
+                    TextField("Text", text: $widget.text)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 120)
+                        .position(
+                            x: geo.size.width  * widget.x,
+                            y: geo.size.height * widget.y
+                        )
                 }
             }
-
-            TextField("Title", text: $slide.testString)
-                .font(.largeTitle)
-                .foregroundColor(.white)
-                .multilineTextAlignment(.center)
-                .lineLimit(1)
-                .minimumScaleFactor(0.1)
-                .padding()
         }
         .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
         .navigationTitle("Edit Slide")
