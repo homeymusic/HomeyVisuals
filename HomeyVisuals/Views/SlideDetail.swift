@@ -1,41 +1,68 @@
+// SlideDetail.swift
 import SwiftUI
+import SwiftData
 import HomeyMusicKit
+import AppKit
 
-/// Read‑only slide view showing either the solid background color or live camera feed.
 struct SlideDetail: View {
-    let slide: Slide
+    @Bindable var slide: Slide
 
     var body: some View {
-        ZStack {
-            // Background: color or camera
-            switch slide.backgroundType {
-            case .color:
-                slide.backgroundColor
-                    .ignoresSafeArea()
+        GeometryReader { geo in
+            let aspect = CGFloat(slide.aspectRatio.ratio)
+            let devSize = deviceSlideSize(aspect: aspect)
+            let scale   = min(geo.size.width  / devSize.width,
+                              geo.size.height / devSize.height)
+            let displaySize = CGSize(width:  devSize.width  * scale,
+                                     height: devSize.height * scale)
+            let offsetX = (geo.size.width  - displaySize.width)  / 2
+            let offsetY = (geo.size.height - displaySize.height) / 2
 
-            case .cameraFeed:
-                if let device = CameraView.device(for: slide.cameraDeviceID) {
-                    CameraView(device: device)
-                        .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fill)
-                        .clipped()
+            ZStack {
+                // Background
+                switch slide.backgroundType {
+                case .color:
+                    slide.backgroundColor
                         .ignoresSafeArea()
-                } else {
-                    Color.black
-                        .ignoresSafeArea()
+                case .cameraFeed:
+                    if let device = CameraView.device(for: slide.cameraDeviceID) {
+                        CameraView(device: device)
+                            .aspectRatio(aspect, contentMode: .fill)
+                            .clipped()
+                    } else {
+                        Color.black
+                    }
+                }
+
+                // Title
+                Text(slide.testString)
+                    .font(.largeTitle)
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.1)
+                    .frame(width: displaySize.width,
+                           height: displaySize.height,
+                           alignment: .center)
+
+                // Widgets
+                ForEach(slide.textWidgets) { widget in
+                    Text(widget.text)
+                        .font(.body)
+                        .padding(6)
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(4)
+                        .position(
+                            x: offsetX + displaySize.width  * widget.x,
+                            y: offsetY + displaySize.height * widget.y
+                        )
                 }
             }
-
-            // Foreground content
-            Text(slide.testString)
-                .font(.largeTitle)
-                .foregroundColor(.white)
-                .multilineTextAlignment(.center)
-                .lineLimit(1)
-                .minimumScaleFactor(0.1)
-                .padding()
+            .frame(width: displaySize.width,
+                   height: displaySize.height)
+            .position(x: geo.size.width/2,
+                      y: geo.size.height/2)
         }
-        .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
         .navigationTitle("Slide Detail")
     }
 }
-

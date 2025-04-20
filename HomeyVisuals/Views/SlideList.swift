@@ -1,3 +1,4 @@
+// SlideList.swift
 import SwiftUI
 import SwiftData
 import CoreTransferable
@@ -7,16 +8,12 @@ import HomeyMusicKit
 struct SlideList: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: [SortDescriptor(\Slide.position)]) private var slides: [Slide]
-    
+
     @Binding var selection: Set<Slide.ID>
     var onAddSlide: (Slide.ID?) -> Void
     var onDeleteSlide: () -> Void
-    
+
     var body: some View {
-        listWithClipboard
-    }
-    
-    private var listWithClipboard: some View {
         ScrollViewReader { proxy in
             List(selection: $selection) {
                 ForEach(slides) { slide in
@@ -30,11 +27,11 @@ struct SlideList: View {
                             }
 
                             Thumbnail(
-                                content: SlideThumbnailContent(slide: slide),
-                                reloadTrigger: slide.thumbnailReloadTrigger
+                                content: SlideDetail(slide: slide),
+                                reloadTrigger: slide.thumbnailReloadTrigger,
+                                aspect: CGFloat(slide.aspectRatio.ratio)
                             )
                             .frame(maxWidth: .infinity)
-                            .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
                         }
                     }
                     .tag(slide.id)
@@ -46,9 +43,8 @@ struct SlideList: View {
             .cuttable(for: SlideRecord.self) { performCutAndReturnRecords() }
             .pasteDestination(for: SlideRecord.self) { performPaste($0) }
             .onChange(of: selection) { _, newSelection in
-                guard let first = newSelection.first else { return }
-                withAnimation {
-                    proxy.scrollTo(first, anchor: .center)
+                if let first = newSelection.first {
+                    withAnimation { proxy.scrollTo(first, anchor: .center) }
                 }
             }
         }
@@ -70,8 +66,8 @@ struct SlideList: View {
         let insertAt = slides.firstIndex(where: { selection.contains($0.id) })
             .map { $0 + 1 } ?? reordered.count
 
-        var cursor = insertAt
         var lastID: Slide.ID?
+        var cursor = insertAt
 
         for rec in records {
             let newSlide = Slide(record: rec, in: modelContext)
@@ -98,50 +94,3 @@ struct SlideList: View {
         }
     }
 }
-
-// MARK: – Array Safe Indexing
-
-private extension Array {
-    subscript(safe idx: Int) -> Element? {
-        indices.contains(idx) ? self[idx] : nil
-    }
-}
-
-struct SlideThumbnailContent: View {
-    let slide: Slide
-
-    var body: some View {
-        ZStack {
-            switch slide.backgroundType
-            {
-                case .color:
-                slide.backgroundColor
-                    .ignoresSafeArea()
-                case .cameraFeed:
-                Color(.black)                
-                GeometryReader { geom in
-                    let ratio: CGFloat = CGFloat(1 / HomeyMusicKit.goldenRatio)
-                    let side = min(geom.size.width, geom.size.height) * ratio
-                    
-                    Image(systemName: "video.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: side, height: side)
-                        .foregroundStyle(.white)
-                        .position(x: geom.size.width/2, y: geom.size.height/2)
-                }
-            }
-
-            // Overlay the slide’s title
-            Text(slide.testString)
-                .font(.largeTitle)
-                .foregroundColor(.white)
-                .multilineTextAlignment(.center)
-                .lineLimit(1)
-                .minimumScaleFactor(0.1)
-                .padding()
-        }
-        .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
-    }
-}
-

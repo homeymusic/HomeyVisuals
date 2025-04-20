@@ -71,6 +71,15 @@ struct ContentView: View {
                 }
                 
                 ToolbarItem(placement: .principal) {
+                    // — Add Text Widget —
+                    Button(action: addTextWidget) {
+                        Image(systemName: "character.textbox")
+                    }
+                    .buttonStyle(.borderless)
+                    .disabled(selectedIndex == nil)
+                }
+
+                ToolbarItem(placement: .principal) {
                     // — Play —
                     Button(action: launchSlideshow) {
                         Image(systemName: "play.fill")
@@ -79,6 +88,7 @@ struct ContentView: View {
                     .keyboardShortcut("p", modifiers: [.command, .option])
                     .disabled(selectedIndex == nil)
                 }
+                
             }
             .onDeleteCommand(perform: deleteSelectedSlides)
             .onAppear {
@@ -98,6 +108,17 @@ struct ContentView: View {
     private func launchSlideshow() {
         guard let idx = selectedIndex else { return }
         Slideshow.present(slides: slides, startIndex: idx)
+    }
+    
+    private func addTextWidget() {
+        guard let idx = selectedIndex else { return }
+        let slide = slides[idx]
+        let nx = Double.random(in: 0.33...0.66)
+        let ny = Double.random(in: 0.33...0.66)
+        let textWidget = TextWidget(x: nx, y: ny, slide: slide)
+        withAnimation {
+            modelContext.insert(textWidget)
+        }
     }
     
     // MARK: – Add a new slide immediately after the given ID

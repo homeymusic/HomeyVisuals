@@ -35,7 +35,7 @@ public struct CameraView: NSViewRepresentable {
     /// Which device types to show on each platform
     private static var deviceTypes: [AVCaptureDevice.DeviceType] {
     #if os(macOS)
-        return [.builtInWideAngleCamera, .externalUnknown]
+        return [.builtInWideAngleCamera, .external]
     #else
         return [.builtInWideAngleCamera, .builtInUltraWideCamera, .builtInTelephotoCamera]
     #endif
