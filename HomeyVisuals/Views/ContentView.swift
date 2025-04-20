@@ -64,7 +64,7 @@ struct ContentView: View {
                     .keyboardShortcut("n", modifiers: [.shift, .command])
                 }
                 
-                ToolbarItem(placement: .primaryAction) {
+                ToolbarItem(placement: .principal) {
                     // — Play —
                     Button(action: launchSlideshow) {
                         VStack(spacing: 10) {
