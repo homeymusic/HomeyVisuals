@@ -1,5 +1,4 @@
 import SwiftUI
-import HomeyMusicKit
 
 struct Thumbnail<Content: View>: View {
     let content: Content

@@ -32,7 +32,7 @@ struct SlideList: View {
                             }
                             Thumbnail(
                                 content: SlideDetail(slide: slide),
-                                reloadTrigger: AnyHashable("\(slide.id)-\(slide.testString)")
+                                reloadTrigger: slide.thumbnailReloadTrigger
                             )
                             .frame(maxWidth: .infinity)
                             .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)

@@ -4,9 +4,14 @@ import HomeyMusicKit
 
 struct SlideInspect: View {
     @Bindable var slide: Slide
-    
+
     var body: some View {
-        Text("Hi")
-            .navigationTitle("Inspect Slide")
+        Form {
+            Section("Appearance") {
+                ColorPicker("Background", selection: $slide.backgroundColor)
+            }
+        }
+        .navigationTitle("Inspect Slide")
+        .padding()
     }
 }

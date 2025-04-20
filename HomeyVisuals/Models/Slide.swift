@@ -3,38 +3,46 @@ import CoreTransferable
 import SwiftData
 import UniformTypeIdentifiers
 import HomeyMusicKit
+import SwiftUI
 
 @Model
 public final class Slide: Identifiable {
     @Attribute(.unique) public var id: UUID
     public var testString: String
-    public var isSkipped:  Bool
-    public var position:   Int
+    public var isSkipped: Bool
+    public var position: Int
 
     public enum BackgroundType: Int, Codable, Sendable {
         case cameraFeed, color
     }
-    public var backgroundType:  BackgroundType
-    public var backgroundColor: RGBAColor
+    public var backgroundType: BackgroundType
+    /// Stored RGBA color for persistence
+    public var backgroundRGBAColor: RGBAColor
 
     @Relationship(deleteRule: .nullify)
     public var aspectRatio: AspectRatio
+
+    /// SwiftUI-friendly color binding
+    public var backgroundColor: Color {
+        get { Color(backgroundRGBAColor) }
+        set { backgroundRGBAColor = RGBAColor(newValue) }
+    }
 
     @MainActor
     public init(
         aspectRatio: AspectRatio,
         backgroundType: BackgroundType = .color,
-        backgroundColor: RGBAColor = .init(red: 0, green: 0, blue: 0, alpha: 1),
+        backgroundRGBAColor: RGBAColor = .init(red: 0, green: 0, blue: 0, alpha: 1),
         isSkipped: Bool = false,
         testString: String = UUID().uuidString
     ) {
-        self.id              = UUID()
-        self.aspectRatio     = aspectRatio
-        self.backgroundType  = backgroundType
-        self.backgroundColor = backgroundColor
-        self.isSkipped       = isSkipped
-        self.testString      = testString
-        self.position        = 0
+        self.id                  = UUID()
+        self.aspectRatio         = aspectRatio
+        self.backgroundType      = backgroundType
+        self.backgroundRGBAColor = backgroundRGBAColor
+        self.isSkipped           = isSkipped
+        self.testString          = testString
+        self.position            = 0
     }
 
     public var record: SlideRecord {
@@ -42,7 +50,7 @@ public final class Slide: Identifiable {
             isSkipped:       isSkipped,
             testString:      testString,
             backgroundType:  backgroundType,
-            backgroundColor: backgroundColor,
+            backgroundColor: backgroundRGBAColor,
             aspectRatioID:   aspectRatio.id
         )
     }
@@ -53,11 +61,11 @@ public final class Slide: Identifiable {
         let ratio = (try? context.fetch(fetch).first)
                   ?? AspectRatio.wide(in: context)
         self.init(
-            aspectRatio:     ratio,
-            backgroundType:  record.backgroundType,
-            backgroundColor: record.backgroundColor,
-            isSkipped:       record.isSkipped,
-            testString:      record.testString
+            aspectRatio:          ratio,
+            backgroundType:       record.backgroundType,
+            backgroundRGBAColor:  record.backgroundColor,
+            isSkipped:            record.isSkipped,
+            testString:           record.testString
         )
     }
 
@@ -73,5 +81,14 @@ public final class Slide: Identifiable {
         for (idx, slide) in slides.enumerated() {
             slide.position = idx + 1
         }
+    }
+}
+public extension Slide {
+    var thumbnailReloadTrigger: AnyHashable {
+        AnyHashable([
+            AnyHashable(id),
+            AnyHashable(testString),
+            AnyHashable(backgroundRGBAColor)
+        ])
     }
 }
