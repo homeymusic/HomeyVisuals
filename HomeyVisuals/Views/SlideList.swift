@@ -30,7 +30,7 @@ struct SlideList: View {
                             }
 
                             Thumbnail(
-                                content: SlideThumbnailContent(slide: slide),
+                                content: SlideThumbnail(slide: slide),
                                 reloadTrigger: slide.thumbnailReloadTrigger
                             )
                             .frame(maxWidth: .infinity)
@@ -107,7 +107,7 @@ private extension Array {
     }
 }
 
-struct SlideThumbnailContent: View {
+struct SlideThumbnail: View {
     let slide: Slide
 
     var body: some View {
@@ -131,15 +131,9 @@ struct SlideThumbnailContent: View {
                         .position(x: geom.size.width/2, y: geom.size.height/2)
                 }
             }
-
-            // Overlay the slide’s title
-            Text(slide.testString)
-                .font(.largeTitle)
-                .foregroundColor(.white)
-                .multilineTextAlignment(.center)
-                .lineLimit(1)
-                .minimumScaleFactor(0.1)
-                .padding()
+            
+            SlideDetail(slide: slide)
+            
         }
         .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
     }
