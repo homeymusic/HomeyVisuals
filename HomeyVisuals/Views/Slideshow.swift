@@ -96,7 +96,7 @@ struct Slideshow: View {
     /// Spins up a new full‑screen window running this slideshow.
     static func present(slides: [Slide], startIndex: Int) {
         let view    = Slideshow(slides: slides, startIndex: startIndex)
-        let hosting = NSHostingController(rootView: view.ignoresSafeArea())
+        let hosting = NSHostingController(rootView: view)
 
         let screenFrame = NSScreen.screens.first?.frame ?? .zero
         let window = NSWindow(

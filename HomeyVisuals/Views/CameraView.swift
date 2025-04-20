@@ -1,5 +1,6 @@
 import SwiftUI
 import AVFoundation
+import HomeyMusicKit
 
 /// A full‑screen (or cropped) live camera feed.
 public struct CameraView: NSViewRepresentable {
@@ -56,3 +57,24 @@ public struct CameraView: NSViewRepresentable {
         return availableDevices.first { $0.uniqueID == id }
     }
 }
+
+
+struct VideoIcon: View {
+    var body: some View {
+        ZStack {
+            Color(.black)
+            GeometryReader { geom in
+                let ratio: CGFloat = CGFloat(1 / HomeyMusicKit.goldenRatio)
+                let side = min(geom.size.width, geom.size.height) * ratio
+                
+                Image(systemName: "video.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: side, height: side)
+                    .foregroundStyle(.white)
+                    .position(x: geom.size.width/2, y: geom.size.height/2)
+            }
+        }
+    }
+}
+

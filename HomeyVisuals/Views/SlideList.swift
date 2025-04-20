@@ -28,10 +28,10 @@ struct SlideList: View {
                                     .font(.caption2)
                                     .foregroundStyle(.secondary)
                             }
-
+                            
                             Thumbnail(
-                                content: SlideThumbnail(slide: slide),
-                                reloadTrigger: slide.thumbnailReloadTrigger
+                              content: SlideDetail(slide: slide, isThumbnail: true),
+                              reloadTrigger: slide.thumbnailReloadTrigger
                             )
                             .frame(maxWidth: .infinity)
                             .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
@@ -104,38 +104,6 @@ struct SlideList: View {
 private extension Array {
     subscript(safe idx: Int) -> Element? {
         indices.contains(idx) ? self[idx] : nil
-    }
-}
-
-struct SlideThumbnail: View {
-    let slide: Slide
-
-    var body: some View {
-        ZStack {
-            switch slide.backgroundType
-            {
-                case .color:
-                slide.backgroundColor
-                    .ignoresSafeArea()
-                case .cameraFeed:
-                Color(.black)                
-                GeometryReader { geom in
-                    let ratio: CGFloat = CGFloat(1 / HomeyMusicKit.goldenRatio)
-                    let side = min(geom.size.width, geom.size.height) * ratio
-                    
-                    Image(systemName: "video.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: side, height: side)
-                        .foregroundStyle(.white)
-                        .position(x: geom.size.width/2, y: geom.size.height/2)
-                }
-            }
-            
-            SlideDetail(slide: slide)
-            
-        }
-        .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
     }
 }
 

@@ -13,17 +13,14 @@ struct SlideEdit: View {
                 switch slide.backgroundType {
                 case .color:
                     slide.backgroundColor
-                        .ignoresSafeArea()
                     
                 case .cameraFeed:
                     if let device = CameraView.device(for: slide.cameraDeviceID) {
                         CameraView(device: device)
                             .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fill)
                             .clipped()
-                            .ignoresSafeArea()
                     } else {
-                        Color.black
-                            .ignoresSafeArea()
+                        VideoIcon()
                     }
                 }
                 

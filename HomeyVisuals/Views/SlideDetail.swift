@@ -4,7 +4,13 @@ import HomeyMusicKit
 /// Read‑only slide view showing either the solid background color or live camera feed.
 struct SlideDetail: View {
     let slide: Slide
+    let isThumbnail: Bool
 
+    init(slide: Slide, isThumbnail: Bool = false) {
+      self.slide = slide
+      self.isThumbnail = isThumbnail
+    }
+    
     var body: some View {
         GeometryReader { geo in
             ZStack {
@@ -12,20 +18,10 @@ struct SlideDetail: View {
                 switch slide.backgroundType {
                 case .color:
                     slide.backgroundColor
-                        .ignoresSafeArea()
-                    
                 case .cameraFeed:
-                    if let device = CameraView.device(for: slide.cameraDeviceID) {
-                        CameraView(device: device)
-                            .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fill)
-                            .clipped()
-                            .ignoresSafeArea()
-                    } else {
-                        Color.black
-                            .ignoresSafeArea()
-                    }
+                    CameraFeed(slide: slide, isThumbnail: isThumbnail)
                 }
-                
+
                 // Foreground content
                 Text(slide.testString)
                     .font(.largeTitle)
@@ -46,7 +42,25 @@ struct SlideDetail: View {
             }
         }
         .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
-        .navigationTitle("Slide Detail")
     }
 }
 
+struct CameraFeed: View {
+    let slide: Slide
+    let isThumbnail: Bool
+
+    var body: some View {
+        
+        if isThumbnail {
+            VideoIcon()
+        } else {
+            if let device = CameraView.device(for: slide.cameraDeviceID) {
+                CameraView(device: device)
+                    .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fill)
+                    .clipped()
+            } else {
+                VideoIcon()
+            }
+        }
+    }
+}
