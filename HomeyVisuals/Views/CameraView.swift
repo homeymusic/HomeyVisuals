@@ -62,7 +62,7 @@ public struct CameraView: NSViewRepresentable {
 struct VideoIcon: View {
     var body: some View {
         ZStack {
-            Color(.black)
+            Color.systemGray
             GeometryReader { geom in
                 let ratio: CGFloat = CGFloat(1 / HomeyMusicKit.goldenRatio)
                 let side = min(geom.size.width, geom.size.height) * ratio
@@ -71,7 +71,7 @@ struct VideoIcon: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: side, height: side)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Color.systemGray6)
                     .position(x: geom.size.width/2, y: geom.size.height/2)
             }
         }

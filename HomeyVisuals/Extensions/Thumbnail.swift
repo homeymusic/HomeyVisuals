@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct Thumbnail<Content: View>: View {
+    @Environment(\.colorScheme) private var colorScheme
     let content: Content
     let reloadTrigger: AnyHashable
     
@@ -27,6 +28,7 @@ struct Thumbnail<Content: View>: View {
         let renderSize = traditionalRenderSize(for: size)
         let renderer = ImageRenderer(content:
                                         content
+            .environment(\.colorScheme, colorScheme)
             .frame(width:  renderSize.width,
                    height: renderSize.height)
         )

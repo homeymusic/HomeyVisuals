@@ -5,15 +5,9 @@ import SwiftData
 @Model
 public class TextWidget: Widget {
     @Attribute(.unique) public var id: UUID = UUID()
-    @Attribute public var x: Double {
-        didSet { slide?.bumpVersion() }
-      }
-    @Attribute public var y: Double {
-        didSet { slide?.bumpVersion() }
-      }
-    @Attribute public var text: String {
-        didSet { slide?.bumpVersion() }
-      }
+    @Attribute public var x: Double
+    @Attribute public var y: Double
+    @Attribute public var text: String
     
     public var slide: Slide?
 
@@ -23,7 +17,6 @@ public class TextWidget: Widget {
         self.y = y
         self.text = text
         self.slide = slide
-        slide.bumpVersion()
     }
 
 }
