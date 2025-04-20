@@ -7,10 +7,10 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: [SortDescriptor(\Slide.position)]) private var slides: [Slide]
     
-    @State private var selection = Set<Slide.ID>()
+    @State private var slideSelection = Set<Slide.ID>()
     
     private var selectedIndex: Int? {
-        guard let id = selection.first else { return nil }
+        guard let id = slideSelection.first else { return nil }
         return slides.firstIndex(where: { $0.id == id })
     }
     
@@ -18,7 +18,7 @@ struct ContentView: View {
         GeometryReader { geo in
             NavigationSplitView {
                 SlideList(
-                    selection:     $selection,
+                    selection:     $slideSelection,
                     onAddSlide:    addSlide(after:),
                     onDeleteSlide: deleteSelectedSlides
                 )
@@ -40,25 +40,31 @@ struct ContentView: View {
                         "Would you look at that.",
                         systemImage: "eye"
                     )
+                    .navigationSplitViewColumnWidth(
+                        min: geo.size.width * 0.5,
+                        ideal: geo.size.width * 0.8,
+                        max: geo.size.width * 0.9
+                    )
                 }
             } detail: {
-                ContentUnavailableView(
-                    "Hello",
-                    systemImage: "eye"
-                )
-                .navigationSplitViewColumnWidth(270)
+                if let idx = selectedIndex {
+                    SlideInspect(slide: slides[idx])
+                        .navigationSplitViewColumnWidth(270)
+                } else {
+                    ContentUnavailableView(
+                        "Would you look at that.",
+                        systemImage: "eye"
+                    )
+                    .navigationSplitViewColumnWidth(270)
+                }
             }
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     // — Add Slide —
                     Button {
-                        addSlide(after: selection.first)
+                        addSlide(after: slideSelection.first)
                     } label: {
-                        VStack(spacing: 10) {
-                            Image(systemName: "plus.rectangle")
-                            Text("Add Slide")
-                                .font(.caption)
-                        }
+                        Image(systemName: "plus.rectangle")
                     }
                     .buttonStyle(.borderless)
                     .keyboardShortcut("n", modifiers: [.shift, .command])
@@ -67,11 +73,7 @@ struct ContentView: View {
                 ToolbarItem(placement: .principal) {
                     // — Play —
                     Button(action: launchSlideshow) {
-                        VStack(spacing: 10) {
-                            Image(systemName: "play.fill")
-                            Text("Play")
-                                .font(.caption)
-                        }
+                        Image(systemName: "play.fill")
                     }
                     .buttonStyle(.borderless)
                     .keyboardShortcut("p", modifiers: [.command, .option])
@@ -81,13 +83,13 @@ struct ContentView: View {
             .onDeleteCommand(perform: deleteSelectedSlides)
             .onAppear {
                 AspectRatio.seedSystemAspectRatios(in: modelContext)
-                if selection.isEmpty, let first = slides.first {
-                    selection = [ first.id ]
+                if slideSelection.isEmpty, let first = slides.first {
+                    slideSelection = [ first.id ]
                 }
             }
             .onChange(of: slides) { _, newSlides in
-                if selection.isEmpty, let first = newSlides.first {
-                    selection = [ first.id ]
+                if slideSelection.isEmpty, let first = newSlides.first {
+                    slideSelection = [ first.id ]
                 }
             }
         }
@@ -114,12 +116,12 @@ struct ContentView: View {
         }
         reordered.insert(newSlide, at: insertIndex)
         Slide.updatePositions(reordered)
-        selection = [ newSlide.id ]
+        slideSelection = [ newSlide.id ]
     }
     
     // MARK: – Delete all selected slides
     private func deleteSelectedSlides() {
-        let toDelete = slides.filter { selection.contains($0.id) }
+        let toDelete = slides.filter { slideSelection.contains($0.id) }
         guard !toDelete.isEmpty else { return }
         
         let all        = slides
@@ -136,12 +138,12 @@ struct ContentView: View {
         
         withAnimation {
             toDelete.forEach(modelContext.delete)
-            let remaining = slides.filter { !selection.contains($0.id) }
+            let remaining = slides.filter { !slideSelection.contains($0.id) }
             Slide.updatePositions(remaining)
             
-            selection.removeAll()
+            slideSelection.removeAll()
             if let keep = nextID {
-                selection.insert(keep)
+                slideSelection.insert(keep)
             }
         }
     }
