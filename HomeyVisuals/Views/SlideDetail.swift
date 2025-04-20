@@ -46,22 +46,3 @@ struct SlideDetail: View {
     }
 }
 
-struct CameraFeed: View {
-    let slide: Slide
-    let isThumbnail: Bool
-
-    var body: some View {
-        
-        if isThumbnail {
-            VideoIcon()
-        } else {
-            if let device = CameraView.device(for: slide.cameraDeviceID) {
-                CameraView(device: device)
-                    .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fill)
-                    .clipped()
-            } else {
-                VideoIcon()
-            }
-        }
-    }
-}

@@ -58,16 +58,42 @@ public struct CameraView: NSViewRepresentable {
     }
 }
 
+struct CameraFeed: View {
+    let slide: Slide
+    let isThumbnail: Bool
+
+    var body: some View {
+        if let device = CameraView.device(for: slide.cameraDeviceID) {
+            if isThumbnail {
+                VideoIcon()
+            } else {
+                CameraView(device: device)
+                    .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fill)
+                    .clipped()
+            }
+        } else {
+            VideoIcon(isSlashed: true)
+        }
+    }
+
+}
 
 struct VideoIcon: View {
+    let isSlashed: Bool
+    
+    init(isSlashed: Bool = false) {
+        self.isSlashed = isSlashed
+    }
+    
     var body: some View {
+        let symbolSystemName = isSlashed ? "video.slash.fill" : "video.fill"
         ZStack {
             Color.systemGray
             GeometryReader { geom in
                 let ratio: CGFloat = CGFloat(1 / HomeyMusicKit.goldenRatio)
                 let side = min(geom.size.width, geom.size.height) * ratio
                 
-                Image(systemName: "video.fill")
+                Image(systemName: symbolSystemName)
                     .resizable()
                     .scaledToFit()
                     .frame(width: side, height: side)

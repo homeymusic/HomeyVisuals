@@ -15,13 +15,7 @@ struct SlideEdit: View {
                     slide.backgroundColor
                     
                 case .cameraFeed:
-                    if let device = CameraView.device(for: slide.cameraDeviceID) {
-                        CameraView(device: device)
-                            .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fill)
-                            .clipped()
-                    } else {
-                        VideoIcon()
-                    }
+                    CameraFeed(slide: slide, isThumbnail: false)
                 }
                 
                 TextField("Title", text: $slide.testString)
