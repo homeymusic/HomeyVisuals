@@ -18,6 +18,8 @@ public final class Slide: Identifiable {
     public var backgroundType: BackgroundType
     /// Stored RGBA color for persistence
     public var backgroundRGBAColor: RGBAColor
+    /// Stored selected camera device unique ID
+    public var cameraDeviceID: String?
 
     @Relationship(deleteRule: .nullify)
     public var aspectRatio: AspectRatio
@@ -33,16 +35,18 @@ public final class Slide: Identifiable {
         aspectRatio: AspectRatio,
         backgroundType: BackgroundType = .color,
         backgroundRGBAColor: RGBAColor = .init(red: 0, green: 0, blue: 0, alpha: 1),
+        cameraDeviceID: String? = nil,
         isSkipped: Bool = false,
         testString: String = UUID().uuidString
     ) {
-        self.id                  = UUID()
-        self.aspectRatio         = aspectRatio
-        self.backgroundType      = backgroundType
+        self.id = UUID()
+        self.aspectRatio = aspectRatio
+        self.backgroundType = backgroundType
         self.backgroundRGBAColor = backgroundRGBAColor
-        self.isSkipped           = isSkipped
-        self.testString          = testString
-        self.position            = 0
+        self.cameraDeviceID = cameraDeviceID
+        self.isSkipped = isSkipped
+        self.testString = testString
+        self.position = 0
     }
 
     public var record: SlideRecord {
@@ -52,6 +56,7 @@ public final class Slide: Identifiable {
             backgroundType:  backgroundType,
             backgroundColor: backgroundRGBAColor,
             aspectRatioID:   aspectRatio.id
+            // TODO: include cameraDeviceID once SlideRecord is updated
         )
     }
 
@@ -61,11 +66,12 @@ public final class Slide: Identifiable {
         let ratio = (try? context.fetch(fetch).first)
                   ?? AspectRatio.wide(in: context)
         self.init(
-            aspectRatio:          ratio,
-            backgroundType:       record.backgroundType,
-            backgroundRGBAColor:  record.backgroundColor,
-            isSkipped:            record.isSkipped,
-            testString:           record.testString
+            aspectRatio:         ratio,
+            backgroundType:      record.backgroundType,
+            backgroundRGBAColor: record.backgroundColor,
+            cameraDeviceID:      nil, // TODO: read from record once updated
+            isSkipped:           record.isSkipped,
+            testString:          record.testString
         )
     }
 
@@ -83,12 +89,15 @@ public final class Slide: Identifiable {
         }
     }
 }
+
 public extension Slide {
     var thumbnailReloadTrigger: AnyHashable {
         AnyHashable([
             AnyHashable(id),
             AnyHashable(testString),
-            AnyHashable(backgroundRGBAColor)
+            AnyHashable(backgroundType.rawValue),
+            AnyHashable(backgroundRGBAColor),
+            AnyHashable(cameraDeviceID ?? "")
         ])
     }
 }
