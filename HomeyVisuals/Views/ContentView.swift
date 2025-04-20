@@ -22,20 +22,31 @@ struct ContentView: View {
                     onAddSlide:    addSlide(after:),
                     onDeleteSlide: deleteSelectedSlides
                 )
-                .frame(
-                    minWidth: 200,
-                    idealWidth: geo.size.width * 0.25,
-                    maxWidth: geo.size.width * 0.5
+                .navigationSplitViewColumnWidth(
+                    min: 170,
+                    ideal: 170,
+                    max: 340
                 )
-            } detail: {
+            } content: {
                 if let idx = selectedIndex {
                     SlideEdit(slide: slides[idx])
+                        .navigationSplitViewColumnWidth(
+                            min: geo.size.width * 0.5,
+                            ideal: geo.size.width * 0.8,
+                            max: geo.size.width * 0.9
+                        )
                 } else {
                     ContentUnavailableView(
                         "Would you look at that.",
                         systemImage: "eye"
                     )
                 }
+            } detail: {
+                ContentUnavailableView(
+                    "Hello",
+                    systemImage: "eye"
+                )
+                .navigationSplitViewColumnWidth(270)
             }
             .toolbar {
                 ToolbarItem(placement: .principal) {
