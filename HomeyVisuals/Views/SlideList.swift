@@ -1,5 +1,3 @@
-// HomeyVisuals/Views/SlideList.swift
-
 import SwiftUI
 import SwiftData
 import CoreTransferable
@@ -30,8 +28,9 @@ struct SlideList: View {
                                     .font(.caption2)
                                     .foregroundStyle(.secondary)
                             }
+
                             Thumbnail(
-                                content: SlideDetail(slide: slide),
+                                content: SlideThumbnailContent(slide: slide),
                                 reloadTrigger: slide.thumbnailReloadTrigger
                             )
                             .frame(maxWidth: .infinity)
@@ -39,7 +38,6 @@ struct SlideList: View {
                         }
                     }
                     .tag(slide.id)
-                    // give each row a stable id for scrollTo
                     .id(slide.id)
                 }
                 .onMove(perform: moveSlides)
@@ -47,7 +45,6 @@ struct SlideList: View {
             .copyable(copyRecords())
             .cuttable(for: SlideRecord.self) { performCutAndReturnRecords() }
             .pasteDestination(for: SlideRecord.self) { performPaste($0) }
-            // whenever the selection Set changes, scroll the first ID into view
             .onChange(of: selection) { _, newSelection in
                 guard let first = newSelection.first else { return }
                 withAnimation {
@@ -56,29 +53,26 @@ struct SlideList: View {
             }
         }
     }
-    // MARK: – Clipboard Actions
-    
+
     private func copyRecords() -> [SlideRecord] {
-        slides
-            .filter { selection.contains($0.id) }
-            .map(\.record)
+        slides.filter { selection.contains($0.id) }.map(\.record)
     }
-    
+
     private func performCutAndReturnRecords() -> [SlideRecord] {
         let recs = copyRecords()
         onDeleteSlide()
         selection.removeAll()
         return recs
     }
-    
+
     private func performPaste(_ records: [SlideRecord]) {
         var reordered = slides
         let insertAt = slides.firstIndex(where: { selection.contains($0.id) })
             .map { $0 + 1 } ?? reordered.count
-        
+
         var cursor = insertAt
         var lastID: Slide.ID?
-        
+
         for rec in records {
             let newSlide = Slide(record: rec, in: modelContext)
             modelContext.insert(newSlide)
@@ -86,16 +80,14 @@ struct SlideList: View {
             lastID = newSlide.id
             cursor += 1
         }
-        
+
         Slide.updatePositions(reordered)
         selection.removeAll()
         if let pick = lastID {
             selection.insert(pick)
         }
     }
-    
-    // MARK: – Reordering
-    
+
     private func moveSlides(fromOffsets source: IndexSet, toOffset destination: Int) {
         var reordered = slides
         let moved = source.map { slides[$0] }
@@ -114,3 +106,42 @@ private extension Array {
         indices.contains(idx) ? self[idx] : nil
     }
 }
+
+struct SlideThumbnailContent: View {
+    let slide: Slide
+
+    var body: some View {
+        ZStack {
+            switch slide.backgroundType
+            {
+                case .color:
+                slide.backgroundColor
+                    .ignoresSafeArea()
+                case .cameraFeed:
+                Color(.black)                
+                GeometryReader { geom in
+                    let ratio: CGFloat = CGFloat(1 / HomeyMusicKit.goldenRatio)
+                    let side = min(geom.size.width, geom.size.height) * ratio
+                    
+                    Image(systemName: "video.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: side, height: side)
+                        .foregroundStyle(.white)
+                        .position(x: geom.size.width/2, y: geom.size.height/2)
+                }
+            }
+
+            // Overlay the slide’s title
+            Text(slide.testString)
+                .font(.largeTitle)
+                .foregroundColor(.white)
+                .multilineTextAlignment(.center)
+                .lineLimit(1)
+                .minimumScaleFactor(0.1)
+                .padding()
+        }
+        .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
+    }
+}
+
