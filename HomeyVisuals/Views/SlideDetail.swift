@@ -1,24 +1,41 @@
 import SwiftUI
 import HomeyMusicKit
 
+/// Read‑only slide view showing either the solid background color or live camera feed.
 struct SlideDetail: View {
     let slide: Slide
 
     var body: some View {
         ZStack {
-            ZStack {
-                Color(slide.backgroundColor)
+            // Background: color or camera
+            switch slide.backgroundType {
+            case .color:
+                slide.backgroundColor
+                    .ignoresSafeArea()
 
-                Text(slide.testString)
-                    .font(.largeTitle)
-                    .foregroundColor(.white)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.1)
-                    .padding()
+            case .cameraFeed:
+                if let device = CameraView.device(for: slide.cameraDeviceID) {
+                    CameraView(device: device)
+                        .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fill)
+                        .clipped()
+                        .ignoresSafeArea()
+                } else {
+                    Color.black
+                        .ignoresSafeArea()
+                }
             }
-            .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
-            .navigationTitle("Slide Detail")
+
+            // Foreground content
+            Text(slide.testString)
+                .font(.largeTitle)
+                .foregroundColor(.white)
+                .multilineTextAlignment(.center)
+                .lineLimit(1)
+                .minimumScaleFactor(0.1)
+                .padding()
         }
+        .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
+        .navigationTitle("Slide Detail")
     }
 }
+

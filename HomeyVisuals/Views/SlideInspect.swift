@@ -6,23 +6,10 @@ import AVFoundation
 struct SlideInspect: View {
     @Bindable var slide: Slide
 
-    // Only wide‑angle & external on macOS; include ultra‑wide/telephoto on iOS.
-    private var videoDevices: [AVCaptureDevice] {
-        let types: [AVCaptureDevice.DeviceType] = [
-            .builtInWideAngleCamera,
-            .external
-        ]
-
-        return AVCaptureDevice.DiscoverySession(
-            deviceTypes: types,
-            mediaType: .video,
-            position: .unspecified
-        ).devices
-    }
-
     var body: some View {
         Form {
             Section("Background") {
+                // Pick between solid color or camera feed
                 Picker("Type", selection: $slide.backgroundType) {
                     Text("Color").tag(Slide.BackgroundType.color)
                     Text("Camera").tag(Slide.BackgroundType.cameraFeed)
@@ -32,19 +19,21 @@ struct SlideInspect: View {
                 switch slide.backgroundType {
                 case .color:
                     ColorPicker("Background Color", selection: $slide.backgroundColor)
+
                 case .cameraFeed:
+                    // Let the user select which camera
                     Picker("Camera", selection: Binding(
                         get: { slide.cameraDeviceID ?? "" },
                         set: { slide.cameraDeviceID = $0 }
                     )) {
-                        ForEach(videoDevices, id: \.uniqueID) { device in
+                        ForEach(CameraView.availableDevices, id: \.uniqueID) { device in
                             Text(device.localizedName).tag(device.uniqueID)
                         }
                     }
 
-                    if let camID = slide.cameraDeviceID,
-                       let device = videoDevices.first(where: { $0.uniqueID == camID }) {
-                        CameraPreviewView(device: device)
+                    // Show a live preview from the selected camera
+                    if let device = CameraView.device(for: slide.cameraDeviceID) {
+                        CameraView(device: device)
                             .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
                             .clipped()
                     } else {
@@ -58,3 +47,4 @@ struct SlideInspect: View {
         .padding()
     }
 }
+

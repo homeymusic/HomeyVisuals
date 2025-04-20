@@ -1,0 +1,58 @@
+import SwiftUI
+import AVFoundation
+
+/// A full‑screen (or cropped) live camera feed.
+public struct CameraView: NSViewRepresentable {
+    public let device: AVCaptureDevice
+
+    public init(device: AVCaptureDevice) {
+        self.device = device
+    }
+
+    public func makeNSView(context: Context) -> some NSView {
+        let view = NSView(frame: .zero)
+        let session = AVCaptureSession()
+        session.sessionPreset = .high
+
+        guard let input = try? AVCaptureDeviceInput(device: device) else {
+            return view
+        }
+        session.beginConfiguration()
+        session.addInput(input)
+        let preview = AVCaptureVideoPreviewLayer(session: session)
+        preview.videoGravity = .resizeAspectFill
+        view.wantsLayer = true
+        view.layer = preview
+        session.commitConfiguration()
+        session.startRunning()
+        return view
+    }
+
+    public func updateNSView(_ nsView: NSViewType, context: Context) { }
+
+    // MARK: ——— Helpers for device enumeration ———
+
+    /// Which device types to show on each platform
+    private static var deviceTypes: [AVCaptureDevice.DeviceType] {
+    #if os(macOS)
+        return [.builtInWideAngleCamera, .externalUnknown]
+    #else
+        return [.builtInWideAngleCamera, .builtInUltraWideCamera, .builtInTelephotoCamera]
+    #endif
+    }
+
+    /// All cameras the system can enumerate today
+    public static var availableDevices: [AVCaptureDevice] {
+        AVCaptureDevice.DiscoverySession(
+            deviceTypes: deviceTypes,
+            mediaType: .video,
+            position: .unspecified
+        ).devices
+    }
+
+    /// Look up a device by its uniqueID (or `nil` if none)
+    public static func device(for uniqueID: String?) -> AVCaptureDevice? {
+        guard let id = uniqueID else { return nil }
+        return availableDevices.first { $0.uniqueID == id }
+    }
+}
