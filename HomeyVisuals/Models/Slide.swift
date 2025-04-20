@@ -8,24 +8,43 @@ import SwiftUI
 @Model
 public final class Slide: Identifiable {
     @Attribute(.unique) public var id: UUID
-    public var testString: String
-    public var isSkipped: Bool
-    public var position: Int
+    @Attribute public private(set) var version: Int = 0
+
+    public var testString: String {
+        didSet { bumpVersion() }
+      }
+    public var isSkipped: Bool {
+        didSet { bumpVersion() }
+      }
+    public var position: Int {
+        didSet { bumpVersion() }
+      }
 
     public enum BackgroundType: Int, Codable, Sendable {
         case cameraFeed, color
     }
-    public var backgroundType: BackgroundType
+    public var backgroundType: BackgroundType {
+        didSet { bumpVersion() }
+      }
     /// Stored RGBA color for persistence
-    public var backgroundRGBAColor: RGBAColor
+    public var backgroundRGBAColor: RGBAColor {
+        didSet { bumpVersion() }
+      }
+    
     /// Stored selected camera device unique ID
-    public var cameraDeviceID: String?
+    public var cameraDeviceID: String? {
+        didSet { bumpVersion() }
+      }
 
     @Relationship(deleteRule: .nullify)
-    public var aspectRatio: AspectRatio
+    public var aspectRatio: AspectRatio {
+        didSet { bumpVersion() }
+      }
 
     @Relationship(deleteRule: .cascade, inverse: \TextWidget.slide)
-        public var textWidgets: [TextWidget] = []
+        public var textWidgets: [TextWidget] = [] {
+            didSet { bumpVersion() }
+          }
     
     /// SwiftUI-friendly color binding
     public var backgroundColor: Color {
@@ -90,6 +109,11 @@ public final class Slide: Identifiable {
         for (idx, slide) in slides.enumerated() {
             slide.position = idx + 1
         }
+    }
+    
+    @MainActor
+    public func bumpVersion() {
+      version &+= 1
     }
 }
 
