@@ -34,6 +34,7 @@ struct SlideEdit: View {
                 
                 ForEach($slide.textWidgets, id: \.id) { $widget in
                     TextField("Text", text: $widget.text)
+                        .foregroundColor(.white)
                         .textFieldStyle(.roundedBorder)
                         .frame(width: 120)
                         .position(

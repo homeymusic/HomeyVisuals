@@ -33,6 +33,7 @@ struct SlideDetail: View {
                 
                 ForEach(slide.textWidgets, id: \.id) {widget in
                     Text(widget.text)
+                        .foregroundColor(.white)
                         .position(
                             x: geo.size.width  * widget.x,
                             y: geo.size.height * widget.y

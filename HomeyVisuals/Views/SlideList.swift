@@ -28,7 +28,6 @@ struct SlideList: View {
                                     .font(.caption2)
                                     .foregroundStyle(.secondary)
                             }
-                            
                             Thumbnail(
                               content: SlideDetail(slide: slide, isThumbnail: true),
                               reloadTrigger: slide.thumbnailReloadTrigger

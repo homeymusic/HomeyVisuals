@@ -101,7 +101,7 @@ public extension Slide {
             AnyHashable(backgroundType.rawValue),
             AnyHashable(backgroundRGBAColor),
             AnyHashable(cameraDeviceID ?? ""),
-            AnyHashable(textWidgets.map(\.self))
+            AnyHashable(textWidgets.map(\.self.id))
         ])
     }
 }
