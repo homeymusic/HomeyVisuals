@@ -7,7 +7,7 @@ import HomeyMusicKit
 /// Editable slide view: click widgets to select, drag to move, click off to deselect.
 struct SlideEdit: View {
     @Bindable var slide: Slide
-    @Binding var selectedWidgetID: UUID?
+    @Binding var textWidgetSelection: Set<TextWidget.ID>
 
     private var sortedWidgetIndices: [Int] {
         slide.textWidgets.indices
@@ -29,7 +29,7 @@ struct SlideEdit: View {
                 Color.clear
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        selectedWidgetID = nil
+                        textWidgetSelection = []
                     }
 
                 // 3) All text widgets, in z‑order
@@ -39,9 +39,13 @@ struct SlideEdit: View {
                         widget:    w,
                         slideSize: geo.size,
                         isSelected: Binding(
-                            get: { selectedWidgetID == w.id },
-                            set: { on in
-                                selectedWidgetID = on ? w.id : nil
+                            get: { textWidgetSelection.contains(w.id) },
+                            set: { isSelected in
+                                if isSelected {
+                                    textWidgetSelection.insert(w.id)
+                                } else {
+                                    textWidgetSelection.remove(w.id)
+                                }
                             }
                         )
                     )
