@@ -36,7 +36,17 @@ struct SlideEdit: View {
 
                     TextWidgetView(
                         widget:    widget,
-                        slideSize: geo.size
+                        slideSize: geo.size,
+                        isSelected: .init(
+                            get: { selectedWidgetID == widget.id },
+                            set: { isOn in
+                                if isOn {
+                                    selectedWidgetID = widget.id
+                                } else if selectedWidgetID == widget.id {
+                                    selectedWidgetID = nil
+                                }
+                            }
+                        )
                     )
                     // make the full frame tappable
                     .contentShape(Rectangle())

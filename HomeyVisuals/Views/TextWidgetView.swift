@@ -4,28 +4,40 @@ import SwiftData
 struct TextWidgetView: View {
     @Bindable var widget: TextWidget
     let slideSize: CGSize
+    @Binding var isSelected: Bool
 
-    // Capture the widget’s original coords when a drag starts
+    // track drag state for stroke color
+    @GestureState private var isDragging: Bool = false
     @State private var dragAnchor: (x: Double, y: Double)?
 
     var body: some View {
         Text(widget.text)
             .foregroundColor(.white)
+            .padding(4)
+            .background(Color.clear)
+            .overlay(selectionOverlay)
             .position(x: positionX, y: positionY)
             .gesture(dragGesture)
     }
 
-    private var positionX: CGFloat {
-        CGFloat(widget.x) * slideSize.width
-    }
-    private var positionY: CGFloat {
-        CGFloat(widget.y) * slideSize.height
+    private var selectionOverlay: some View {
+        // only render when selected or dragging
+        Group {
+            if isSelected || isDragging {
+                Rectangle()
+                    .stroke(isDragging ? Color.white : Color(.systemBlue), lineWidth: 0.5)
+            }
+        }
     }
 
     private var dragGesture: some Gesture {
         DragGesture(minimumDistance: 0)
+            .updating($isDragging) { value, state, _ in
+                // only flip into dragging once you’ve actually moved
+                let moved = value.translation.width != 0 || value.translation.height != 0
+                state = moved
+            }
             .onChanged { value in
-                // first event: remember where we started
                 if dragAnchor == nil {
                     dragAnchor = (widget.x, widget.y)
                 }
@@ -38,9 +50,22 @@ struct TextWidgetView: View {
             }
             .onEnded { _ in
                 dragAnchor = nil
-                // optional: clamp into [0…1]
-                widget.x = min(max(widget.x, 0), 1)
-                widget.y = min(max(widget.y, 0), 1)
+                widget.x = widget.x.clamped(to: 0...1)
+                widget.y = widget.y.clamped(to: 0...1)
             }
+    }
+    
+    private var positionX: CGFloat {
+        CGFloat(widget.x) * slideSize.width
+    }
+    private var positionY: CGFloat {
+        CGFloat(widget.y) * slideSize.height
+    }
+}
+
+// simple Double clamping helper
+private extension Double {
+    func clamped(to range: ClosedRange<Double>) -> Double {
+        min(max(self, range.lowerBound), range.upperBound)
     }
 }
