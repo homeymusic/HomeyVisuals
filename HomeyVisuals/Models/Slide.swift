@@ -93,17 +93,25 @@ public final class Slide: Identifiable {
 }
 
 public extension Slide {
+    /// Fires whenever any slide-level or widget-level state changes.
     var thumbnailReloadTrigger: AnyHashable {
-        AnyHashable([
+        // 1) slide-level bits
+        let base: [AnyHashable] = [
             AnyHashable(id),
             AnyHashable(backgroundType.rawValue),
             AnyHashable(backgroundRGBAColor),
-            AnyHashable(cameraDeviceID ?? ""),
-            AnyHashable(textWidgets.map(\.self.id))
-        ])
+            AnyHashable(cameraDeviceID ?? "")
+        ]
+
+        // 2) widget-level bits, in stable order
+        let widgetHashes = textWidgets
+            .sorted { $0.z < $1.z }
+            .map { $0.widgetHash }
+
+        return AnyHashable(base + [ AnyHashable(widgetHashes) ])
     }
-    
+
     var highestZ: Int {
-        (textWidgets.map(\.z).max() ?? -1)
+        textWidgets.map(\.z).max() ?? -1
     }
 }

@@ -10,6 +10,7 @@ struct TextWidgetView: View {
 
     var body: some View {
         Text(widget.text)
+            .font(.largeTitle)
             .foregroundColor(.white)
             .padding(4)
             .fixedSize()                        // 1) shrink to text+padding

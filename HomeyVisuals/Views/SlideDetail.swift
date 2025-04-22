@@ -17,6 +17,7 @@ struct SlideDetail: View {
         SlideContainer(slide: slide, isThumbnail: isThumbnail) { size in
             ForEach(slide.textWidgets, id: \.id) { widget in
                 Text(widget.text)
+                    .font(.largeTitle)
                     .foregroundColor(.white)
                     .position(
                         x: size.width  * widget.x,

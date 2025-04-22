@@ -1,11 +1,12 @@
 // TextWidget.swift
+
 import Foundation
 import SwiftData
 
 @Model
-public class TextWidget: Widget {
+public final class TextWidget: Widget {
     #Unique<TextWidget>([\.id], [\.slide, \.z])
-    
+
     public var id: UUID
     public var slide: Slide?
     public var x: Double
@@ -14,7 +15,7 @@ public class TextWidget: Widget {
     public var width: Double
     public var height: Double
     public var text: String
-    
+
     public init(
         slide: Slide,
         x: Double      = 0.5,
@@ -33,17 +34,25 @@ public class TextWidget: Widget {
         self.height = height
         self.text   = text
     }
-    
+
     public convenience init(slide: Slide) {
         self.init(
             slide: slide,
             x: 0.5,
             y: 0.5,
-            z: slide.highestZ + 1,     // bump z automatically
+            z: slide.highestZ + 1,
             width:  0.1,
             height: 0.1,
             text:   "Text"
         )
     }
+}
 
+extension TextWidget {
+    /// Include both geometry *and* `text` in the hash snapshot.
+    public var widgetHash: AnyHashable {
+        var arr = Self.baseHashElements(of: self as! Self)
+        arr.append(AnyHashable(text))
+        return AnyHashable(arr)
+    }
 }
