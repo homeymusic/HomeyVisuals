@@ -22,7 +22,7 @@ struct TextWidgetView: View {
             )
             .contentShape(Rectangle())          // 2) make only that small area tappable
             .onTapGesture {
-                isSelected = true               // 3) tap to select
+                isSelected.toggle()
             }
             .position(                          // 4) move BOTH view & hit‑area
                 x: CGFloat(widget.x) * slideSize.width,
