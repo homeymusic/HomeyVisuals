@@ -7,56 +7,30 @@ import AppKit
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(Selections.self) var selections
     @Query(sort: [SortDescriptor(\Slide.position)]) private var slides: [Slide]
-    
-    @State private var slideSelection      = Set<Slide.ID>()
-    private var selectedSlide: Slide? {
-        guard
-            let slideID = slideSelection.first
-        else { return nil }
-        return slides.first { $0.id == slideID }
-    }
-    
-    @State private var textWidgetSelection = Set<TextWidget.ID>()
-    private var selectedTextWidget: TextWidget? {
-        guard
-            let slide = selectedSlide,
-            let textWidgetID = textWidgetSelection.first
-        else { return nil }
-        return slide.textWidgets.first { $0.id == textWidgetID }
-    }
     
     var body: some View {
         GeometryReader { geo in
             NavigationSplitView {
                 // Sidebar: list of slides
                 SlideList(
-                    selection:     $slideSelection,
                     onAddSlide:    addSlide(after:),
                     onDeleteSlide: deleteSelectedSlides
                 )
                 .navigationSplitViewColumnWidth(min: 170, ideal: 170, max: 340)
             } content: {
-                Group {
-                    if let slide = selectedSlide {
-                        SlideEdit(
-                            slide:               slide,
-                            textWidgetSelection: $textWidgetSelection
-                        )
-                    } else {
-                        ContentUnavailableView("Would you look at that.", systemImage: "eye")
-                    }
-                }
-                .navigationSplitViewColumnWidth(
-                    min: geo.size.width * 0.5,
-                    ideal: geo.size.width * 0.8,
-                    max: geo.size.width * 0.9
-                )
+                SlideEdit()
+                    .navigationSplitViewColumnWidth(
+                        min: geo.size.width * 0.5,
+                        ideal: geo.size.width * 0.8,
+                        max: geo.size.width * 0.9
+                    )
             } detail: {
                 Group {
-                    if let widget = selectedTextWidget {
+                    if let widget = selections.selectedTextWidget(in: slides) {
                         WidgetInspect(widget: widget)
-                    } else if let slide = selectedSlide {
+                    } else if let slide = selections.selectedSlide(in: slides) {
                         SlideInspect(slide: slide)
                     } else {
                         ContentUnavailableView("Nothing to inspect", systemImage: "eye")
@@ -68,12 +42,12 @@ struct ContentView: View {
             .onDeleteCommand(perform: deleteSelectedSlides)
             .onAppear(perform: seedAspectRatios)
             .onChange(of: slides) { _, newSlides in
-                if slideSelection.isEmpty, let first = newSlides.first {
-                    slideSelection = [ first.id ]
+                if selections.slideSelections.isEmpty, let first = newSlides.first {
+                    selections.slideSelections = [ first.id ]
                 }
             }
-            .onChange(of: slideSelection) { _, _ in
-                textWidgetSelection.removeAll()
+            .onChange(of: selections.slideSelections) { _, _ in
+                selections.textWidgetSelections.removeAll()
             }
         }
     }
@@ -81,7 +55,7 @@ struct ContentView: View {
     @ToolbarContentBuilder
     private var toolbarItems: some ToolbarContent {
         ToolbarItem(placement: .principal) {
-            Button { addSlide(after: slideSelection.first) }
+            Button { addSlide(after: selections.slideSelections.first) }
             label: { Label("Add Slide", systemImage: "plus.rectangle") }
                 .buttonStyle(.borderless)
                 .keyboardShortcut("n", modifiers: [.shift, .command])
@@ -91,7 +65,7 @@ struct ContentView: View {
                 Label("Text Box", systemImage: "character.textbox")
             }
             .buttonStyle(.borderless)
-            .disabled(selectedSlide == nil)
+            .disabled(selections.selectedSlide(in: slides) == nil)
         }
         ToolbarItem(placement: .primaryAction) {
             Button(action: launchSlideshow) {
@@ -99,34 +73,34 @@ struct ContentView: View {
             }
             .buttonStyle(.borderless)
             .keyboardShortcut("p", modifiers: [.command, .option])
-            .disabled(selectedSlide == nil)
+            .disabled(selections.selectedSlide(in: slides) == nil)
         }
     }
     
     private func seedAspectRatios() {
         AspectRatio.seedSystemAspectRatios(in: modelContext)
-        if slideSelection.isEmpty, let first = slides.first {
-            slideSelection = [ first.id ]
+        if selections.slideSelections.isEmpty, let first = slides.first {
+            selections.slideSelections = [ first.id ]
         }
     }
     
     private func launchSlideshow() {
         guard
-            let slide = selectedSlide,
+            let slide = selections.selectedSlide(in: slides),
             let idx   = slides.firstIndex(of: slide)
         else { return }
         Slideshow.present(slides: slides, startIndex: idx)
     }
     
     private func addTextWidget() {
-        guard let slide = selectedSlide else { return }
+        guard let slide = selections.selectedSlide(in: slides) else { return }
         let widget = TextWidget(slide: slide)
         
         withAnimation {
             slide.textWidgets.append(widget)
         }
         // put the new widget’s ID into the selection set
-        textWidgetSelection = [ widget.id ]
+        selections.textWidgetSelections = [ widget.id ]
     }
     
     private func addSlide(after id: Slide.ID?) {
@@ -144,12 +118,12 @@ struct ContentView: View {
         }
         Slide.updatePositions(reordered)
         
-        slideSelection      = [ newSlide.id ]
-        textWidgetSelection.removeAll()
+        selections.slideSelections      = [ newSlide.id ]
+        selections.textWidgetSelections.removeAll()
     }
     
     private func deleteSelectedSlides() {
-        let toDelete = slides.filter { slideSelection.contains($0.id) }
+        let toDelete = slides.filter { selections.slideSelections.contains($0.id) }
         guard !toDelete.isEmpty else { return }
         
         let all        = slides
@@ -166,13 +140,13 @@ struct ContentView: View {
         
         withAnimation {
             toDelete.forEach(modelContext.delete)
-            let remaining = slides.filter { !slideSelection.contains($0.id) }
+            let remaining = slides.filter { !selections.slideSelections.contains($0.id) }
             Slide.updatePositions(remaining)
             
-            slideSelection.removeAll()
-            textWidgetSelection.removeAll()
+            selections.slideSelections.removeAll()
+            selections.textWidgetSelections.removeAll()
             if let keep = nextID {
-                slideSelection.insert(keep)
+                selections.slideSelections.insert(keep)
             }
         }
     }
