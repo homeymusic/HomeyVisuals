@@ -12,14 +12,11 @@ struct ContentView: View {
     @State private var slideSelection   = Set<Slide.ID>()
     @State private var selectedWidgetID: UUID?
 
-    private var selectedIndex: Int? {
-        guard let id = slideSelection.first else { return nil }
-        return slides.firstIndex(where: { $0.id == id })
-    }
     private var selectedSlide: Slide? {
-        guard let idx = selectedIndex, slides.indices.contains(idx) else { return nil }
-        return slides[idx]
+        guard let firstID = slideSelection.first else { return nil }
+        return slides.first { $0.id == firstID }
     }
+    
     private var selectedWidget: TextWidget? {
         guard
             let slide = selectedSlide,
@@ -39,37 +36,32 @@ struct ContentView: View {
                 )
                 .navigationSplitViewColumnWidth(min: 170, ideal: 170, max: 340)
             } content: {
-                // Main canvas / editor
-                if let slide = selectedSlide {
-                    SlideEdit(
-                        slide: slide,
-                        selectedWidgetID: $selectedWidgetID
-                    )
-                    .navigationSplitViewColumnWidth(
-                        min: geo.size.width * 0.5,
-                        ideal: geo.size.width * 0.8,
-                        max: geo.size.width * 0.9
-                    )
-                } else {
-                    ContentUnavailableView("Would you look at that.", systemImage: "eye")
-                        .navigationSplitViewColumnWidth(
-                            min: geo.size.width * 0.5,
-                            ideal: geo.size.width * 0.8,
-                            max: geo.size.width * 0.9
+                Group {
+                    if let slide = selectedSlide {
+                        SlideEdit(
+                            slide: slide,
+                            selectedWidgetID: $selectedWidgetID
                         )
+                    } else {
+                        ContentUnavailableView("Would you look at that.", systemImage: "eye")
+                    }
                 }
+                .navigationSplitViewColumnWidth(
+                    min: geo.size.width * 0.5,
+                    ideal: geo.size.width * 0.8,
+                    max: geo.size.width * 0.9
+                )
             } detail: {
-                // Inspector: widget first, else slide
-                if let widget = selectedWidget {
-                    WidgetInspect(widget: widget)
-                        .navigationSplitViewColumnWidth(270)
-                } else if let slide = selectedSlide {
-                    SlideInspect(slide: slide)
-                        .navigationSplitViewColumnWidth(270)
-                } else {
-                    ContentUnavailableView("Would you look at that.", systemImage: "eye")
-                        .navigationSplitViewColumnWidth(270)
+                Group {
+                    if let widget = selectedWidget {
+                        WidgetInspect(widget: widget)
+                    } else if let slide = selectedSlide {
+                        SlideInspect(slide: slide)
+                    } else {
+                        ContentUnavailableView("Nothing to inspect", systemImage: "eye")
+                    }
                 }
+                .navigationSplitViewColumnWidth(270)
             }
             .toolbar {
                 // — New Slide —
@@ -89,7 +81,7 @@ struct ContentView: View {
                         Label("Text Box", systemImage: "character.textbox")
                     }
                     .buttonStyle(.borderless)
-                    .disabled(selectedIndex == nil)
+                    .disabled(selectedSlide == nil)
                 }
 
                 // — Play Slideshow —
@@ -99,7 +91,7 @@ struct ContentView: View {
                     }
                     .buttonStyle(.borderless)
                     .keyboardShortcut("p", modifiers: [.command, .option])
-                    .disabled(selectedIndex == nil)
+                    .disabled(selectedSlide == nil)
                 }
             }
             .onDeleteCommand(perform: deleteSelectedSlides)
@@ -123,7 +115,10 @@ struct ContentView: View {
     // MARK: – Actions
 
     private func launchSlideshow() {
-        guard let idx = selectedIndex else { return }
+        guard
+            let slide = selectedSlide,
+            let idx = slides.firstIndex(of: slide)
+        else { return }
         Slideshow.present(slides: slides, startIndex: idx)
     }
 
