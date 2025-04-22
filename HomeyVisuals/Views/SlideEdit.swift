@@ -4,25 +4,20 @@ import SwiftUI
 import SwiftData
 import HomeyMusicKit
 
-/// Editable slide view: renders either a solid color or live camera feed background,
-/// and lets the user click‑select and drag TextWidgets around.
+/// Editable slide view: click widgets to select, drag to move, click off to deselect.
 struct SlideEdit: View {
     @Bindable var slide: Slide
     @Binding var selectedWidgetID: UUID?
 
-    /// Compute each widget’s index sorted by its `z`‑order.
     private var sortedWidgetIndices: [Int] {
-        slide.textWidgets
-            .indices
-            .sorted { a, b in
-                slide.textWidgets[a].z < slide.textWidgets[b].z
-            }
+        slide.textWidgets.indices
+            .sorted { slide.textWidgets[$0].z < slide.textWidgets[$1].z }
     }
 
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                // MARK: Background
+                // 1) Background
                 switch slide.backgroundType {
                 case .color:
                     slide.backgroundColor
@@ -30,32 +25,25 @@ struct SlideEdit: View {
                     CameraFeed(slide: slide, isThumbnail: false)
                 }
 
-                // MARK: Draggable TextWidgets
-                ForEach(sortedWidgetIndices, id: \.self) { idx in
-                    let widget = slide.textWidgets[idx]
+                // 2) Full‑screen clear tappable layer → deselect
+                Color.clear
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        selectedWidgetID = nil
+                    }
 
+                // 3) All text widgets, in z‑order
+                ForEach(sortedWidgetIndices, id: \.self) { idx in
+                    let w = slide.textWidgets[idx]
                     TextWidgetView(
-                        widget:    widget,
+                        widget:    w,
                         slideSize: geo.size,
-                        isSelected: .init(
-                            get: { selectedWidgetID == widget.id },
-                            set: { isOn in
-                                if isOn {
-                                    selectedWidgetID = widget.id
-                                } else if selectedWidgetID == widget.id {
-                                    selectedWidgetID = nil
-                                }
+                        isSelected: Binding(
+                            get: { selectedWidgetID == w.id },
+                            set: { on in
+                                selectedWidgetID = on ? w.id : nil
                             }
                         )
-                    )
-                    // make the full frame tappable
-                    .contentShape(Rectangle())
-                    // tap to select this widget
-                    .simultaneousGesture(
-                        TapGesture()
-                            .onEnded { _ in
-                                selectedWidgetID = widget.id
-                            }
                     )
                 }
             }
