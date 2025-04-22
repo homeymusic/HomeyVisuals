@@ -1,3 +1,5 @@
+// SlideDetail.swift
+
 import SwiftUI
 import HomeyMusicKit
 
@@ -7,33 +9,20 @@ struct SlideDetail: View {
     let isThumbnail: Bool
 
     init(slide: Slide, isThumbnail: Bool = false) {
-      self.slide = slide
-      self.isThumbnail = isThumbnail
+        self.slide = slide
+        self.isThumbnail = isThumbnail
     }
-    
-    var body: some View {
-        GeometryReader { geo in
-            ZStack {
-                // Background: color or camera
-                switch slide.backgroundType {
-                case .color:
-                    slide.backgroundColor
-                case .cameraFeed:
-                    CameraFeed(slide: slide, isThumbnail: isThumbnail)
-                }
 
-                ForEach(slide.textWidgets, id: \.id) {widget in
-                    Text(widget.text)
-                        .foregroundColor(.white)
-                        .position(
-                            x: geo.size.width  * widget.x,
-                            y: geo.size.height * widget.y
-                        )
-                }
-                
+    var body: some View {
+        SlideContainer(slide: slide, isThumbnail: isThumbnail) { size in
+            ForEach(slide.textWidgets, id: \.id) { widget in
+                Text(widget.text)
+                    .foregroundColor(.white)
+                    .position(
+                        x: size.width  * widget.x,
+                        y: size.height * widget.y
+                    )
             }
         }
-        .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
     }
 }
-
