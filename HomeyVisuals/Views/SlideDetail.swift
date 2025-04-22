@@ -22,15 +22,6 @@ struct SlideDetail: View {
                     CameraFeed(slide: slide, isThumbnail: isThumbnail)
                 }
 
-                // Foreground content
-                Text(slide.testString)
-                    .font(.largeTitle)
-                    .foregroundColor(.white)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.1)
-                    .padding()
-                
                 ForEach(slide.textWidgets, id: \.id) {widget in
                     Text(widget.text)
                         .foregroundColor(.white)

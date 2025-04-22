@@ -1,3 +1,5 @@
+// ContentView.swift
+
 import SwiftUI
 import SwiftData
 import HomeyMusicKit
@@ -6,81 +8,94 @@ import AppKit
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: [SortDescriptor(\Slide.position)]) private var slides: [Slide]
-    
-    @State private var slideSelection = Set<Slide.ID>()
-    
+
+    @State private var slideSelection   = Set<Slide.ID>()
+    @State private var selectedWidgetID: UUID?
+
     private var selectedIndex: Int? {
         guard let id = slideSelection.first else { return nil }
         return slides.firstIndex(where: { $0.id == id })
     }
-    
+    private var selectedSlide: Slide? {
+        guard let idx = selectedIndex, slides.indices.contains(idx) else { return nil }
+        return slides[idx]
+    }
+    private var selectedWidget: TextWidget? {
+        guard
+            let slide = selectedSlide,
+            let wid   = selectedWidgetID
+        else { return nil }
+        return slide.textWidgets.first { $0.id == wid }
+    }
+
     var body: some View {
         GeometryReader { geo in
             NavigationSplitView {
+                // Sidebar: list of slides
                 SlideList(
                     selection:     $slideSelection,
                     onAddSlide:    addSlide(after:),
                     onDeleteSlide: deleteSelectedSlides
                 )
-                .navigationSplitViewColumnWidth(
-                    min: 170,
-                    ideal: 170,
-                    max: 340
-                )
+                .navigationSplitViewColumnWidth(min: 170, ideal: 170, max: 340)
             } content: {
-                if let idx = selectedIndex {
-                    SlideEdit(slide: slides[idx])
-                        .navigationSplitViewColumnWidth(
-                            min: geo.size.width * 0.5,
-                            ideal: geo.size.width * 0.8,
-                            max: geo.size.width * 0.9
-                        )
-                } else {
-                    ContentUnavailableView(
-                        "Would you look at that.",
-                        systemImage: "eye"
+                // Main canvas / editor
+                if let slide = selectedSlide {
+                    SlideEdit(
+                        slide: slide,
+                        selectedWidgetID: $selectedWidgetID
                     )
                     .navigationSplitViewColumnWidth(
                         min: geo.size.width * 0.5,
                         ideal: geo.size.width * 0.8,
                         max: geo.size.width * 0.9
                     )
+                } else {
+                    ContentUnavailableView("Would you look at that.", systemImage: "eye")
+                        .navigationSplitViewColumnWidth(
+                            min: geo.size.width * 0.5,
+                            ideal: geo.size.width * 0.8,
+                            max: geo.size.width * 0.9
+                        )
                 }
             } detail: {
-                if let idx = selectedIndex {
-                    SlideInspect(slide: slides[idx])
+                // Inspector: widget first, else slide
+                if let widget = selectedWidget {
+                    WidgetInspect(widget: widget)
+                        .navigationSplitViewColumnWidth(270)
+                } else if let slide = selectedSlide {
+                    SlideInspect(slide: slide)
                         .navigationSplitViewColumnWidth(270)
                 } else {
-                    ContentUnavailableView(
-                        "Would you look at that.",
-                        systemImage: "eye"
-                    )
-                    .navigationSplitViewColumnWidth(270)
+                    ContentUnavailableView("Would you look at that.", systemImage: "eye")
+                        .navigationSplitViewColumnWidth(270)
                 }
             }
             .toolbar {
+                // — New Slide —
                 ToolbarItem(placement: .principal) {
                     Button {
                         addSlide(after: slideSelection.first)
                     } label: {
-                        Image(systemName: "plus.rectangle")
+                        Label("Add Slide", systemImage: "plus.rectangle")
                     }
                     .buttonStyle(.borderless)
                     .keyboardShortcut("n", modifiers: [.shift, .command])
                 }
-                
-                ToolbarItem(placement: .principal) {
-                                    // — Add Text Widget —
-                                    Button(action: addTextWidget) {
-                                        Image(systemName: "character.textbox")
-                                    }
-                                    .buttonStyle(.borderless)
-                                    .disabled(selectedIndex == nil)
-                                }
 
+                // — New Text Widget —
                 ToolbarItem(placement: .principal) {
+                    Button(action: addTextWidget) {
+                        Label("Text Box", systemImage: "character.textbox")
+                    }
+                    .buttonStyle(.borderless)
+                    .disabled(selectedIndex == nil)
+                }
+
+                // — Play Slideshow —
+                ToolbarItem(placement: .primaryAction) {
                     Button(action: launchSlideshow) {
-                        Image(systemName: "play.fill")
+                        Label("Play", systemImage: "play.fill")
                     }
                     .buttonStyle(.borderless)
                     .keyboardShortcut("p", modifiers: [.command, .option])
@@ -99,34 +114,34 @@ struct ContentView: View {
                     slideSelection = [ first.id ]
                 }
             }
+            .onChange(of: slideSelection) { _, _ in
+                selectedWidgetID = nil
+            }
         }
     }
-    
+
+    // MARK: – Actions
+
     private func launchSlideshow() {
         guard let idx = selectedIndex else { return }
         Slideshow.present(slides: slides, startIndex: idx)
     }
-    
+
     private func addTextWidget() {
-        guard let idx = selectedIndex else { return }
-        let slide = slides[idx]
-        let nx = Double.random(in: 0.33...0.66)
-        let ny = Double.random(in: 0.33...0.66)
-        let textWidget = TextWidget(x: nx, y: ny, slide: slide)
+        guard let slide = selectedSlide else { return }
+        let widget = TextWidget(slide: slide)
         withAnimation {
-            slide.textWidgets.append(textWidget)
+            slide.textWidgets.append(widget)
         }
+        selectedWidgetID = widget.id
     }
-    
-    // MARK: – Add a new slide immediately after the given ID
+
     private func addSlide(after id: Slide.ID?) {
         let newSlide = Slide.create(in: modelContext)
-        
         var reordered = slides
         let insertIndex: Int
-        if
-            let target = id,
-            let pos = reordered.firstIndex(where: { $0.id == target })
+        if let target = id,
+           let pos    = reordered.firstIndex(where: { $0.id == target })
         {
             insertIndex = pos + 1
         } else {
@@ -135,13 +150,13 @@ struct ContentView: View {
         reordered.insert(newSlide, at: insertIndex)
         Slide.updatePositions(reordered)
         slideSelection = [ newSlide.id ]
+        selectedWidgetID = nil
     }
-    
-    // MARK: – Delete all selected slides
+
     private func deleteSelectedSlides() {
         let toDelete = slides.filter { slideSelection.contains($0.id) }
         guard !toDelete.isEmpty else { return }
-        
+
         let all        = slides
         let deletedIdx = toDelete.compactMap { all.firstIndex(of: $0) }.sorted()
         let afterIdx   = deletedIdx.last! + 1
@@ -153,13 +168,14 @@ struct ContentView: View {
                 return all.indices.contains(before) ? all[before].id : nil
             }
         }()
-        
+
         withAnimation {
             toDelete.forEach(modelContext.delete)
             let remaining = slides.filter { !slideSelection.contains($0.id) }
             Slide.updatePositions(remaining)
-            
+
             slideSelection.removeAll()
+            selectedWidgetID = nil
             if let keep = nextID {
                 slideSelection.insert(keep)
             }
