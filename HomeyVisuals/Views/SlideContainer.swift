@@ -3,34 +3,51 @@
 import SwiftUI
 import HomeyMusicKit
 
-/// A reusable container that handles sizing, background, and aspect ratio for a Slide.
+/// Wrap any slide content in the proper letterbox→scale logic.
 struct SlideContainer<Content: View>: View {
     let slide: Slide
     let isThumbnail: Bool
-    @ViewBuilder let content: (_ size: CGSize) -> Content
+    @ViewBuilder let content: (_ letterbox: CGSize) -> Content
 
+    /// You can omit `isThumbnail` when you want full-screen/edit mode.
     init(
         slide: Slide,
         isThumbnail: Bool = false,
-        @ViewBuilder content: @escaping (_ size: CGSize) -> Content
+        @ViewBuilder content: @escaping (_ letterbox: CGSize) -> Content
     ) {
-        self.slide = slide
+        self.slide       = slide
         self.isThumbnail = isThumbnail
-        self.content = content
+        self.content     = content
     }
 
     var body: some View {
         GeometryReader { geo in
+            let containerSize = geo.size
+            // pick the “box” we lay out into:
+            // – full-screen letterbox for slideshow/edit
+            // – real-screen letterbox for thumbnails
+            let box = isThumbnail
+                ? slide.letterboxSizeOnScreen
+                : containerSize
+
+            // compute scale to fit that box *into* the container
+            let scale = min(
+                containerSize.width  / box.width,
+                containerSize.height / box.height
+            )
+
             ZStack {
                 SlideBackground(slide: slide, isThumbnail: isThumbnail)
-                content(geo.size)
+                content(box)
             }
+            .frame(width: box.width, height: box.height)
+            .scaleEffect(isThumbnail ? scale : 1, anchor: .topLeading)
         }
         .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
     }
 }
 
-/// Extracted background logic so you only have one switch to maintain.
+/// Centralized background logic (color vs. camera).
 struct SlideBackground: View {
     let slide: Slide
     let isThumbnail: Bool

@@ -1,3 +1,5 @@
+// SlideList.swift
+
 import SwiftUI
 import SwiftData
 import CoreTransferable
@@ -8,10 +10,10 @@ struct SlideList: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(Selections.self) var selections
     @Query(sort: [SortDescriptor(\Slide.position)]) private var slides: [Slide]
-    
+
     var onAddSlide: (Slide.ID?) -> Void
     var onDeleteSlide: () -> Void
-    
+
     var body: some View {
         @Bindable var bindableSelections = selections
 
@@ -20,18 +22,20 @@ struct SlideList: View {
                 ForEach(slides) { slide in
                     NavigationLink(value: slide.id) {
                         HStack(spacing: 3) {
+                            // slide index badge
                             VStack {
                                 Spacer()
                                 Text("\(slide.position)")
                                     .font(.caption2)
                                     .foregroundStyle(.secondary)
                             }
-                            Thumbnail(
-                              content: SlideDetail(slide: slide, isThumbnail: true),
-                              reloadTrigger: slide.thumbnailReloadTrigger
-                            )
-                            .frame(maxWidth: .infinity)
-                            .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
+                            // live, vector thumbnail
+                            SlideDetail(slide: slide, isThumbnail: true)
+                                .frame(maxWidth: .infinity)
+                                .aspectRatio(
+                                    CGFloat(slide.aspectRatio.ratio),
+                                    contentMode: .fit
+                                )
                         }
                     }
                     .tag(slide.id)
@@ -42,17 +46,18 @@ struct SlideList: View {
             .copyable(copyRecords())
             .cuttable(for: SlideRecord.self) { performCutAndReturnRecords() }
             .pasteDestination(for: SlideRecord.self) { performPaste($0) }
-            .onChange(of: selections.slideSelections) { _, newSelection in
-                guard let first = newSelection.first else { return }
-                withAnimation {
-                    proxy.scrollTo(first, anchor: .center)
-                }
+            .onChange(of: selections.slideSelections) { _, new in
+                guard let first = new.first else { return }
+                withAnimation { proxy.scrollTo(first, anchor: .center) }
             }
         }
     }
 
+    // MARK: – Clipboard Helpers
+
     private func copyRecords() -> [SlideRecord] {
-        slides.filter { selections.slideSelections.contains($0.id) }.map(\.record)
+        slides.filter { selections.slideSelections.contains($0.id) }
+              .map(\.record)
     }
 
     private func performCutAndReturnRecords() -> [SlideRecord] {
@@ -65,7 +70,7 @@ struct SlideList: View {
     private func performPaste(_ records: [SlideRecord]) {
         var reordered = slides
         let insertAt = slides.firstIndex(where: { selections.slideSelections.contains($0.id) })
-            .map { $0 + 1 } ?? reordered.count
+                        .map { $0 + 1 } ?? reordered.count
 
         var cursor = insertAt
         var lastID: Slide.ID?
@@ -85,6 +90,8 @@ struct SlideList: View {
         }
     }
 
+    // MARK: – Reordering
+
     private func moveSlides(fromOffsets source: IndexSet, toOffset destination: Int) {
         withAnimation {
             var reordered = slides
@@ -97,12 +104,3 @@ struct SlideList: View {
         }
     }
 }
-
-// MARK: – Array Safe Indexing
-
-private extension Array {
-    subscript(safe idx: Int) -> Element? {
-        indices.contains(idx) ? self[idx] : nil
-    }
-}
-

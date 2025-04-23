@@ -15,7 +15,8 @@ public final class TextWidget: Widget {
     public var width: Double
     public var height: Double
     public var text: String
-
+    public var fontSize: Double
+    
     public init(
         slide: Slide,
         x: Double      = 0.5,
@@ -23,7 +24,8 @@ public final class TextWidget: Widget {
         z: Int,
         width: Double  = 0.1,
         height: Double = 0.1,
-        text: String   = "Text"
+        text: String   = "Text",
+        fontSize: Double = 150
     ) {
         self.id     = UUID()
         self.slide  = slide
@@ -33,6 +35,7 @@ public final class TextWidget: Widget {
         self.width  = width
         self.height = height
         self.text   = text
+        self.fontSize = fontSize
     }
 
     public convenience init(slide: Slide) {
@@ -43,7 +46,8 @@ public final class TextWidget: Widget {
             z: slide.highestZ + 1,
             width:  0.1,
             height: 0.1,
-            text:   "Text"
+            text:   "Text",
+            fontSize: 150
         )
     }
 }
@@ -53,6 +57,7 @@ extension TextWidget {
     public var widgetHash: AnyHashable {
         var arr = Self.baseHashElements(of: self as! Self)
         arr.append(AnyHashable(text))
+        arr.append(AnyHashable(fontSize))
         return AnyHashable(arr)
     }
 }
