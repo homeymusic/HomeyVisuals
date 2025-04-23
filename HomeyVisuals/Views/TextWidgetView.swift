@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 import HomeyMusicKit
 
-/// View for a single TextWidget—selection and edit state driven entirely from the environment
+/// View for a single TextWidget—selection on first click, edit on second click
 struct TextWidgetView: View {
     @Environment(Selections.self) private var selections
     @Bindable var textWidget: TextWidget
@@ -35,8 +35,8 @@ struct TextWidgetView: View {
                 )
                 .focused($fieldIsFocused)
                 .onAppear { fieldIsFocused = true }
-                .onChange(of: fieldIsFocused) {
-                    if !fieldIsFocused {
+                .onChange(of: fieldIsFocused) { _, focused in
+                    if !focused {
                         selections.editingWidgetID = nil
                     }
                 }
@@ -62,20 +62,14 @@ struct TextWidgetView: View {
             x: slideSize.width  * textWidget.x,
             y: slideSize.height * textWidget.y
         )
-        // Double-click to enter edit-mode
-        .highPriorityGesture(
-            TapGesture(count: 2)
-                .onEnded {
-                    selections.editingWidgetID = textWidget.id
-                }
-        )
-        // Single-tap toggles selection when not editing
+        // First click selects, second click (if already selected) enters edit-mode
         .onTapGesture {
             guard !isEditing else { return }
+
             if isSelected {
-                selections.textWidgetSelections.remove(textWidget.id)
+                selections.editingWidgetID = textWidget.id
             } else {
-                selections.textWidgetSelections.insert(textWidget.id)
+                selections.textWidgetSelections = [textWidget.id]
             }
         }
     }
