@@ -61,3 +61,19 @@ struct SlideBackground: View {
         }
     }
 }
+
+/// The shared drawing logic for any TextWidget.
+struct TextWidgetContent: View {
+  let widget: TextWidget
+  let slideSize: CGSize
+
+  var body: some View {
+    Text(widget.text)
+      .font(.system(size: widget.fontSize))
+      .foregroundColor(.white)
+      .position(
+        x: slideSize.width  * widget.x,
+        y: slideSize.height * widget.y
+      )
+  }
+}

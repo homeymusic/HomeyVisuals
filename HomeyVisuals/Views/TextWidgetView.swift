@@ -10,9 +10,7 @@ struct TextWidgetView: View {
 
     var body: some View {
         
-        Text(textWidget.text)
-            .font(.system(size: textWidget.fontSize))
-            .foregroundColor(.white)
+        TextWidgetContent(widget: textWidget, slideSize: slideSize)
             .overlay(
                 Rectangle()
                     .stroke(
@@ -24,10 +22,6 @@ struct TextWidgetView: View {
             .onTapGesture {
                 isSelected.toggle()
             }
-            .position(                          // 4) move BOTH view & hit‑area
-                x: CGFloat(textWidget.x) * slideSize.width,
-                y: CGFloat(textWidget.y) * slideSize.height
-            )
     }
 }
 
