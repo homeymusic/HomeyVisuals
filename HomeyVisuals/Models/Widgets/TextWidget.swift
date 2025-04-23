@@ -15,7 +15,9 @@ public final class TextWidget: Widget {
     public var width: Double
     public var height: Double
     public var text: String
-    public var fontSize: Double
+
+    @Attribute
+    public var fontSize: Double = 150.0
     
     public init(
         slide: Slide,
