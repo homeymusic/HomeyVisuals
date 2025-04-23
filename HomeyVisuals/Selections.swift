@@ -5,8 +5,8 @@ import SwiftUI
 public final class Selections {
     var slideSelections      = Set<Slide.ID>()
     var textWidgetSelections = Set<TextWidget.ID>()
-
-    /// returns the actual Slide given the current selection, from *your* array
+    var editingWidgetID: TextWidget.ID? = nil
+    
     func selectedSlide(in slides: [Slide]) -> Slide? {
         guard let id = slideSelections.first else { return nil }
         return slides.first { $0.id == id }

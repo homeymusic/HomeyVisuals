@@ -1,24 +1,25 @@
-// SlideEdit.swift
-
 import SwiftUI
 import SwiftData
 import HomeyMusicKit
 
-/// Editable slide view: click to select, drag to move, tap off to deselect.
+/// Editable slide view: click to select, drag to move, double-click to edit, tap off to deselect or exit edit-mode.
 struct SlideEdit: View {
-    @Environment(Selections.self) var selections
+    @Environment(Selections.self) private var selections
     @Query(sort: [SortDescriptor(\Slide.position)]) private var slides: [Slide]
 
     var body: some View {
         if let slide = selections.selectedSlide(in: slides) {
             SlideContainer(slide: slide, isThumbnail: false) { slideSize in
-                Group {
-                    // 1) Tap to deselect
+                ZStack {
+                    // 1) Tap anywhere empty to clear selection AND exit edit-mode
                     Color.clear
                         .contentShape(Rectangle())
-                        .onTapGesture { selections.textWidgetSelections = [] }
+                        .onTapGesture {
+                            selections.textWidgetSelections = []
+                            selections.editingWidgetID = nil
+                        }
 
-                    // 2) Render each text widget
+                    // 2) Render each text widget in z-order
                     ForEach(
                         slide.textWidgets.indices
                             .sorted { slide.textWidgets[$0].z < slide.textWidgets[$1].z },
@@ -26,18 +27,8 @@ struct SlideEdit: View {
                     ) { index in
                         let textWidget = slide.textWidgets[index]
                         TextWidgetView(
-                            textWidget:    textWidget,
-                            slideSize: slideSize,
-                            isSelected: Binding(
-                                get: { selections.textWidgetSelections.contains(textWidget.id) },
-                                set: { isSel in
-                                    if isSel {
-                                        selections.textWidgetSelections.insert(textWidget.id)
-                                    } else {
-                                        selections.textWidgetSelections.remove(textWidget.id)
-                                    }
-                                }
-                            )
+                            textWidget: textWidget,
+                            slideSize: slideSize
                         )
                     }
                 }
