@@ -2,13 +2,16 @@ import SwiftUI
 import SwiftData
 import HomeyMusicKit
 
-/// View for a single TextWidget—selection on first click, edit on second click
+/// View for a single TextWidget—click once to select, click again to edit, drag when selected
 struct TextWidgetView: View {
     @Environment(Selections.self) private var selections
     @Bindable var textWidget: TextWidget
     let slideSize: CGSize
 
     @FocusState private var fieldIsFocused: Bool
+
+    /// Temporary drag offset (in points) while dragging
+    @State private var dragOffset: CGSize = .zero
 
     /// computed from `selections.textWidgetSelections`
     private var isSelected: Bool {
@@ -18,6 +21,8 @@ struct TextWidgetView: View {
     private var isEditing: Bool {
         selections.editingWidgetID == textWidget.id
     }
+    
+    @State private var isDragging = false
 
     var body: some View {
         ZStack {
@@ -49,28 +54,60 @@ struct TextWidgetView: View {
                 TextWidgetContent(textWidget: textWidget, slideSize: slideSize)
                     .fixedSize()
                     .overlay(
-                        Rectangle()
-                            .stroke(
-                                isSelected ? Color(.systemBlue) : .clear,
-                                lineWidth: 1 / HomeyMusicKit.goldenRatio
-                            )
+                      Rectangle()
+                        .stroke(
+                          isDragging
+                            ? Color.gray
+                            : (isSelected ? Color(.systemBlue) : .clear),
+                          lineWidth: 1 / HomeyMusicKit.goldenRatio
+                        )
                     )
             }
         }
         .contentShape(Rectangle())
+        // position uses stored x/y plus any live drag offset
         .position(
-            x: slideSize.width  * textWidget.x,
-            y: slideSize.height * textWidget.y
+            x: slideSize.width  * textWidget.x + dragOffset.width,
+            y: slideSize.height * textWidget.y + dragOffset.height
         )
-        // First click selects, second click (if already selected) enters edit-mode
+        // toggle selection or enter edit-mode on click
         .onTapGesture {
             guard !isEditing else { return }
-
             if isSelected {
+                // second click → edit
                 selections.editingWidgetID = textWidget.id
             } else {
+                // first click → select
                 selections.textWidgetSelections = [textWidget.id]
             }
         }
+        // allow dragging when selected & not editing
+        .gesture(
+            DragGesture()
+                .onChanged { value in
+                    guard isSelected && !isEditing else { return }
+                    isDragging = true
+                    dragOffset = value.translation
+                }
+                .onEnded { value in
+                    guard isSelected && !isEditing else {
+                        dragOffset = .zero
+                        return
+                    }
+                    // compute new normalized position
+                    let dx = value.translation.width  / slideSize.width
+                    let dy = value.translation.height / slideSize.height
+                    textWidget.x = (textWidget.x + dx).clamped(to: 0...1)
+                    textWidget.y = (textWidget.y + dy).clamped(to: 0...1)
+                    dragOffset = .zero
+                    isDragging = false
+                }
+        )
+    }
+}
+
+private extension Double {
+    func clamped(to range: ClosedRange<Double>) -> Double {
+        min(max(self, range.lowerBound), range.upperBound)
     }
 }
