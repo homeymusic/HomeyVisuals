@@ -54,13 +54,44 @@ struct TextWidgetView: View {
                 TextWidgetContent(textWidget: textWidget, slideSize: slideSize)
                     .fixedSize()
                     .overlay(
-                      Rectangle()
-                        .stroke(
-                          isDragging
-                            ? Color.gray
-                            : (isSelected ? Color(.systemBlue) : .clear),
-                          lineWidth: 1 / HomeyMusicKit.goldenRatio
-                        )
+                      ZStack {
+                        Rectangle()
+                          .stroke(
+                            isDragging
+                              ? Color.gray
+                              : (isSelected ? Color(.systemBlue) : .clear),
+                            lineWidth: 1 / HomeyMusicKit.goldenRatio
+                          )
+
+                        if isSelected && !isDragging && !isEditing {
+                          GeometryReader { geo in
+                            let handleSize: CGFloat = 13
+                            let yCenter = geo.size.height / 2
+
+                            Group {
+                              // Left handle
+                              Rectangle()
+                                .fill(Color.white)
+                                .frame(width: handleSize, height: handleSize)
+                                .overlay(
+                                  Rectangle()
+                                    .stroke(Color.black, lineWidth: 2)
+                                )
+                                .position(x: 0, y: yCenter)
+
+                              // Right handle
+                              Rectangle()
+                                .fill(Color.white)
+                                .frame(width: handleSize, height: handleSize)
+                                .overlay(
+                                  Rectangle()
+                                    .stroke(Color.black, lineWidth: 2)
+                                )
+                                .position(x: geo.size.width, y: yCenter)
+                            }
+                          }
+                        }
+                      }
                     )
             }
         }
