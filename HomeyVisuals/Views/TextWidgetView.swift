@@ -1,7 +1,6 @@
-// TextWidgetView.swift
-
 import SwiftUI
 import SwiftData
+import HomeyMusicKit
 
 struct TextWidgetView: View {
     @Bindable var textWidget: TextWidget
@@ -10,18 +9,23 @@ struct TextWidgetView: View {
 
     var body: some View {
         
-        TextWidgetContent(widget: textWidget, slideSize: slideSize)
+        TextWidgetContent(textWidget: textWidget, slideSize: slideSize)
+            .fixedSize()
             .overlay(
                 Rectangle()
                     .stroke(
                         isSelected ? Color(.systemBlue) : .clear,
-                        lineWidth: 0.5
+                        lineWidth: 1 / HomeyMusicKit.goldenRatio
                     )
             )
             .contentShape(Rectangle())          // 2) make only that small area tappable
             .onTapGesture {
                 isSelected.toggle()
             }
+            .position(
+                x: slideSize.width  * textWidget.x,
+                y: slideSize.height * textWidget.y
+            )
     }
 }
 

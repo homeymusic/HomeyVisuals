@@ -15,8 +15,12 @@ struct SlideDetail: View {
     
     var body: some View {
         SlideContainer(slide: slide, isThumbnail: isThumbnail) { slideSize in
-            ForEach(slide.textWidgets, id: \.id) { w in
-                TextWidgetContent(widget: w, slideSize: slideSize)
+            ForEach(slide.textWidgets, id: \.id) { textWidget in
+                TextWidgetContent(textWidget: textWidget, slideSize: slideSize)
+                    .position(
+                        x: slideSize.width  * textWidget.x,
+                        y: slideSize.height * textWidget.y
+                    )
             }
         }
     }
