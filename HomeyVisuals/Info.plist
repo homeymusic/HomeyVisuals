@@ -43,6 +43,26 @@
       <string>application/vnd.homeymusic.slide</string>
     </dict>
   </dict>
+  <dict>
+      <key>UTTypeIdentifier</key>
+      <string>com.homeymusic.visuals.textwidget</string>
+      <key>UTTypeDescription</key>
+      <string>Homey Visuals Text Widget</string>
+      <key>UTTypeConformsTo</key>
+      <array>
+        <string>public.data</string>
+        <string>public.json</string>
+      </array>
+      <key>UTTypeTagSpecification</key>
+      <dict>
+        <key>public.filename-extension</key>
+        <array>
+          <string>json</string>
+        </array>
+        <key>public.mime-type</key>
+        <string>application/vnd.homeymusic.textwidget</string>
+      </dict>
+    </dict>
 </array>
 <key>CFBundleDocumentTypes</key>
 <array>

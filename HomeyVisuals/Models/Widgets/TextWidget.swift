@@ -52,6 +52,31 @@ public final class TextWidget: Widget {
             fontSize: 150
         )
     }
+    @MainActor
+    public convenience init(record: TextWidgetRecord, slide: Slide) {
+      self.init(
+        slide:  slide,
+        x:      record.x,
+        y:      record.y,
+        z:      record.z,
+        width:  record.width,
+        height: record.height,
+        text:   record.text
+      )
+      self.fontSize = record.fontSize
+    }
+    public var record: TextWidgetRecord {
+      TextWidgetRecord(
+        id:         id,
+        x:          x,
+        y:          y,
+        z:          z,
+        width:      width,
+        height:     height,
+        text:       text,
+        fontSize:   fontSize
+      )
+    }
 }
 
 extension TextWidget {

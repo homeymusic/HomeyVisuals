@@ -52,28 +52,38 @@ public final class Slide: Identifiable {
         self.position = 0
     }
     
+    // in Slide model
     public var record: SlideRecord {
-        SlideRecord(
-            isSkipped:       isSkipped,
-            backgroundType:  backgroundType,
-            backgroundColor: backgroundRGBAColor,
-            aspectRatioID:   aspectRatio.id
-            // TODO: include cameraDeviceID once SlideRecord is updated
-        )
+      SlideRecord(
+        isSkipped:       isSkipped,
+        backgroundType:  backgroundType,
+        backgroundColor: backgroundRGBAColor,
+        aspectRatioID:   aspectRatio.id,
+        cameraDeviceID:  cameraDeviceID,
+        textWidgets:     textWidgets.map(\.record)
+      )
     }
     
     @MainActor
     public convenience init(record: SlideRecord, in context: ModelContext) {
-        let fetch = AspectRatio.fetchDescriptor(id: record.aspectRatioID)
-        let ratio = (try? context.fetch(fetch).first)
-        ?? AspectRatio.wide(in: context)
-        self.init(
-            aspectRatio:         ratio,
-            backgroundType:      record.backgroundType,
-            backgroundRGBAColor: record.backgroundColor,
-            cameraDeviceID:      nil, // TODO: read from record once updated
-            isSkipped:           record.isSkipped
-        )
+      let fetch = AspectRatio.fetchDescriptor(id: record.aspectRatioID)
+      let ratio = (try? context.fetch(fetch).first)
+                  ?? AspectRatio.wide(in: context)
+
+      self.init(
+        aspectRatio:         ratio,
+        backgroundType:      record.backgroundType,
+        backgroundRGBAColor: record.backgroundColor,
+        cameraDeviceID:      record.cameraDeviceID,
+        isSkipped:           record.isSkipped
+      )
+
+      // re-create all the widgets
+      for wRec in record.textWidgets {
+        let w = TextWidget(record: wRec, slide: self)
+        context.insert(w)
+        textWidgets.append(w)
+      }
     }
     
     @MainActor
