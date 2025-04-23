@@ -31,11 +31,6 @@ struct SlideList: View {
                             }
                             // live, vector thumbnail
                             SlideDetail(slide: slide, isThumbnail: true)
-                                .frame(maxWidth: .infinity)
-                                .aspectRatio(
-                                    CGFloat(slide.aspectRatio.ratio),
-                                    contentMode: .fit
-                                )
                         }
                     }
                     .tag(slide.id)

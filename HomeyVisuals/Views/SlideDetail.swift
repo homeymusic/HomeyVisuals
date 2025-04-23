@@ -8,7 +8,7 @@ struct SlideDetail: View {
     let slide: Slide
     let isThumbnail: Bool
     
-    init(slide: Slide, isThumbnail: Bool = false) {
+    init(slide: Slide, isThumbnail: Bool) {
         self.slide       = slide
         self.isThumbnail = isThumbnail
     }

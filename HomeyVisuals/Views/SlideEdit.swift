@@ -11,7 +11,7 @@ struct SlideEdit: View {
 
     var body: some View {
         if let slide = selections.selectedSlide(in: slides) {
-            SlideContainer(slide: slide) { slideSize in
+            SlideContainer(slide: slide, isThumbnail: false) { slideSize in
                 Group {
                     // 1) Tap to deselect
                     Color.clear

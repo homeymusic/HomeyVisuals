@@ -1,5 +1,3 @@
-// SlideContainer.swift
-
 import SwiftUI
 import HomeyMusicKit
 
@@ -23,25 +21,23 @@ struct SlideContainer<Content: View>: View {
     var body: some View {
         GeometryReader { geo in
             let containerSize = geo.size
-            // pick the “box” we lay out into:
-            // – full-screen letterbox for slideshow/edit
-            // – real-screen letterbox for thumbnails
-            let box = isThumbnail
-                ? slide.letterboxSizeOnScreen
-                : containerSize
-
-            // compute scale to fit that box *into* the container
+            
+            // always use the letterbox sized for the main screen
+            let letterbox = slide.letterboxSizeOnScreen
+            
+            // compute scale to fit that letterbox into whatever container we have
             let scale = min(
-                containerSize.width  / box.width,
-                containerSize.height / box.height
+                containerSize.width  / letterbox.width,
+                containerSize.height / letterbox.height
             )
 
             ZStack {
                 SlideBackground(slide: slide, isThumbnail: isThumbnail)
-                content(box)
+                content(letterbox)
             }
-            .frame(width: box.width, height: box.height)
-            .scaleEffect(isThumbnail ? scale : 1, anchor: .topLeading)
+            .frame(width:  letterbox.width,
+                   height: letterbox.height)
+            .scaleEffect(scale, anchor: .topLeading)
         }
         .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
     }
@@ -64,16 +60,17 @@ struct SlideBackground: View {
 
 /// The shared drawing logic for any TextWidget.
 struct TextWidgetContent: View {
-  let widget: TextWidget
-  let slideSize: CGSize
+    let widget: TextWidget
+    let slideSize: CGSize
 
-  var body: some View {
-    Text(widget.text)
-      .font(.system(size: widget.fontSize))
-      .foregroundColor(.white)
-      .position(
-        x: slideSize.width  * widget.x,
-        y: slideSize.height * widget.y
-      )
-  }
+    var body: some View {
+        Text(widget.text)
+            .font(.system(size: widget.fontSize))
+            .foregroundColor(.white)
+            .position(
+                x: slideSize.width  * widget.x,
+                y: slideSize.height * widget.y
+            )
+    }
 }
+

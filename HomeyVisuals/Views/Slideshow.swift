@@ -15,7 +15,7 @@ struct Slideshow: View {
     var body: some View {
         ZStack {
             // Render the slide
-            SlideDetail(slide: slides[index])
+            SlideDetail(slide: slides[index], isThumbnail: false)
 
             // Invisible overlay for key handling
             KeyCatcher(
