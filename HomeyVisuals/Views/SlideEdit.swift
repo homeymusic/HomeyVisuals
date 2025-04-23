@@ -11,8 +11,7 @@ struct SlideEdit: View {
 
     var body: some View {
         if let slide = selections.selectedSlide(in: slides) {
-            // ← remove isThumbnail: true here
-            SlideContainer(slide: slide) { box in
+            SlideContainer(slide: slide) { slideSize in
                 Group {
                     // 1) Tap to deselect
                     Color.clear
@@ -24,24 +23,22 @@ struct SlideEdit: View {
                         slide.textWidgets.indices
                             .sorted { slide.textWidgets[$0].z < slide.textWidgets[$1].z },
                         id: \.self
-                    ) { idx in
-                        let w = slide.textWidgets[idx]
+                    ) { index in
+                        let textWidget = slide.textWidgets[index]
                         TextWidgetView(
-                            widget:    w,
-                            slideSize: box,
+                            textWidget:    textWidget,
+                            slideSize: slideSize,
                             isSelected: Binding(
-                                get: { selections.textWidgetSelections.contains(w.id) },
+                                get: { selections.textWidgetSelections.contains(textWidget.id) },
                                 set: { isSel in
                                     if isSel {
-                                        selections.textWidgetSelections.insert(w.id)
+                                        selections.textWidgetSelections.insert(textWidget.id)
                                     } else {
-                                        selections.textWidgetSelections.remove(w.id)
+                                        selections.textWidgetSelections.remove(textWidget.id)
                                     }
                                 }
                             )
                         )
-                        // use the same widget.fontSize
-                        .font(.system(size: w.fontSize))
                     }
                 }
             }

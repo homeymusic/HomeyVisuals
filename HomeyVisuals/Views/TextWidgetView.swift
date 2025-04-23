@@ -4,16 +4,15 @@ import SwiftUI
 import SwiftData
 
 struct TextWidgetView: View {
-    @Bindable var widget: TextWidget
+    @Bindable var textWidget: TextWidget
     let slideSize: CGSize
     @Binding var isSelected: Bool
 
     var body: some View {
-        Text(widget.text)
-            .font(.largeTitle)
+        
+        Text(textWidget.text)
+            .font(.system(size: textWidget.fontSize))
             .foregroundColor(.white)
-            .padding(4)
-            .fixedSize()                        // 1) shrink to text+padding
             .overlay(
                 Rectangle()
                     .stroke(
@@ -26,8 +25,8 @@ struct TextWidgetView: View {
                 isSelected.toggle()
             }
             .position(                          // 4) move BOTH view & hit‑area
-                x: CGFloat(widget.x) * slideSize.width,
-                y: CGFloat(widget.y) * slideSize.height
+                x: CGFloat(textWidget.x) * slideSize.width,
+                y: CGFloat(textWidget.y) * slideSize.height
             )
     }
 }

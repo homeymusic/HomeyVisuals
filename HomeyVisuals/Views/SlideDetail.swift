@@ -14,14 +14,14 @@ struct SlideDetail: View {
     }
 
     var body: some View {
-        SlideContainer(slide: slide, isThumbnail: isThumbnail) { box in
-            ForEach(slide.textWidgets, id: \.id) { w in
-                Text(w.text)
-                    .font(.system(size: w.fontSize))
+        SlideContainer(slide: slide, isThumbnail: isThumbnail) { slideSize in
+            ForEach(slide.textWidgets, id: \.id) { textWidget in
+                Text(textWidget.text)
+                    .font(.system(size: textWidget.fontSize))
                     .foregroundColor(.white)
                     .position(
-                        x: box.width  * w.x,
-                        y: box.height * w.y
+                        x: slideSize.width  * textWidget.x,
+                        y: slideSize.height * textWidget.y
                     )
             }
         }

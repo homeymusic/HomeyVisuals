@@ -85,8 +85,8 @@ public final class Slide: Identifiable {
     }
     
     public static func updatePositions(_ slides: [Slide]) {
-        for (idx, slide) in slides.enumerated() {
-            slide.position = idx + 1
+        for (index, slide) in slides.enumerated() {
+            slide.position = index + 1
         }
     }
     
