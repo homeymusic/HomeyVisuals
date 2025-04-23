@@ -39,19 +39,15 @@ struct TextWidgetView: View {
                 .focused($fieldIsFocused)
                 .onAppear { fieldIsFocused = true }
                 .onChange(of: fieldIsFocused) { _, focused in
-                    if !focused {
-                        selections.editingWidgetID = nil
-                    }
+                    if !focused { selections.editingWidgetID = nil }
                 }
-                .onExitCommand {
-                    selections.editingWidgetID = nil
-                }
+                .onExitCommand { selections.editingWidgetID = nil }
 
             } else {
                 let handleSize: CGFloat = 13
                 let slideW = slideSize.width
 
-                // Render content with a width driven by textWidget.width
+                // Main content with dynamic width
                 TextWidgetContent(textWidget: textWidget, slideSize: slideSize)
                     .frame(width: textWidget.width * slideW, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
@@ -59,7 +55,7 @@ struct TextWidgetView: View {
                     .contentShape(Rectangle())
                     .overlay(
                         ZStack {
-                            // Outline border
+                            // Outline when selected or dragging
                             Rectangle()
                                 .inset(by: handleSize / 2)
                                 .stroke(
@@ -67,38 +63,58 @@ struct TextWidgetView: View {
                                     lineWidth: 1
                                 )
 
-                            // Resize handles when selected
                             if isSelected && !isDragging {
                                 GeometryReader { geo in
                                     let yCenter = geo.size.height / 2
                                     let minWidth: CGFloat = handleSize * 2
 
-                                    // Leading handle: drag to resize left edge, keep right fixed
+                                    // --- Leading handle (resize left edge) ---
                                     Rectangle()
                                         .fill(Color.white)
                                         .frame(width: handleSize, height: handleSize)
                                         .overlay(Rectangle().stroke(Color.black, lineWidth: 1))
                                         .position(x: handleSize / 2, y: yCenter)
                                         .pointerStyle(.frameResize(position: .leading))
+                                        // Option+drag: symmetric around center
                                         .highPriorityGesture(
                                             DragGesture()
+                                                .modifiers(.option)
                                                 .onChanged { value in
                                                     if resizingInitialWidth == nil {
                                                         resizingInitialWidth = textWidget.width * slideW
                                                         resizingInitialX     = textWidget.x
                                                     }
-                                                    let initialWidthPts  = resizingInitialWidth!
-                                                    let initialCenterPts = resizingInitialX! * slideW
-                                                    let initialRightPts  = initialCenterPts + initialWidthPts/2
-                                                    let initialLeftPts   = initialCenterPts - initialWidthPts/2
-
-                                                    let rawNewLeftPts = initialLeftPts + value.translation.width
-                                                    var newWidthPts   = initialRightPts - rawNewLeftPts
-                                                    newWidthPts       = max(newWidthPts, minWidth)
-                                                    let newCenterPts  = rawNewLeftPts + newWidthPts/2
-
-                                                    textWidget.width = newWidthPts / slideW
-                                                    textWidget.x     = newCenterPts / slideW
+                                                    let w0    = resizingInitialWidth!
+                                                    let x0    = resizingInitialX!
+                                                    let delta = -value.translation.width
+                                                    let newW  = max(w0 + delta, minWidth)
+                                                    textWidget.width = newW / slideW
+                                                    textWidget.x     = x0
+                                                }
+                                                .onEnded { _ in
+                                                    resizingInitialWidth = nil
+                                                    resizingInitialX     = nil
+                                                }
+                                        )
+                                        // Normal leading drag
+                                        .gesture(
+                                            DragGesture()
+                                                .modifiers([])
+                                                .onChanged { value in
+                                                    let dx = value.translation.width
+                                                    if resizingInitialWidth == nil {
+                                                        resizingInitialWidth = textWidget.width * slideW
+                                                        resizingInitialX     = textWidget.x
+                                                    }
+                                                    let w0 = resizingInitialWidth!
+                                                    let x0 = resizingInitialX! * slideW
+                                                    let rightEdge = x0 + w0/2
+                                                    let left0     = x0 - w0/2
+                                                    let newLeft   = left0 + dx
+                                                    let wPts      = max(rightEdge - newLeft, minWidth)
+                                                    let centerPts = newLeft + wPts/2
+                                                    textWidget.width = wPts / slideW
+                                                    textWidget.x     = centerPts / slideW
                                                 }
                                                 .onEnded { _ in
                                                     resizingInitialWidth = nil
@@ -106,31 +122,52 @@ struct TextWidgetView: View {
                                                 }
                                         )
 
-                                    // Trailing handle: drag to resize right edge, keep left fixed
+                                    // --- Trailing handle (resize right edge) ---
                                     Rectangle()
                                         .fill(Color.white)
                                         .frame(width: handleSize, height: handleSize)
                                         .overlay(Rectangle().stroke(Color.black, lineWidth: 1))
                                         .position(x: geo.size.width - handleSize/2, y: yCenter)
                                         .pointerStyle(.frameResize(position: .trailing))
+                                        // Option+drag: symmetric around center
                                         .highPriorityGesture(
                                             DragGesture()
+                                                .modifiers(.option)
                                                 .onChanged { value in
                                                     if resizingInitialWidth == nil {
                                                         resizingInitialWidth = textWidget.width * slideW
                                                         resizingInitialX     = textWidget.x
                                                     }
-                                                    let initialWidthPts  = resizingInitialWidth!
-                                                    let initialCenterPts = resizingInitialX! * slideW
-                                                    let initialLeftPts   = initialCenterPts - initialWidthPts/2
-
-                                                    let rawNewRightPts = initialLeftPts + initialWidthPts + value.translation.width
-                                                    var newWidthPts    = rawNewRightPts - initialLeftPts
-                                                    newWidthPts        = max(newWidthPts, minWidth)
-                                                    let newCenterPts   = initialLeftPts + newWidthPts/2
-
-                                                    textWidget.width = newWidthPts / slideW
-                                                    textWidget.x     = newCenterPts / slideW
+                                                    let w0    = resizingInitialWidth!
+                                                    let x0    = resizingInitialX!
+                                                    let delta = value.translation.width
+                                                    let newW  = max(w0 + delta, minWidth)
+                                                    textWidget.width = newW / slideW
+                                                    textWidget.x     = x0
+                                                }
+                                                .onEnded { _ in
+                                                    resizingInitialWidth = nil
+                                                    resizingInitialX     = nil
+                                                }
+                                        )
+                                        // Normal trailing drag
+                                        .gesture(
+                                            DragGesture()
+                                                .modifiers([])
+                                                .onChanged { value in
+                                                    let dx = value.translation.width
+                                                    if resizingInitialWidth == nil {
+                                                        resizingInitialWidth = textWidget.width * slideW
+                                                        resizingInitialX     = textWidget.x
+                                                    }
+                                                    let w0  = resizingInitialWidth!
+                                                    let x0  = resizingInitialX! * slideW
+                                                    let leftEdge = x0 - w0/2
+                                                    let newR     = leftEdge + w0 + dx
+                                                    let wPts     = max(newR - leftEdge, minWidth)
+                                                    let centerPts = leftEdge + wPts/2
+                                                    textWidget.width = wPts / slideW
+                                                    textWidget.x     = centerPts / slideW
                                                 }
                                                 .onEnded { _ in
                                                     resizingInitialWidth = nil
@@ -151,27 +188,20 @@ struct TextWidgetView: View {
         )
         .onTapGesture {
             guard !isEditing else { return }
-            if isSelected {
-                selections.editingWidgetID = textWidget.id
-            } else {
-                selections.textWidgetSelections = [textWidget.id]
-            }
+            if isSelected { selections.editingWidgetID = textWidget.id }
+            else { selections.textWidgetSelections = [textWidget.id] }
         }
         .gesture(
             DragGesture()
                 .onChanged { value in
                     guard !isEditing else { return }
-                    if !isSelected {
-                        selections.textWidgetSelections = [textWidget.id]
-                    }
+                    if !isSelected { selections.textWidgetSelections = [textWidget.id] }
                     isDragging = true
                     dragOffset = value.translation
                 }
                 .onEnded { value in
                     guard !isEditing else {
-                        isDragging = false
-                        dragOffset = .zero
-                        return
+                        isDragging = false; dragOffset = .zero; return
                     }
                     let dx = value.translation.width / slideSize.width
                     let dy = value.translation.height / slideSize.height
@@ -189,3 +219,4 @@ private extension Double {
         min(max(self, range.lowerBound), range.upperBound)
     }
 }
+
