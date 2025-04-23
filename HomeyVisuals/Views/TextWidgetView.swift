@@ -83,25 +83,31 @@ struct TextWidgetView: View {
         }
         // allow dragging when selected & not editing
         .gesture(
-            DragGesture()
-                .onChanged { value in
-                    guard isSelected && !isEditing else { return }
-                    isDragging = true
-                    dragOffset = value.translation
-                }
-                .onEnded { value in
-                    guard isSelected && !isEditing else {
-                        dragOffset = .zero
-                        return
-                    }
-                    // compute new normalized position
-                    let dx = value.translation.width  / slideSize.width
-                    let dy = value.translation.height / slideSize.height
-                    textWidget.x = (textWidget.x + dx).clamped(to: 0...1)
-                    textWidget.y = (textWidget.y + dy).clamped(to: 0...1)
-                    dragOffset = .zero
-                    isDragging = false
-                }
+          DragGesture()
+            .onChanged { value in
+              guard !isEditing else { return }
+              // 1) if this widget wasn’t selected yet, select it immediately
+              if !isSelected {
+                selections.textWidgetSelections = [textWidget.id]
+              }
+              // 2) kick off the drag
+              isDragging = true
+              dragOffset = value.translation
+            }
+            .onEnded { value in
+              guard !isEditing else {
+                isDragging = false
+                dragOffset = .zero
+                return
+              }
+              // commit the final normalized position
+              let dx = value.translation.width  / slideSize.width
+              let dy = value.translation.height / slideSize.height
+              textWidget.x = (textWidget.x + dx).clamped(to: 0...1)
+              textWidget.y = (textWidget.y + dy).clamped(to: 0...1)
+              isDragging = false
+              dragOffset = .zero
+            }
         )
     }
 }
