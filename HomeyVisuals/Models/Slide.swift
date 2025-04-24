@@ -34,6 +34,12 @@ public final class Slide: Identifiable {
     @Relationship(deleteRule: .cascade, inverse: \InstrumentWidget.slide)
     public var instrumentWidgets: [InstrumentWidget] = []
     
+    public var widgets: [any Widget] {
+        // Note: we need to cast to `any Widget` so we can mix TextWidget & InstrumentWidget
+        ((textWidgets as [any Widget]) +
+        (instrumentWidgets as [any Widget])).sorted { $0.z < $1.z }
+    }
+    
     /// SwiftUI-friendly color binding
     public var backgroundColor: Color {
         get { Color(backgroundRGBAColor) }
