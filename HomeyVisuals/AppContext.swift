@@ -3,31 +3,22 @@ import SwiftUI
 @MainActor
 @Observable
 public final class AppContext {
-    var slideSelections      = Set<Slide.ID>()
-    var textWidgetSelections = Set<TextWidget.ID>()
-    var instrumentWidgetSelections = Set<InstrumentWidget.ID>()
-    var editingTextWidgetID: TextWidget.ID? = nil
-    var editingInstrumentWidgetID: InstrumentWidget.ID? = nil
+    // Only one selection set now, for *any* widget ID
+    public var slideSelections      = Set<Slide.ID>()
+    public var widgetSelections     = Set<UUID>()
+    public var editingWidgetID: UUID? = nil
 
-    func selectedSlide(in slides: [Slide]) -> Slide? {
+    /// Which slide is selected?
+    public func selectedSlide(in slides: [Slide]) -> Slide? {
         guard let id = slideSelections.first else { return nil }
         return slides.first { $0.id == id }
     }
 
-    func selectedTextWidget(in slides: [Slide]) -> TextWidget? {
-        guard
-          let slide      = selectedSlide(in: slides),
-          let widgetID   = textWidgetSelections.first
+    /// Which widget (text or instrument) is selected?
+    public func selectedWidget(in slides: [Slide]) -> (any Widget)? {
+        guard let slide   = selectedSlide(in: slides),
+              let widgetID = widgetSelections.first
         else { return nil }
-        return slide.textWidgets.first { $0.id == widgetID }
+        return slide.widgets.first { $0.id == widgetID }
     }
-    
-    func selectedInstrumentWidget(in slides: [Slide]) -> InstrumentWidget? {
-        guard
-          let slide      = selectedSlide(in: slides),
-          let widgetID   = instrumentWidgetSelections.first
-        else { return nil }
-        return slide.instrumentWidgets.first { $0.id == widgetID }
-    }
-
 }

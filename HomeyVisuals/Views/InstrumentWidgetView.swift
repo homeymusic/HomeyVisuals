@@ -10,10 +10,10 @@ struct InstrumentWidgetView: View {
     let slideScale: CGFloat
 
     private var isSelected: Bool {
-        appContext.instrumentWidgetSelections.contains(instrumentWidget.id)
+        appContext.widgetSelections.contains(instrumentWidget.id)
     }
     private var isEditing: Bool {
-        appContext.editingInstrumentWidgetID == instrumentWidget.id
+        appContext.editingWidgetID == instrumentWidget.id
     }
 
     var body: some View {
@@ -23,10 +23,10 @@ struct InstrumentWidgetView: View {
             isSelected: isSelected,
             isEditing: isEditing,
             onSelect: {
-                appContext.instrumentWidgetSelections = [ instrumentWidget.id ]
+                appContext.widgetSelections = [ instrumentWidget.id ]
             },
             onBeginEditing: {
-                appContext.editingInstrumentWidgetID = instrumentWidget.id
+                appContext.editingWidgetID = instrumentWidget.id
             }
         ) {
             InstrumentView()

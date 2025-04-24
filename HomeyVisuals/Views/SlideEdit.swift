@@ -16,8 +16,8 @@ struct SlideEdit: View {
                     Color.clear
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            appContext.textWidgetSelections.removeAll()
-                            appContext.editingTextWidgetID = nil
+                            appContext.widgetSelections.removeAll()
+                            appContext.editingWidgetID = nil
                         }
 
                     SlideWidgetsOverlay(

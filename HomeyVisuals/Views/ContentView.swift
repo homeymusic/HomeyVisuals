@@ -32,8 +32,16 @@ struct ContentView: View {
                     )
             } detail: {
                 Group {
-                    if let widget = appContext.selectedTextWidget(in: slides) {
-                        TextWidgetInspect(widget: widget)
+                    if let widget = appContext.selectedWidget(in: slides) {
+                        // Show the correct inspector based on widget type:
+                        switch widget {
+                        case let text as TextWidget:
+                            TextWidgetInspect(widget: text)
+                        case let inst as InstrumentWidget:
+                            Text("Instrument inspector coming soon")
+                        default:
+                            EmptyView()
+                        }
                     } else if let slide = appContext.selectedSlide(in: slides) {
                         SlideInspect(slide: slide)
                     } else {
@@ -51,7 +59,7 @@ struct ContentView: View {
                 }
             }
             .onChange(of: appContext.slideSelections) { _, _ in
-                appContext.textWidgetSelections.removeAll()
+                appContext.widgetSelections.removeAll()
             }
         }
     }
@@ -122,7 +130,7 @@ struct ContentView: View {
             slide.textWidgets.append(widget)
         }
         // put the new widget’s ID into the selection set
-        appContext.textWidgetSelections = [ widget.id ]
+        appContext.widgetSelections = [ widget.id ]
     }
     
     private func addInstrument(instrumentChoice: InstrumentChoice) {
@@ -133,7 +141,7 @@ struct ContentView: View {
             slide.instrumentWidgets.append(widget)
         }
         // put the new widget’s ID into the selection set
-        appContext.instrumentWidgetSelections = [ widget.id ]
+        appContext.widgetSelections = [ widget.id ]
     }
 
     private func addSlide(after id: Slide.ID?) {
@@ -152,7 +160,7 @@ struct ContentView: View {
         Slide.updatePositions(reordered)
         
         appContext.slideSelections      = [ newSlide.id ]
-        appContext.textWidgetSelections.removeAll()
+        appContext.widgetSelections.removeAll()
     }
     
     private func deleteSelectedSlides() {
@@ -177,7 +185,7 @@ struct ContentView: View {
             Slide.updatePositions(remaining)
             
             appContext.slideSelections.removeAll()
-            appContext.textWidgetSelections.removeAll()
+            appContext.widgetSelections.removeAll()
             if let keep = nextID {
                 appContext.slideSelections.insert(keep)
             }

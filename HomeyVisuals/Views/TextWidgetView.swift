@@ -13,10 +13,10 @@ struct TextWidgetView: View {
     @FocusState private var fieldIsFocused: Bool
 
     private var isSelected: Bool {
-        appContext.textWidgetSelections.contains(textWidget.id)
+        appContext.widgetSelections.contains(textWidget.id)
     }
     private var isEditing: Bool {
-        appContext.editingTextWidgetID == textWidget.id
+        appContext.editingWidgetID == textWidget.id
     }
 
     var body: some View {
@@ -26,10 +26,10 @@ struct TextWidgetView: View {
             isSelected: isSelected,
             isEditing: isEditing,
             onSelect: {
-                appContext.textWidgetSelections = [ textWidget.id ]
+                appContext.widgetSelections = [ textWidget.id ]
             },
             onBeginEditing: {
-                appContext.editingTextWidgetID = textWidget.id
+                appContext.editingWidgetID = textWidget.id
             }
         ) {
             if isEditing {
@@ -40,11 +40,11 @@ struct TextWidgetView: View {
                     .onAppear { fieldIsFocused = true }
                     .onChange(of: fieldIsFocused) {
                         if !fieldIsFocused {
-                            appContext.editingTextWidgetID = nil
+                            appContext.editingWidgetID = nil
                         }
                     }
                     .onExitCommand {
-                        appContext.editingTextWidgetID = nil
+                        appContext.editingWidgetID = nil
                     }
             } else {
                 Text(textWidget.text)
