@@ -3,7 +3,7 @@ import SwiftData
 import HomeyMusicKit
 
 /// View for a single TextWidget—click once to select, click again to edit,
-/// drag when selected or resize via handles (leading/trailing), with Option for symmetric
+/// drag when selected or resize via handles (leading/trailing), with Option for symmetric resizing
 struct TextWidgetView: View {
     @Environment(Selections.self) private var selections
     @Bindable var textWidget: TextWidget
@@ -14,6 +14,9 @@ struct TextWidgetView: View {
     @State private var resizingInitialWidth: CGFloat? = nil
     @State private var resizingInitialX: CGFloat? = nil
 
+    /// The inset used around text for resize handles
+    private let handleSize: CGFloat = 13
+
     private var isSelected: Bool {
         selections.textWidgetSelections.contains(textWidget.id)
     }
@@ -21,10 +24,6 @@ struct TextWidgetView: View {
         selections.editingWidgetID == textWidget.id
     }
 
-    /// Minimum width in points (two handles)
-    private let minWidthPts: CGFloat = 26
-
-    /// Resize handles
     private enum ResizeAnchor { case leading, trailing }
 
     var body: some View {
@@ -44,28 +43,10 @@ struct TextWidgetView: View {
         .gesture(moveGesture)
     }
 
-    // MARK: - Editor
-    private var editor: some View {
-        TextField("", text: $textWidget.text, onCommit: {
-            selections.editingWidgetID = nil
-        })
-        .font(.system(size: textWidget.fontSize))
-        .textFieldStyle(.plain)
-        .fixedSize()
-        .overlay(Rectangle().stroke(Color.gray, lineWidth: 2))
-        .focused($fieldIsFocused)
-        .onAppear { fieldIsFocused = true }
-        .onChange(of: fieldIsFocused) { _, focused in
-            if !focused { selections.editingWidgetID = nil }
-        }
-        .onExitCommand { selections.editingWidgetID = nil }
-    }
-
-    // MARK: - Content + Handles
+    // MARK: - Display mode content
     private var content: some View {
-        let handleSize: CGFloat = 13
-
-        return TextWidgetContent(textWidget: textWidget)
+        TextWidgetContent(textWidget: textWidget)
+            .multilineTextAlignment(.leading)
             .frame(width: textWidget.width, alignment: .leading)
             .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, handleSize / 2)
@@ -73,7 +54,12 @@ struct TextWidgetView: View {
                 ZStack {
                     Rectangle()
                         .inset(by: handleSize / 2)
-                        .stroke(isDragging ? Color.gray : (isSelected ? Color(.systemBlue) : .clear), lineWidth: 2)
+                        .stroke(
+                            isDragging
+                                ? Color.gray
+                                : (isSelected ? Color(.systemBlue) : .clear),
+                            lineWidth: 2
+                        )
 
                     if isSelected && !isDragging {
                         GeometryReader { geo in
@@ -104,12 +90,34 @@ struct TextWidgetView: View {
             )
     }
 
+    // MARK: - Editor mode content
+    private var editor: some View {
+        TextEditor(text: $textWidget.text)
+            .font(.system(size: textWidget.fontSize))
+            .multilineTextAlignment(.leading)
+            .frame(width: textWidget.width, alignment: .leading)
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(.horizontal, handleSize / 2)
+            .overlay(Rectangle().stroke(Color.gray, lineWidth: 2))
+            .background(Color.clear)
+            .focused($fieldIsFocused)
+            .onAppear { fieldIsFocused = true }
+            .onChange(of: fieldIsFocused) { _, focused in
+                if !focused {
+                    selections.editingWidgetID = nil
+                }
+            }
+            .onExitCommand { selections.editingWidgetID = nil }
+    }
+
     // MARK: - Move Gesture
     private var moveGesture: some Gesture {
         DragGesture()
             .onChanged { value in
                 guard !isEditing else { return }
-                if !isSelected { selections.textWidgetSelections = [textWidget.id] }
+                if !isSelected {
+                    selections.textWidgetSelections = [ textWidget.id ]
+                }
                 isDragging = true
                 dragOffset = value.translation
             }
@@ -140,14 +148,16 @@ struct TextWidgetView: View {
 
     // MARK: - Resize Logic
     private func applyResize(delta: CGFloat, anchor: ResizeAnchor, symmetric: Bool) {
-        guard let w0 = resizingInitialWidth, let x0 = resizingInitialX else { return }
-        let sign = (anchor == .trailing ? 1.0 : -1.0)
+        guard let w0 = resizingInitialWidth,
+              let x0 = resizingInitialX else { return }
+        let minWidth = handleSize * 2
+        let sign: CGFloat = (anchor == .trailing ? 1 : -1)
 
         if symmetric {
-            let newW = max(w0 + sign * delta, minWidthPts)
+            let newW = max(w0 + sign * delta, minWidth)
             textWidget.width = newW
         } else {
-            let newW = max(w0 + sign * delta, minWidthPts)
+            let newW = max(w0 + sign * delta, minWidth)
             let deltaW = newW - w0
             let newX  = x0 + sign * (deltaW / 2)
             textWidget.width = newW
@@ -160,13 +170,13 @@ struct TextWidgetView: View {
         resizingInitialX     = nil
     }
 
-    // MARK: - Helpers
+    // MARK: - Tap Handling
     private func handleTap() {
         guard !isEditing else { return }
         if isSelected {
             selections.editingWidgetID = textWidget.id
         } else {
-            selections.textWidgetSelections = [textWidget.id]
+            selections.textWidgetSelections = [ textWidget.id ]
         }
     }
 }
