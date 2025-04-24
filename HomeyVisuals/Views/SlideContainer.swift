@@ -8,7 +8,7 @@ struct SlideContainer<Content: View>: View {
     let slide: Slide
     let isThumbnail: Bool
     @ViewBuilder let content: () -> Content
-
+    
     /// You can omit `isThumbnail` when you want full-screen/edit mode.
     init(
         slide: Slide,
@@ -19,7 +19,7 @@ struct SlideContainer<Content: View>: View {
         self.isThumbnail = isThumbnail
         self.content     = content
     }
-
+    
     var body: some View {
         GeometryReader { geo in
             // 1) Compute the scale that fits your slide into the container
@@ -28,7 +28,7 @@ struct SlideContainer<Content: View>: View {
                 geo.size.width  / letterbox.width,
                 geo.size.height / letterbox.height
             )
-
+            
             // 2) Kick the scale into AppContext any time it changes
             ZStack(alignment: .topLeading) {
                 SlideBackground(slide: slide, isThumbnail: isThumbnail)
@@ -50,7 +50,7 @@ struct SlideContainer<Content: View>: View {
 struct SlideBackground: View {
     let slide: Slide
     let isThumbnail: Bool
-
+    
     var body: some View {
         switch slide.backgroundType {
         case .color:
@@ -64,7 +64,7 @@ struct SlideBackground: View {
 /// The shared drawing logic for any TextWidget.
 struct TextWidgetContent: View {
     let textWidget: TextWidget
-
+    
     var body: some View {
         Text(textWidget.text)
             .font(.system(size: textWidget.fontSize))
@@ -75,9 +75,13 @@ struct TextWidgetContent: View {
 /// The shared drawing logic for any TextWidget.
 struct InstrumentWidgetContent: View {
     let instrumentWidget: InstrumentWidget
-
+    @Environment(InstrumentalContext.self) var instrumentalContext
+    
     var body: some View {
         InstrumentView()
+            .onAppear {
+                instrumentalContext.instrumentChoice = instrumentWidget.instrumentChoice
+            }
     }
 }
 

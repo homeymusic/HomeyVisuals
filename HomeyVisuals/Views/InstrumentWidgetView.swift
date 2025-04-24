@@ -5,6 +5,7 @@ import AppKit
 
 struct InstrumentWidgetView: View {
     @Environment(AppContext.self) private var appContext
+    @Environment(InstrumentalContext.self) var instrumentalContext
     @Bindable var instrumentWidget: InstrumentWidget
 
     @FocusState private var fieldIsFocused: Bool
@@ -39,6 +40,7 @@ struct InstrumentWidgetView: View {
             .fixedSize(horizontal: false, vertical: true)
             .padding(handleSize)
             .overlay(selectionOverlay)
+            .environment(instrumentalContext)
     }
 
     private var selectionOverlay: some View {
