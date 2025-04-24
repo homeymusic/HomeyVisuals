@@ -24,6 +24,7 @@ struct InstrumentWidgetView: View {
             isEditing: isEditing,
             onSelect: {
                 appContext.widgetSelections = [ instrumentWidget.id ]
+                appContext.editingWidgetID = nil
             },
             onBeginEditing: {
                 appContext.editingWidgetID = instrumentWidget.id
@@ -33,6 +34,7 @@ struct InstrumentWidgetView: View {
                 .onAppear {
                     instrumentalContext.instrumentChoice = instrumentWidget.instrumentChoice
                 }
+                .allowsHitTesting(isEditing)
         }
     }
 }

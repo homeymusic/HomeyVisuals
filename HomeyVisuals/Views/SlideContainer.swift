@@ -37,8 +37,8 @@ struct SlideContainer<Content: View>: View {
             .frame(width:  letterbox.width,
                    height: letterbox.height)
             .scaleEffect(scale, anchor: .topLeading)
+            .coordinateSpace(name: "slideSpace")
         }
-        .coordinateSpace(name: "slideSpace")
         .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
     }
 }

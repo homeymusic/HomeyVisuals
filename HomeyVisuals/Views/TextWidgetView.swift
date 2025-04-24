@@ -27,6 +27,7 @@ struct TextWidgetView: View {
             isEditing: isEditing,
             onSelect: {
                 appContext.widgetSelections = [ textWidget.id ]
+                appContext.editingWidgetID = nil
             },
             onBeginEditing: {
                 appContext.editingWidgetID = textWidget.id
