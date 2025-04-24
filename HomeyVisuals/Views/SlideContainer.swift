@@ -5,17 +5,17 @@ import HomeyMusicKit
 struct SlideContainer<Content: View>: View {
     let slide: Slide
     let isThumbnail: Bool
-    @ViewBuilder let content: Content
+    @ViewBuilder let content: () -> Content
 
     /// You can omit `isThumbnail` when you want full-screen/edit mode.
     init(
         slide: Slide,
         isThumbnail: Bool = false,
-        @ViewBuilder content: () -> Content
+        @ViewBuilder content: @escaping () -> Content
     ) {
         self.slide       = slide
         self.isThumbnail = isThumbnail
-        self.content     = content()
+        self.content     = content
     }
 
     var body: some View {
@@ -27,9 +27,9 @@ struct SlideContainer<Content: View>: View {
                 containerSize.height / slide.size.height
             )
 
-            ZStack {
+            ZStack(alignment: .topLeading) {
                 SlideBackground(slide: slide, isThumbnail: isThumbnail)
-                content
+                content()
             }
             .frame(width:  slide.size.width,
                    height: slide.size.height)
