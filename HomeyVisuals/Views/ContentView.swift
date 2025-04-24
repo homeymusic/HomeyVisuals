@@ -29,7 +29,7 @@ struct ContentView: View {
             } detail: {
                 Group {
                     if let widget = appContext.selectedTextWidget(in: slides) {
-                        WidgetInspect(widget: widget)
+                        TextWidgetInspect(widget: widget)
                     } else if let slide = appContext.selectedSlide(in: slides) {
                         SlideInspect(slide: slide)
                     } else {

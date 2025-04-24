@@ -1,5 +1,7 @@
 import SwiftUI
 import CoreGraphics
+import SwiftData
+import HomeyMusicKit
 
 // MARK: — Binding adapter for CGFloat ↔︎ Double
 private extension Binding where Value == CGFloat {
@@ -12,17 +14,58 @@ private extension Binding where Value == CGFloat {
     }
 }
 
-// MARK: — Inspection View
-
-struct WidgetInspect: View {
+/// Inspector for a selected TextWidget: shows a segmented picker (Style/Text/Arrange) and defaults to Arrange.
+struct TextWidgetInspect: View {
     @Bindable var widget: TextWidget
+    @State private var selectedTab: Tab = .arrange
 
-    /// Slide’s absolute size in points
     private var slideSize: CGSize {
         widget.slide?.size ?? .zero
     }
 
+    enum Tab: String, CaseIterable {
+        case style   = "Style"
+        case text    = "Text"
+        case arrange = "Arrange"
+    }
+
     var body: some View {
+        VStack(spacing: 0) {
+            // Header with segmented picker
+            Picker("", selection: $selectedTab) {
+                ForEach(Tab.allCases, id: \.self) { tab in
+                    Text(tab.rawValue).tag(tab)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.vertical, 8)
+
+            Divider()
+
+            // Content for each tab (Arrange only for now)
+            Group {
+                switch selectedTab {
+                case .arrange:
+                    arrangeView
+                case .style:
+                    Text("Style options coming soon…")
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                case .text:
+                    Text("Text options coming soon…")
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
+            .padding()
+
+            Spacer()
+        }
+        .padding()
+    }
+
+    /// The Arrange tab: position & size controls
+    private var arrangeView: some View {
         Form {
             Section("Position & Size") {
                 FieldControl(
@@ -44,12 +87,7 @@ struct WidgetInspect: View {
                     step: 1
                 )
             }
-            Section("Text") {
-                TextField("Content", text: $widget.text)
-            }
         }
-        .navigationTitle("Inspect Text-Box")
-        .padding()
     }
 }
 
