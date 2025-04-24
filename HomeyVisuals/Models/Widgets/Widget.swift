@@ -1,35 +1,95 @@
-// Widget.swift
-
 import Foundation
+import CoreGraphics
 
 /// Base protocol for anything that lives on a Slide and can be hashed for thumbnail invalidation.
-protocol Widget: Identifiable {
-    var id: UUID       { get }
-    var slide: Slide?  { get set }
-    var x: Double      { get set }
-    var y: Double      { get set }
-    var z: Int         { get set }
-    var width: Double  { get set }
-    var height: Double { get set }
+protocol Widget: AnyObject, Identifiable {
+    // MARK: — Identity & Z-order
+    var id: UUID { get }
+    var slide: Slide? { get set }
+    var z: Int { get set }
 
-    /// Every concrete Widget *must* supply its own hash snapshot.
+    // MARK: — Stored (all relative, persisted)
+    /// 0…1 fraction of slide width
+    var relativeX: Double { get set }
+    /// 0…1 fraction of slide height
+    var relativeY: Double { get set }
+    /// 0…1 fraction of slide width
+    var relativeWidth: Double { get set }
+    /// 0…1 fraction of slide height
+    var relativeHeight: Double { get set }
+
+    // MARK: — Computed (absolute, derived via slide.size)
+    /// Absolute X in points
+    var x: CGFloat { get set }
+    /// Absolute Y in points
+    var y: CGFloat { get set }
+    /// Absolute width in points
+    var width: CGFloat { get set }
+    /// Absolute height in points
+    var height: CGFloat { get set }
+
+    /// Every concrete Widget must supply a hash snapshot that includes any content beyond geometry.
     var widgetHash: AnyHashable { get }
 }
 
 extension Widget {
-    /// Helper to gather the six geometry fields all widgets share.
+    // MARK: — Helper: resolved slide size (nil → zero)
+    private var slideSize: CGSize {
+        slide?.size ?? .zero
+    }
+
+    // MARK: — Default computed property implementations
+    public var x: CGFloat {
+        get { CGFloat(relativeX) * slideSize.width }
+        set {
+            guard slideSize.width > 0 else { return }
+            relativeX = (Double(newValue) / Double(slideSize.width)).clamped(to: 0...1)
+        }
+    }
+
+    public var y: CGFloat {
+        get { CGFloat(relativeY) * slideSize.height }
+        set {
+            guard slideSize.height > 0 else { return }
+            relativeY = (Double(newValue) / Double(slideSize.height)).clamped(to: 0...1)
+        }
+    }
+
+    public var width: CGFloat {
+        get { CGFloat(relativeWidth) * slideSize.width }
+        set {
+            guard slideSize.width > 0 else { return }
+            relativeWidth = (Double(newValue) / Double(slideSize.width)).clamped(to: 0...1)
+        }
+    }
+
+    public var height: CGFloat {
+        get { CGFloat(relativeHeight) * slideSize.height }
+        set {
+            guard slideSize.height > 0 else { return }
+            relativeHeight = (Double(newValue) / Double(slideSize.height)).clamped(to: 0...1)
+        }
+    }
+
+    // MARK: — Geometry hashing helper
+    /// Gather geometry fields for thumbnail invalidation
     static func baseHashElements(of w: Self) -> [AnyHashable] {
         [
             AnyHashable(w.id),
-            AnyHashable(w.x),
-            AnyHashable(w.y),
+            AnyHashable(w.relativeX),
+            AnyHashable(w.relativeY),
             AnyHashable(w.z),
-            AnyHashable(w.width),
-            AnyHashable(w.height)
+            AnyHashable(w.relativeWidth),
+            AnyHashable(w.relativeHeight)
         ]
     }
-
-    /// Stub default implementation that forces each conformer to override.
-    @available(*, unavailable, message: "Conformers must implement `widgetHash`.")
-    var widgetHash: AnyHashable { fatalError("Unreachable") }
 }
+
+// MARK: — Utility for clamping any Comparable
+private extension Comparable {
+    /// Clamp this value into the given closed range.
+    func clamped(to range: ClosedRange<Self>) -> Self {
+        min(max(self, range.lowerBound), range.upperBound)
+    }
+}
+

@@ -18,8 +18,8 @@ struct SlideDetail: View {
             ForEach(slide.textWidgets, id: \.id) { textWidget in
                 TextWidgetContent(textWidget: textWidget)
                     .position(
-                        x: textWidget.slideSize.width  * textWidget.x,
-                        y: textWidget.slideSize.height * textWidget.y
+                        x: textWidget.width,
+                        y: textWidget.height
                     )
             }
         }

@@ -1,91 +1,93 @@
-// TextWidget.swift
-
 import Foundation
 import SwiftData
+import CoreGraphics
 
 @Model
 public final class TextWidget: Widget {
     #Unique<TextWidget>([\.id], [\.slide, \.z])
 
+    // MARK: — Identity & Z-order
     public var id: UUID
     public var slide: Slide?
-    public var x: Double
-    public var y: Double
     public var z: Int
-    public var width: Double
-    public var height: Double
+
+    // MARK: — Stored (relative, persisted)
+    /// 0…1 fraction of slide width
+    public var relativeX: Double
+    /// 0…1 fraction of slide height
+    public var relativeY: Double
+    /// 0…1 fraction of slide width
+    public var relativeWidth: Double
+    /// 0…1 fraction of slide height
+    public var relativeHeight: Double
+
+    // MARK: — Content
     public var text: String
 
     @Attribute
     public var fontSize: Double = 150.0
-    
+
+    // MARK: — Init
     public init(
         slide: Slide,
-        x: Double      = 0.5,
-        y: Double      = 0.5,
+        relativeX: Double = 0.5,
+        relativeY: Double = 0.5,
         z: Int,
-        width: Double  = 0.1,
-        height: Double = 0.1,
-        text: String   = "Text",
-        fontSize: Double = 150
+        relativeWidth: Double = 0.25,
+        relativeHeight: Double = 0.25,
+        text: String = "Text",
+        fontSize: Double = 150.0
     ) {
-        self.id     = UUID()
-        self.slide  = slide
-        self.x      = x
-        self.y      = y
-        self.z      = z
-        self.width  = width
-        self.height = height
-        self.text   = text
-        self.fontSize = fontSize
+        self.id             = UUID()
+        self.slide          = slide
+        self.relativeX      = relativeX
+        self.relativeY      = relativeY
+        self.z              = z
+        self.relativeWidth  = relativeWidth
+        self.relativeHeight = relativeHeight
+        self.text           = text
+        self.fontSize       = fontSize
     }
 
     public convenience init(slide: Slide) {
         self.init(
             slide: slide,
-            x: 0.5,
-            y: 0.5,
-            z: slide.highestZ + 1,
-            width:  0.1,
-            height: 0.1,
-            text:   "Text",
-            fontSize: 150
+            z: slide.highestZ + 1
         )
     }
+
     @MainActor
     public convenience init(record: TextWidgetRecord, slide: Slide) {
-      self.init(
-        slide:  slide,
-        x:      record.x,
-        y:      record.y,
-        z:      record.z,
-        width:  record.width,
-        height: record.height,
-        text:   record.text
-      )
-      self.fontSize = record.fontSize
-    }
-    public var record: TextWidgetRecord {
-      TextWidgetRecord(
-        id:         id,
-        x:          x,
-        y:          y,
-        z:          z,
-        width:      width,
-        height:     height,
-        text:       text,
-        fontSize:   fontSize
-      )
-    }
-    
-    public var slideSize: CGSize {
-      slide?.size ?? .zero
+        self.init(
+            slide: slide,
+            relativeX: record.x,
+            relativeY: record.y,
+            z: record.z,
+            relativeWidth: record.width,
+            relativeHeight: record.height,
+            text: record.text,
+            fontSize: record.fontSize
+        )
+        self.id = record.id
     }
 
+    // MARK: — Record mapping
+    public var record: TextWidgetRecord {
+        TextWidgetRecord(
+            id:         id,
+            x:          relativeX,
+            y:          relativeY,
+            z:          z,
+            width:      relativeWidth,
+            height:     relativeHeight,
+            text:       text,
+            fontSize:   fontSize
+        )
+    }
 }
 
 extension TextWidget {
-    /// Include both geometry *and* `text` in the hash snapshot.
+    /// Include geometry + content in the hash snapshot.
     public var widgetHash: AnyHashable {
         var arr = Self.baseHashElements(of: self as! Self)
         arr.append(AnyHashable(text))
@@ -93,3 +95,4 @@ extension TextWidget {
         return AnyHashable(arr)
     }
 }
+

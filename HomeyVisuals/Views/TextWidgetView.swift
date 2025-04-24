@@ -7,12 +7,12 @@ import HomeyMusicKit
 struct TextWidgetView: View {
     @Environment(Selections.self) private var selections
     @Bindable var textWidget: TextWidget
-    
+
     @FocusState private var fieldIsFocused: Bool
     @State private var dragOffset: CGSize = .zero
     @State private var isDragging = false
     @State private var resizingInitialWidth: CGFloat? = nil
-    @State private var resizingInitialX: Double? = nil
+    @State private var resizingInitialX: CGFloat? = nil
 
     private var isSelected: Bool {
         selections.textWidgetSelections.contains(textWidget.id)
@@ -37,8 +37,8 @@ struct TextWidgetView: View {
         }
         .contentShape(Rectangle())
         .position(
-            x: textWidget.slideSize.width * textWidget.x + dragOffset.width,
-            y: textWidget.slideSize.height * textWidget.y + dragOffset.height
+            x: textWidget.x + dragOffset.width,
+            y: textWidget.y + dragOffset.height
         )
         .onTapGesture { handleTap() }
         .gesture(moveGesture)
@@ -52,7 +52,7 @@ struct TextWidgetView: View {
         .font(.system(size: textWidget.fontSize))
         .textFieldStyle(.plain)
         .fixedSize()
-        .overlay(Rectangle().stroke(Color.gray, lineWidth: 2 ))
+        .overlay(Rectangle().stroke(Color.gray, lineWidth: 2))
         .focused($fieldIsFocused)
         .onAppear { fieldIsFocused = true }
         .onChange(of: fieldIsFocused) { _, focused in
@@ -64,10 +64,9 @@ struct TextWidgetView: View {
     // MARK: - Content + Handles
     private var content: some View {
         let handleSize: CGFloat = 13
-        let slideW = textWidget.slideSize.width
 
         return TextWidgetContent(textWidget: textWidget)
-            .frame(width: textWidget.width * slideW, alignment: .leading)
+            .frame(width: textWidget.width, alignment: .leading)
             .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, handleSize / 2)
             .overlay(
@@ -118,10 +117,8 @@ struct TextWidgetView: View {
                 guard !isEditing else {
                     isDragging = false; dragOffset = .zero; return
                 }
-                let dx = value.translation.width / textWidget.slideSize.width
-                let dy = value.translation.height / textWidget.slideSize.height
-                textWidget.x = (textWidget.x + dx).clamped(to: 0...1)
-                textWidget.y = (textWidget.y + dy).clamped(to: 0...1)
+                textWidget.x += value.translation.width
+                textWidget.y += value.translation.height
                 isDragging = false
                 dragOffset = .zero
             }
@@ -133,7 +130,7 @@ struct TextWidgetView: View {
             .modifiers(symmetric ? .option : [])
             .onChanged { value in
                 if resizingInitialWidth == nil {
-                    resizingInitialWidth = textWidget.width * textWidget.slideSize.width
+                    resizingInitialWidth = textWidget.width
                     resizingInitialX     = textWidget.x
                 }
                 applyResize(delta: value.translation.width, anchor: anchor, symmetric: symmetric)
@@ -143,20 +140,16 @@ struct TextWidgetView: View {
 
     // MARK: - Resize Logic
     private func applyResize(delta: CGFloat, anchor: ResizeAnchor, symmetric: Bool) {
-        guard let w0Pts = resizingInitialWidth, let x0Norm = resizingInitialX else { return }
-        let slideW = textWidget.slideSize.width
-        let deltaNorm = Double(delta / slideW)
-        let minWNorm  = Double(minWidthPts / slideW)
-        let w0Norm    = Double(w0Pts / slideW)
-        let sign      = (anchor == .trailing ? 1.0 : -1.0)
+        guard let w0 = resizingInitialWidth, let x0 = resizingInitialX else { return }
+        let sign = (anchor == .trailing ? 1.0 : -1.0)
 
         if symmetric {
-            textWidget.width = max(w0Norm + sign * deltaNorm, minWNorm)
+            let newW = max(w0 + sign * delta, minWidthPts)
+            textWidget.width = newW
         } else {
-            var newW = w0Norm + sign * deltaNorm
-            newW = max(newW, minWNorm)
-            let deltaW = newW - w0Norm
-            let newX   = (x0Norm + sign * (deltaW / 2)).clamped(to: 0...1)
+            let newW = max(w0 + sign * delta, minWidthPts)
+            let deltaW = newW - w0
+            let newX  = x0 + sign * (deltaW / 2)
             textWidget.width = newW
             textWidget.x     = newX
         }
@@ -175,12 +168,6 @@ struct TextWidgetView: View {
         } else {
             selections.textWidgetSelections = [textWidget.id]
         }
-    }
-}
-
-private extension Double {
-    func clamped(to range: ClosedRange<Double>) -> Double {
-        min(max(self, range.lowerBound), range.upperBound)
     }
 }
 
