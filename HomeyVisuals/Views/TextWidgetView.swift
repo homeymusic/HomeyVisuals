@@ -77,8 +77,9 @@ struct TextWidgetView: View {
             .frame(width: textWidget.width, alignment: .leading)
             .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, handleSize)
-            .overlay(Rectangle().stroke(Color.gray, lineWidth: 1))
             .background(Color.clear)
+            .scrollContentBackground(.hidden)
+            .overlay(Rectangle().stroke(Color.gray, lineWidth: 1))
             .focused($fieldIsFocused)
             .onAppear { fieldIsFocused = true }
             .onChange(of: fieldIsFocused) { _, f in if !f { selections.editingWidgetID = nil } }
