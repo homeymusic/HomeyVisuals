@@ -1,10 +1,11 @@
 import Foundation
 import SwiftData
 import CoreGraphics
+import HomeyMusicKit
 
 @Model
-public final class TextWidget: Widget {
-    #Unique<TextWidget>([\.id], [\.slide, \.z])
+public final class InstrumentWidget: Widget {
+    #Unique<InstrumentWidget>([\.id], [\.slide, \.z])
 
     // MARK: — Identity & Z-order
     public var id: UUID
@@ -22,9 +23,7 @@ public final class TextWidget: Widget {
     public var relativeHeight: Double
 
     // MARK: — Content
-    public var text: String
-
-    public var fontSize: Double = 150.0
+    public var instrumentChoice: InstrumentChoice
 
     // MARK: — Init
     public init(
@@ -34,8 +33,7 @@ public final class TextWidget: Widget {
         z: Int,
         relativeWidth: Double = 0.25,
         relativeHeight: Double = 0.25,
-        text: String = "Text",
-        fontSize: Double = 150.0
+        instrumentChoice: InstrumentChoice = .piano
     ) {
         self.id             = UUID()
         self.slide          = slide
@@ -44,8 +42,7 @@ public final class TextWidget: Widget {
         self.z              = z
         self.relativeWidth  = relativeWidth
         self.relativeHeight = relativeHeight
-        self.text           = text
-        self.fontSize       = fontSize
+        self.instrumentChoice     = instrumentChoice
     }
 
     public convenience init(slide: Slide) {
@@ -55,42 +52,13 @@ public final class TextWidget: Widget {
         )
     }
 
-    @MainActor
-    public convenience init(record: TextWidgetRecord, slide: Slide) {
-        self.init(
-            slide: slide,
-            relativeX: record.x,
-            relativeY: record.y,
-            z: record.z,
-            relativeWidth: record.width,
-            relativeHeight: record.height,
-            text: record.text,
-            fontSize: record.fontSize
-        )
-        self.id = record.id
-    }
-
-    // MARK: — Record mapping
-    public var record: TextWidgetRecord {
-        TextWidgetRecord(
-            id:         id,
-            x:          relativeX,
-            y:          relativeY,
-            z:          z,
-            width:      relativeWidth,
-            height:     relativeHeight,
-            text:       text,
-            fontSize:   fontSize
-        )
-    }
 }
 
-extension TextWidget {
+extension InstrumentWidget {
     /// Include geometry + content in the hash snapshot.
     public var widgetHash: AnyHashable {
         var arr = Self.baseHashElements(of: self as! Self)
-        arr.append(AnyHashable(text))
-        arr.append(AnyHashable(fontSize))
+        arr.append(AnyHashable(instrumentChoice))
         return AnyHashable(arr)
     }
 }
