@@ -40,11 +40,11 @@ struct TextWidgetView: View {
             .multilineTextAlignment(.leading)
             .frame(width: textWidget.width, alignment: .leading)
             .fixedSize(horizontal: false, vertical: true)
-            .padding(.horizontal, handleSize)
-            .overlay(resizeOverlay)
+            .padding(handleSize)  // full padding on all sides
+            .overlay(selectedOverlay)
     }
 
-    private var resizeOverlay: some View {
+    private var selectedOverlay: some View {
         ZStack {
             Rectangle()
                 .inset(by: handleSize)
@@ -78,13 +78,15 @@ struct TextWidgetView: View {
             .multilineTextAlignment(.leading)
             .frame(width: textWidget.width, alignment: .leading)
             .fixedSize(horizontal: false, vertical: true)
-            .padding(.horizontal, handleSize)
+            .padding(handleSize)          // full padding here, too
             .background(Color.clear)
             .scrollContentBackground(.hidden)
             .overlay(Rectangle().stroke(Color.gray, lineWidth: 1))
             .focused($fieldIsFocused)
             .onAppear { fieldIsFocused = true }
-            .onChange(of: fieldIsFocused) { _, f in if !f { appContext.editingWidgetID = nil } }
+            .onChange(of: fieldIsFocused) { _, f in
+                if !f { appContext.editingWidgetID = nil }
+            }
             .onExitCommand { appContext.editingWidgetID = nil }
     }
 
@@ -95,31 +97,31 @@ struct TextWidgetView: View {
                 guard !isEditing else { return }
                 if !isSelected { appContext.textWidgetSelections = [textWidget.id] }
                 isDragging = true
-                // Convert from screen-space back to slide-space
+                // screen-space → slide-space
                 let dx = v.translation.width / appContext.slideScale
                 let dy = v.translation.height / appContext.slideScale
                 dragOffset = CGSize(width: dx, height: dy)
             }
             .onEnded { v in
-                guard !isEditing else { isDragging = false; dragOffset = .zero; return }
-                textWidget.x += v.translation.width / appContext.slideScale
+                guard !isEditing else {
+                    isDragging = false; dragOffset = .zero; return
+                }
+                textWidget.x += v.translation.width  / appContext.slideScale
                 textWidget.y += v.translation.height / appContext.slideScale
                 isDragging = false
                 dragOffset = .zero
             }
     }
 
-    // MARK: Non-symmetric resize (drag handle without Option)
+    // MARK: Non-symmetric resize (drag without Option)
     private func nonSymResizeGesture(anchor: ResizeAnchor) -> some Gesture {
         DragGesture(coordinateSpace: .global)
             .onChanged { v in
                 let prev = (anchor == .leading ? lastLeadingTranslation : lastTrailingTranslation)
                 let rawDelta = v.translation.width - prev
-                if anchor == .leading {
-                    lastLeadingTranslation = v.translation.width
-                } else {
-                    lastTrailingTranslation = v.translation.width
-                }
+                if anchor == .leading { lastLeadingTranslation = v.translation.width }
+                else                  { lastTrailingTranslation = v.translation.width }
+
                 let delta = rawDelta / appContext.slideScale
                 let sign: CGFloat = (anchor == .trailing ? 1 : -1)
                 let currentW = textWidget.width
@@ -127,13 +129,13 @@ struct TextWidgetView: View {
                 textWidget.width = newW
                 textWidget.x += sign * ((newW - currentW) / 2)
             }
-            .onEnded { _ in
+            .onEnded {_ in 
                 lastLeadingTranslation = 0
                 lastTrailingTranslation = 0
             }
     }
 
-    // MARK: Symmetric resize (Option + drag handle)
+    // MARK: Symmetric resize (Option + drag)
     private func symResizeGesture(anchor: ResizeAnchor) -> some Gesture {
         DragGesture(coordinateSpace: .global)
             .modifiers(.option)
@@ -160,4 +162,3 @@ struct TextWidgetView: View {
 }
 
 private enum ResizeAnchor { case leading, trailing }
-
