@@ -5,7 +5,7 @@ import UniformTypeIdentifiers
 @main
 struct HomeyVisualsApp: App {
     
-    @State private var selections = Selections()
+    @State private var selections = AppContext()
     
     var body: some Scene {
         DocumentGroup(

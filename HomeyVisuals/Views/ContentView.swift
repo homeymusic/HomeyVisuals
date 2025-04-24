@@ -7,7 +7,7 @@ import AppKit
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Environment(Selections.self) var selections
+    @Environment(AppContext.self) var appContext
     @Query(sort: [SortDescriptor(\Slide.position)]) private var slides: [Slide]
     
     var body: some View {
@@ -28,9 +28,9 @@ struct ContentView: View {
                     )
             } detail: {
                 Group {
-                    if let widget = selections.selectedTextWidget(in: slides) {
+                    if let widget = appContext.selectedTextWidget(in: slides) {
                         WidgetInspect(widget: widget)
-                    } else if let slide = selections.selectedSlide(in: slides) {
+                    } else if let slide = appContext.selectedSlide(in: slides) {
                         SlideInspect(slide: slide)
                     } else {
                         ContentUnavailableView("Nothing to inspect", systemImage: "eye")
@@ -42,12 +42,12 @@ struct ContentView: View {
             .onDeleteCommand(perform: deleteSelectedSlides)
             .onAppear(perform: seedAspectRatios)
             .onChange(of: slides) { _, newSlides in
-                if selections.slideSelections.isEmpty, let first = newSlides.first {
-                    selections.slideSelections = [ first.id ]
+                if appContext.slideSelections.isEmpty, let first = newSlides.first {
+                    appContext.slideSelections = [ first.id ]
                 }
             }
-            .onChange(of: selections.slideSelections) { _, _ in
-                selections.textWidgetSelections.removeAll()
+            .onChange(of: appContext.slideSelections) { _, _ in
+                appContext.textWidgetSelections.removeAll()
             }
         }
     }
@@ -55,7 +55,7 @@ struct ContentView: View {
     @ToolbarContentBuilder
     private var toolbarItems: some ToolbarContent {
         ToolbarItem(placement: .principal) {
-            Button { addSlide(after: selections.slideSelections.first) }
+            Button { addSlide(after: appContext.slideSelections.first) }
             label: { Label("Add Slide", systemImage: "plus.rectangle") }
                 .buttonStyle(.borderless)
                 .keyboardShortcut("n", modifiers: [.shift, .command])
@@ -65,7 +65,7 @@ struct ContentView: View {
                 Label("Text Box", systemImage: "character.textbox")
             }
             .buttonStyle(.borderless)
-            .disabled(selections.selectedSlide(in: slides) == nil)
+            .disabled(appContext.selectedSlide(in: slides) == nil)
         }
         ToolbarItem(placement: .primaryAction) {
             Button(action: launchSlideshow) {
@@ -73,34 +73,34 @@ struct ContentView: View {
             }
             .buttonStyle(.borderless)
             .keyboardShortcut("p", modifiers: [.command, .option])
-            .disabled(selections.selectedSlide(in: slides) == nil)
+            .disabled(appContext.selectedSlide(in: slides) == nil)
         }
     }
     
     private func seedAspectRatios() {
         AspectRatio.seedSystemAspectRatios(in: modelContext)
-        if selections.slideSelections.isEmpty, let first = slides.first {
-            selections.slideSelections = [ first.id ]
+        if appContext.slideSelections.isEmpty, let first = slides.first {
+            appContext.slideSelections = [ first.id ]
         }
     }
     
     private func launchSlideshow() {
         guard
-            let slide = selections.selectedSlide(in: slides),
+            let slide = appContext.selectedSlide(in: slides),
             let index   = slides.firstIndex(of: slide)
         else { return }
         Slideshow.present(slides: slides, startIndex: index)
     }
     
     private func addTextWidget() {
-        guard let slide = selections.selectedSlide(in: slides) else { return }
+        guard let slide = appContext.selectedSlide(in: slides) else { return }
         let widget = TextWidget(slide: slide)
         
         withAnimation {
             slide.textWidgets.append(widget)
         }
         // put the new widget’s ID into the selection set
-        selections.textWidgetSelections = [ widget.id ]
+        appContext.textWidgetSelections = [ widget.id ]
     }
     
     private func addSlide(after id: Slide.ID?) {
@@ -118,12 +118,12 @@ struct ContentView: View {
         }
         Slide.updatePositions(reordered)
         
-        selections.slideSelections      = [ newSlide.id ]
-        selections.textWidgetSelections.removeAll()
+        appContext.slideSelections      = [ newSlide.id ]
+        appContext.textWidgetSelections.removeAll()
     }
     
     private func deleteSelectedSlides() {
-        let toDelete = slides.filter { selections.slideSelections.contains($0.id) }
+        let toDelete = slides.filter { appContext.slideSelections.contains($0.id) }
         guard !toDelete.isEmpty else { return }
         
         let all        = slides
@@ -140,13 +140,13 @@ struct ContentView: View {
         
         withAnimation {
             toDelete.forEach(modelContext.delete)
-            let remaining = slides.filter { !selections.slideSelections.contains($0.id) }
+            let remaining = slides.filter { !appContext.slideSelections.contains($0.id) }
             Slide.updatePositions(remaining)
             
-            selections.slideSelections.removeAll()
-            selections.textWidgetSelections.removeAll()
+            appContext.slideSelections.removeAll()
+            appContext.textWidgetSelections.removeAll()
             if let keep = nextID {
-                selections.slideSelections.insert(keep)
+                appContext.slideSelections.insert(keep)
             }
         }
     }

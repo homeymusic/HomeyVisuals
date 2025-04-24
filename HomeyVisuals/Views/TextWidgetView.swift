@@ -5,7 +5,7 @@ import HomeyMusicKit
 /// View for a single TextWidget: select to edit text, drag to move, drag handles to resize.
 /// Holding Option while dragging resizes symmetrically around the center.
 struct TextWidgetView: View {
-    @Environment(Selections.self) private var selections
+    @Environment(AppContext.self) private var appContext
     @Bindable var textWidget: TextWidget
 
     @FocusState private var fieldIsFocused: Bool
@@ -17,8 +17,8 @@ struct TextWidgetView: View {
 
     private let handleSize: CGFloat = 10
 
-    private var isSelected: Bool { selections.textWidgetSelections.contains(textWidget.id) }
-    private var isEditing:  Bool { selections.editingWidgetID == textWidget.id }
+    private var isSelected: Bool { appContext.textWidgetSelections.contains(textWidget.id) }
+    private var isEditing:  Bool { appContext.editingWidgetID == textWidget.id }
 
     var body: some View {
         ZStack {
@@ -26,8 +26,10 @@ struct TextWidgetView: View {
             else        { display }
         }
         .contentShape(Rectangle())
-        .position(x: textWidget.x + dragOffset.width,
-                  y: textWidget.y + dragOffset.height)
+        .position(
+            x: textWidget.x + dragOffset.width,
+            y: textWidget.y + dragOffset.height
+        )
         .onTapGesture { handleTap() }
         .gesture(moveGesture)
     }
@@ -49,7 +51,7 @@ struct TextWidgetView: View {
                 .stroke(isDragging ? Color.gray : (isSelected ? .blue : .clear), lineWidth: 1)
             if isSelected && !isDragging {
                 GeometryReader { geo in
-                    let yC = geo.size.height/2
+                    let yC = geo.size.height / 2
                     handleView(anchor: .leading)
                         .position(x: handleSize, y: yC)
                     handleView(anchor: .trailing)
@@ -82,23 +84,26 @@ struct TextWidgetView: View {
             .overlay(Rectangle().stroke(Color.gray, lineWidth: 1))
             .focused($fieldIsFocused)
             .onAppear { fieldIsFocused = true }
-            .onChange(of: fieldIsFocused) { _, f in if !f { selections.editingWidgetID = nil } }
-            .onExitCommand { selections.editingWidgetID = nil }
+            .onChange(of: fieldIsFocused) { _, f in if !f { appContext.editingWidgetID = nil } }
+            .onExitCommand { appContext.editingWidgetID = nil }
     }
 
-    // MARK: Move
+    // MARK: Move Gesture
     private var moveGesture: some Gesture {
-        DragGesture()
+        DragGesture(coordinateSpace: .global)
             .onChanged { v in
                 guard !isEditing else { return }
-                if !isSelected { selections.textWidgetSelections = [textWidget.id] }
+                if !isSelected { appContext.textWidgetSelections = [textWidget.id] }
                 isDragging = true
-                dragOffset = v.translation
+                // Convert from screen-space back to slide-space
+                let dx = v.translation.width / appContext.slideScale
+                let dy = v.translation.height / appContext.slideScale
+                dragOffset = CGSize(width: dx, height: dy)
             }
             .onEnded { v in
                 guard !isEditing else { isDragging = false; dragOffset = .zero; return }
-                textWidget.x += v.translation.width
-                textWidget.y += v.translation.height
+                textWidget.x += v.translation.width / appContext.slideScale
+                textWidget.y += v.translation.height / appContext.slideScale
                 isDragging = false
                 dragOffset = .zero
             }
@@ -109,17 +114,23 @@ struct TextWidgetView: View {
         DragGesture(coordinateSpace: .global)
             .onChanged { v in
                 let prev = (anchor == .leading ? lastLeadingTranslation : lastTrailingTranslation)
-                let delta = v.translation.width - prev
-                if anchor == .leading { lastLeadingTranslation = v.translation.width }
-                else                  { lastTrailingTranslation = v.translation.width }
+                let rawDelta = v.translation.width - prev
+                if anchor == .leading {
+                    lastLeadingTranslation = v.translation.width
+                } else {
+                    lastTrailingTranslation = v.translation.width
+                }
+                let delta = rawDelta / appContext.slideScale
                 let sign: CGFloat = (anchor == .trailing ? 1 : -1)
                 let currentW = textWidget.width
-                let newW = max(currentW + sign * delta, handleSize*2)
+                let newW = max(currentW + sign * delta, handleSize * 2)
                 textWidget.width = newW
-                // shift center by half the width change
-                textWidget.x += sign * ((newW - currentW)/2.0)
+                textWidget.x += sign * ((newW - currentW) / 2)
             }
-            .onEnded { _ in lastLeadingTranslation = 0; lastTrailingTranslation = 0 }
+            .onEnded { _ in
+                lastLeadingTranslation = 0
+                lastTrailingTranslation = 0
+            }
     }
 
     // MARK: Symmetric resize (Option + drag handle)
@@ -127,10 +138,11 @@ struct TextWidgetView: View {
         DragGesture(coordinateSpace: .global)
             .modifiers(.option)
             .onChanged { v in
-                let delta = v.translation.width - lastSymTranslation
+                let rawDelta = v.translation.width - lastSymTranslation
                 lastSymTranslation = v.translation.width
+                let delta = rawDelta / appContext.slideScale
                 let sign: CGFloat = (anchor == .trailing ? 1 : -1)
-                let newW = max(textWidget.width + sign * delta, handleSize*2)
+                let newW = max(textWidget.width + 2 * sign * delta, handleSize * 2)
                 textWidget.width = newW
             }
             .onEnded { _ in lastSymTranslation = 0 }
@@ -139,8 +151,11 @@ struct TextWidgetView: View {
     // MARK: Helpers
     private func handleTap() {
         guard !isEditing else { return }
-        if isSelected { selections.editingWidgetID = textWidget.id }
-        else          { selections.textWidgetSelections = [ textWidget.id ] }
+        if isSelected {
+            appContext.editingWidgetID = textWidget.id
+        } else {
+            appContext.textWidgetSelections = [textWidget.id]
+        }
     }
 }
 

@@ -2,7 +2,10 @@ import SwiftUI
 
 @MainActor
 @Observable
-public final class Selections {
+public final class AppContext {
+    /// Current zoom factor mapping slide‐space to screen‐space
+    public var slideScale: CGFloat = 1.0
+
     var slideSelections      = Set<Slide.ID>()
     var textWidgetSelections = Set<TextWidget.ID>()
     var editingWidgetID: TextWidget.ID? = nil

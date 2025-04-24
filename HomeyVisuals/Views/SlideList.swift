@@ -8,14 +8,14 @@ import HomeyMusicKit
 
 struct SlideList: View {
     @Environment(\.modelContext) private var modelContext
-    @Environment(Selections.self) var selections
+    @Environment(AppContext.self) var appContext
     @Query(sort: [SortDescriptor(\Slide.position)]) private var slides: [Slide]
 
     var onAddSlide: (Slide.ID?) -> Void
     var onDeleteSlide: () -> Void
 
     var body: some View {
-        @Bindable var bindableSelections = selections
+        @Bindable var bindableSelections = appContext
 
         ScrollViewReader { proxy in
             List(selection: $bindableSelections.slideSelections) {
@@ -41,7 +41,7 @@ struct SlideList: View {
             .copyable(copyRecords())
             .cuttable(for: SlideRecord.self) { performCutAndReturnRecords() }
             .pasteDestination(for: SlideRecord.self) { performPaste($0) }
-            .onChange(of: selections.slideSelections) { _, new in
+            .onChange(of: appContext.slideSelections) { _, new in
                 guard let first = new.first else { return }
                 withAnimation { proxy.scrollTo(first, anchor: .center) }
             }
@@ -51,20 +51,20 @@ struct SlideList: View {
     // MARK: – Clipboard Helpers
 
     private func copyRecords() -> [SlideRecord] {
-        slides.filter { selections.slideSelections.contains($0.id) }
+        slides.filter { appContext.slideSelections.contains($0.id) }
               .map(\.record)
     }
 
     private func performCutAndReturnRecords() -> [SlideRecord] {
         let recs = copyRecords()
         onDeleteSlide()
-        selections.slideSelections.removeAll()
+        appContext.slideSelections.removeAll()
         return recs
     }
 
     private func performPaste(_ records: [SlideRecord]) {
         var reordered = slides
-        let insertAt = slides.firstIndex(where: { selections.slideSelections.contains($0.id) })
+        let insertAt = slides.firstIndex(where: { appContext.slideSelections.contains($0.id) })
                         .map { $0 + 1 } ?? reordered.count
 
         var cursor = insertAt
@@ -79,9 +79,9 @@ struct SlideList: View {
         }
 
         Slide.updatePositions(reordered)
-        selections.slideSelections.removeAll()
+        appContext.slideSelections.removeAll()
         if let pick = lastID {
-            selections.slideSelections.insert(pick)
+            appContext.slideSelections.insert(pick)
         }
     }
 
@@ -94,7 +94,7 @@ struct SlideList: View {
             reordered.move(fromOffsets: source, toOffset: destination)
             Slide.updatePositions(reordered)
             if let first = moved.first {
-                selections.slideSelections = [ first.id ]
+                appContext.slideSelections = [ first.id ]
             }
         }
     }

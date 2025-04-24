@@ -4,19 +4,19 @@ import HomeyMusicKit
 
 /// Editable slide view: click to select, drag to move, double-click to edit, tap off to deselect or exit edit-mode.
 struct SlideEdit: View {
-    @Environment(Selections.self) private var selections
+    @Environment(AppContext.self) private var appContext
     @Query(sort: [SortDescriptor(\Slide.position)]) private var slides: [Slide]
 
     var body: some View {
-        if let slide = selections.selectedSlide(in: slides) {
+        if let slide = appContext.selectedSlide(in: slides) {
             SlideContainer(slide: slide, isThumbnail: false) {
                 ZStack {
                     // 1) Tap anywhere empty to clear selection AND exit edit-mode
                     Color.clear
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            selections.textWidgetSelections = []
-                            selections.editingWidgetID = nil
+                            appContext.textWidgetSelections = []
+                            appContext.editingWidgetID = nil
                         }
 
                     // 2) Render each text widget in z-order

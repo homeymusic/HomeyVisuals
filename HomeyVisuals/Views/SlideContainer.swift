@@ -3,6 +3,8 @@ import HomeyMusicKit
 
 /// Wrap any slide content in the proper letterbox→scale logic.
 struct SlideContainer<Content: View>: View {
+    @Environment(AppContext.self) private var appContext
+    
     let slide: Slide
     let isThumbnail: Bool
     @ViewBuilder let content: () -> Content
@@ -20,20 +22,25 @@ struct SlideContainer<Content: View>: View {
 
     var body: some View {
         GeometryReader { geo in
-            let containerSize = geo.size
-            // compute scale to fit that letterbox into whatever container we have
+            // 1) Compute the scale that fits your slide into the container
+            let letterbox = slide.size
             let scale = min(
-                containerSize.width  / slide.size.width,
-                containerSize.height / slide.size.height
+                geo.size.width  / letterbox.width,
+                geo.size.height / letterbox.height
             )
 
+            // 2) Kick the scale into AppContext any time it changes
             ZStack(alignment: .topLeading) {
                 SlideBackground(slide: slide, isThumbnail: isThumbnail)
                 content()
             }
-            .frame(width:  slide.size.width,
-                   height: slide.size.height)
+            .frame(width:  letterbox.width,
+                   height: letterbox.height)
             .scaleEffect(scale, anchor: .topLeading)
+            .onAppear { appContext.slideScale = scale }
+            .onChange(of: scale) {
+                appContext.slideScale = scale
+            }
         }
         .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
     }
