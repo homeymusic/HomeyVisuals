@@ -8,6 +8,7 @@ import AppKit
 struct TextWidgetView: View {
     @Environment(AppContext.self) private var appContext
     @Bindable var textWidget: TextWidget
+    let slideScale: CGFloat
 
     @FocusState private var fieldIsFocused: Bool
     @State private var dragOffset = CGSize.zero
@@ -96,16 +97,16 @@ struct TextWidgetView: View {
                 guard !isEditing else { return }
                 if !isSelected { appContext.textWidgetSelections = [textWidget.id] }
                 isDragging = true
-                let dx = value.translation.width / appContext.slideScale
-                let dy = value.translation.height / appContext.slideScale
+                let dx = value.translation.width / slideScale
+                let dy = value.translation.height / slideScale
                 dragOffset = CGSize(width: dx, height: dy)
             }
             .onEnded { value in
                 guard !isEditing else {
                     isDragging = false; dragOffset = .zero; return
                 }
-                textWidget.x += value.translation.width  / appContext.slideScale
-                textWidget.y += value.translation.height / appContext.slideScale
+                textWidget.x += value.translation.width  / slideScale
+                textWidget.y += value.translation.height / slideScale
                 isDragging = false
                 dragOffset = .zero
             }
@@ -124,7 +125,7 @@ struct TextWidgetView: View {
                     lastTrailingTranslation = value.translation.width
                 }
                 // map screen-space → slide-space
-                let delta = rawDelta / appContext.slideScale
+                let delta = rawDelta / slideScale
                 // detect Option key
                 let optionDown = NSEvent.modifierFlags.contains(.option)
                 let sign: CGFloat = (anchor == .trailing ? 1 : -1)

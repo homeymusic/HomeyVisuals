@@ -16,8 +16,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "B03FA5E42DB145CF00478DEE"
-               BuildableName = "HomeyVisuals.app"
-               BlueprintName = "HomeyVisuals"
+               BuildableName = "Homey Visuals.app"
+               BlueprintName = "Homey Visuals"
                ReferencedContainer = "container:HomeyVisuals.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -45,8 +45,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B03FA5E42DB145CF00478DEE"
-            BuildableName = "HomeyVisuals.app"
-            BlueprintName = "HomeyVisuals"
+            BuildableName = "Homey Visuals.app"
+            BlueprintName = "Homey Visuals"
             ReferencedContainer = "container:HomeyVisuals.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -68,8 +68,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B03FA5E42DB145CF00478DEE"
-            BuildableName = "HomeyVisuals.app"
-            BlueprintName = "HomeyVisuals"
+            BuildableName = "Homey Visuals.app"
+            BlueprintName = "Homey Visuals"
             ReferencedContainer = "container:HomeyVisuals.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

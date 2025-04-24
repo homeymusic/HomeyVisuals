@@ -9,7 +9,7 @@ struct SlideEdit: View {
 
     var body: some View {
         if let slide = appContext.selectedSlide(in: slides) {
-            SlideContainer(slide: slide, isThumbnail: false) {
+            SlideContainer(slide: slide, isThumbnail: false) { scale in
                 ZStack {
                     // 1) Tap anywhere empty to clear selection AND exit edit-mode
                     Color.clear
@@ -27,7 +27,8 @@ struct SlideEdit: View {
                     ) { index in
                         let textWidget = slide.textWidgets[index]
                         TextWidgetView(
-                            textWidget: textWidget
+                            textWidget: textWidget,
+                            slideScale: scale
                         )
                     }
                     
@@ -38,7 +39,8 @@ struct SlideEdit: View {
                     ) { index in
                         let instrumentWidget = slide.instrumentWidgets[index]
                         InstrumentWidgetView(
-                            instrumentWidget: instrumentWidget
+                            instrumentWidget: instrumentWidget,
+                            slideScale: scale 
                         )
                     }
 

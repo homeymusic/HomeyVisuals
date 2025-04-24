@@ -7,13 +7,13 @@ struct SlideContainer<Content: View>: View {
     
     let slide: Slide
     let isThumbnail: Bool
-    @ViewBuilder let content: () -> Content
+    @ViewBuilder let content: (CGFloat) -> Content
     
     /// You can omit `isThumbnail` when you want full-screen/edit mode.
     init(
         slide: Slide,
         isThumbnail: Bool = false,
-        @ViewBuilder content: @escaping () -> Content
+        @ViewBuilder content: @escaping (CGFloat) -> Content
     ) {
         self.slide       = slide
         self.isThumbnail = isThumbnail
@@ -32,16 +32,13 @@ struct SlideContainer<Content: View>: View {
             // 2) Kick the scale into AppContext any time it changes
             ZStack(alignment: .topLeading) {
                 SlideBackground(slide: slide, isThumbnail: isThumbnail)
-                content()
+                content(scale)
             }
             .frame(width:  letterbox.width,
                    height: letterbox.height)
             .scaleEffect(scale, anchor: .topLeading)
-            .onAppear { appContext.slideScale = scale }
-            .onChange(of: scale) {
-                appContext.slideScale = scale
-            }
         }
+        .coordinateSpace(name: "slideSpace")
         .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
     }
 }

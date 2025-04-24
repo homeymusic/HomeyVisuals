@@ -11,16 +11,16 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		B03FA5E52DB145CF00478DEE /* HomeyVisuals.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HomeyVisuals.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B03FA5E52DB145CF00478DEE /* Homey Visuals.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Homey Visuals.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		B03FA5F22DB145D100478DEE /* Exceptions for "HomeyVisuals" folder in "HomeyVisuals" target */ = {
+		B03FA5F22DB145D100478DEE /* Exceptions for "HomeyVisuals" folder in "Homey Visuals" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = B03FA5E42DB145CF00478DEE /* HomeyVisuals */;
+			target = B03FA5E42DB145CF00478DEE /* Homey Visuals */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -28,7 +28,7 @@
 		B03FA5E72DB145CF00478DEE /* HomeyVisuals */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				B03FA5F22DB145D100478DEE /* Exceptions for "HomeyVisuals" folder in "HomeyVisuals" target */,
+				B03FA5F22DB145D100478DEE /* Exceptions for "HomeyVisuals" folder in "Homey Visuals" target */,
 			);
 			path = HomeyVisuals;
 			sourceTree = "<group>";
@@ -58,7 +58,7 @@
 		B03FA5E62DB145CF00478DEE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B03FA5E52DB145CF00478DEE /* HomeyVisuals.app */,
+				B03FA5E52DB145CF00478DEE /* Homey Visuals.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -66,9 +66,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B03FA5E42DB145CF00478DEE /* HomeyVisuals */ = {
+		B03FA5E42DB145CF00478DEE /* Homey Visuals */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B03FA5F32DB145D100478DEE /* Build configuration list for PBXNativeTarget "HomeyVisuals" */;
+			buildConfigurationList = B03FA5F32DB145D100478DEE /* Build configuration list for PBXNativeTarget "Homey Visuals" */;
 			buildPhases = (
 				B03FA5E12DB145CF00478DEE /* Sources */,
 				B03FA5E22DB145CF00478DEE /* Frameworks */,
@@ -81,12 +81,12 @@
 			fileSystemSynchronizedGroups = (
 				B03FA5E72DB145CF00478DEE /* HomeyVisuals */,
 			);
-			name = HomeyVisuals;
+			name = "Homey Visuals";
 			packageProductDependencies = (
 				B0CA51ED2DB2BD4D0048EF3F /* HomeyMusicKit */,
 			);
 			productName = HomeyVisuals;
-			productReference = B03FA5E52DB145CF00478DEE /* HomeyVisuals.app */;
+			productReference = B03FA5E52DB145CF00478DEE /* Homey Visuals.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -121,7 +121,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B03FA5E42DB145CF00478DEE /* HomeyVisuals */,
+				B03FA5E42DB145CF00478DEE /* Homey Visuals */,
 			);
 		};
 /* End PBXProject section */
@@ -160,6 +160,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = HomeyVisuals/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Homey Visuals";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -202,6 +204,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = HomeyVisuals/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Homey Visuals";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -359,7 +363,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B03FA5F32DB145D100478DEE /* Build configuration list for PBXNativeTarget "HomeyVisuals" */ = {
+		B03FA5F32DB145D100478DEE /* Build configuration list for PBXNativeTarget "Homey Visuals" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B03FA5F42DB145D100478DEE /* Debug */,

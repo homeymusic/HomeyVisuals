@@ -7,6 +7,7 @@ struct InstrumentWidgetView: View {
     @Environment(AppContext.self) private var appContext
     @Environment(InstrumentalContext.self) var instrumentalContext
     @Bindable var instrumentWidget: InstrumentWidget
+    let slideScale: CGFloat
 
     @FocusState private var fieldIsFocused: Bool
     @State private var dragOffset = CGSize.zero
@@ -76,16 +77,16 @@ struct InstrumentWidgetView: View {
                 guard !isEditing else { return }
                 if !isSelected { appContext.instrumentWidgetSelections = [instrumentWidget.id] }
                 isDragging = true
-                let dx = value.translation.width / appContext.slideScale
-                let dy = value.translation.height / appContext.slideScale
+                let dx = value.translation.width / slideScale
+                let dy = value.translation.height / slideScale
                 dragOffset = CGSize(width: dx, height: dy)
             }
             .onEnded { value in
                 guard !isEditing else {
                     isDragging = false; dragOffset = .zero; return
                 }
-                instrumentWidget.x += value.translation.width  / appContext.slideScale
-                instrumentWidget.y += value.translation.height / appContext.slideScale
+                instrumentWidget.x += value.translation.width  / slideScale
+                instrumentWidget.y += value.translation.height / slideScale
                 isDragging = false
                 dragOffset = .zero
             }
@@ -104,7 +105,7 @@ struct InstrumentWidgetView: View {
                     lastTrailingTranslation = value.translation.width
                 }
                 // map screen-space → slide-space
-                let delta = rawDelta / appContext.slideScale
+                let delta = rawDelta / slideScale
                 // detect Option key
                 let optionDown = NSEvent.modifierFlags.contains(.option)
                 let sign: CGFloat = (anchor == .trailing ? 1 : -1)

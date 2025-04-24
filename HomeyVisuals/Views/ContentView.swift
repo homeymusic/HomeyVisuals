@@ -64,20 +64,15 @@ struct ContentView: View {
                 .buttonStyle(.borderless)
                 .keyboardShortcut("n", modifiers: [.shift, .command])
         }
+        
         ToolbarItem(placement: .principal) {
-            Button(action: addPiano) {
+            Button(action: {addInstrument(instrumentChoice: InstrumentChoice.piano)}) {
                 Label("Piano", systemImage: InstrumentChoice.piano.icon)
             }
             .buttonStyle(.borderless)
             .disabled(appContext.selectedSlide(in: slides) == nil)
         }
-        ToolbarItem(placement: .principal) {
-            Button(action: addDiamanti) {
-                Label("Diamanti", systemImage: InstrumentChoice.diamanti.icon)
-            }
-            .buttonStyle(.borderless)
-            .disabled(appContext.selectedSlide(in: slides) == nil)
-        }
+        
         ToolbarItem(placement: .principal) {
             Button(action: addTextWidget) {
                 Label("Text Box", systemImage: "character.textbox")
@@ -130,20 +125,9 @@ struct ContentView: View {
         appContext.textWidgetSelections = [ widget.id ]
     }
     
-    private func addPiano() {
+    private func addInstrument(instrumentChoice: InstrumentChoice) {
         guard let slide = appContext.selectedSlide(in: slides) else { return }
-        let widget = InstrumentWidget(slide: slide, instrumentChoice: .piano)
-        
-        withAnimation {
-            slide.instrumentWidgets.append(widget)
-        }
-        // put the new widget’s ID into the selection set
-        appContext.instrumentWidgetSelections = [ widget.id ]
-    }
-
-    private func addDiamanti() {
-        guard let slide = appContext.selectedSlide(in: slides) else { return }
-        let widget = InstrumentWidget(slide: slide, instrumentChoice: .diamanti)
+        let widget = InstrumentWidget(slide: slide, instrumentChoice: instrumentChoice)
         
         withAnimation {
             slide.instrumentWidgets.append(widget)
