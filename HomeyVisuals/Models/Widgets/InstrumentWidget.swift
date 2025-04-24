@@ -52,6 +52,15 @@ public final class InstrumentWidget: Widget {
         )
     }
 
+    public convenience init(slide: Slide, instrumentChoice: InstrumentChoice) {
+        self.init(
+            slide: slide,
+            z: slide.highestZ + 1,
+            instrumentChoice: instrumentChoice
+        )
+    }
+
+    
 }
 
 extension InstrumentWidget {

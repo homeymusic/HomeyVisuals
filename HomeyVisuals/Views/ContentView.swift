@@ -72,6 +72,13 @@ struct ContentView: View {
             .disabled(appContext.selectedSlide(in: slides) == nil)
         }
         ToolbarItem(placement: .principal) {
+            Button(action: addDiamanti) {
+                Label("Diamanti", systemImage: InstrumentChoice.diamanti.icon)
+            }
+            .buttonStyle(.borderless)
+            .disabled(appContext.selectedSlide(in: slides) == nil)
+        }
+        ToolbarItem(placement: .principal) {
             Button(action: addTextWidget) {
                 Label("Text Box", systemImage: "character.textbox")
             }
@@ -125,7 +132,18 @@ struct ContentView: View {
     
     private func addPiano() {
         guard let slide = appContext.selectedSlide(in: slides) else { return }
-        let widget = InstrumentWidget(slide: slide)
+        let widget = InstrumentWidget(slide: slide, instrumentChoice: .piano)
+        
+        withAnimation {
+            slide.instrumentWidgets.append(widget)
+        }
+        // put the new widget’s ID into the selection set
+        appContext.instrumentWidgetSelections = [ widget.id ]
+    }
+
+    private func addDiamanti() {
+        guard let slide = appContext.selectedSlide(in: slides) else { return }
+        let widget = InstrumentWidget(slide: slide, instrumentChoice: .diamanti)
         
         withAnimation {
             slide.instrumentWidgets.append(widget)
