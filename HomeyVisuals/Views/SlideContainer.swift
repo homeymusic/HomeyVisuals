@@ -77,7 +77,7 @@ struct InstrumentWidgetContent: View {
     let instrumentWidget: InstrumentWidget
 
     var body: some View {
-        Text(instrumentWidget.instrumentChoice.label)
+        InstrumentView()
     }
 }
 
