@@ -4,6 +4,8 @@ import AppKit
 
 /// Full‑screen slideshow with key navigation (including Home/End jump).
 struct Slideshow: View {
+    @Environment(AppContext.self) var appContext
+    
     let slides: [Slide]
     @State private var index: Int
 
@@ -94,8 +96,13 @@ struct Slideshow: View {
     // MARK: - Presentation Helper
 
     /// Spins up a new full‑screen window running this slideshow.
-    static func present(slides: [Slide], startIndex: Int) {
-        let view    = Slideshow(slides: slides, startIndex: startIndex)
+    static func present(
+        slides: [Slide],
+        startIndex: Int,
+        appContext: AppContext
+      ) {
+        let view = Slideshow(slides: slides, startIndex: startIndex)
+                     .environment(appContext)
         let hosting = NSHostingController(rootView: view)
 
         let screenFrame = NSScreen.screens.first?.frame ?? .zero

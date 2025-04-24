@@ -85,11 +85,16 @@ struct ContentView: View {
     }
     
     private func launchSlideshow() {
-        guard
-            let slide = appContext.selectedSlide(in: slides),
-            let index   = slides.firstIndex(of: slide)
-        else { return }
-        Slideshow.present(slides: slides, startIndex: index)
+      guard
+        let slide = appContext.selectedSlide(in: slides),
+        let index = slides.firstIndex(of: slide)
+      else { return }
+
+      Slideshow.present(
+        slides: slides,
+        startIndex: index,
+        appContext: appContext
+      )
     }
     
     private func addTextWidget() {

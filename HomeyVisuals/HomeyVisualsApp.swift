@@ -5,7 +5,7 @@ import UniformTypeIdentifiers
 @main
 struct HomeyVisualsApp: App {
     
-    @State private var selections = AppContext()
+    @State private var appContext = AppContext()
     
     var body: some Scene {
         DocumentGroup(
@@ -13,7 +13,7 @@ struct HomeyVisualsApp: App {
             contentType: .visuals
         ) {
             ContentView()
-                .environment(selections)
+                .environment(appContext)
         }
         .defaultSize(width: 1440, height: 900)
     }
