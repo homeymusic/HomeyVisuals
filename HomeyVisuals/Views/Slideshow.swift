@@ -5,7 +5,11 @@ import AppKit
 /// Full‑screen slideshow with key navigation (including Home/End jump).
 struct Slideshow: View {
     @Environment(AppContext.self) var appContext
-    
+    @Environment(TonalContext.self) var tonalContext
+    @Environment(InstrumentalContext.self) var instrumentalContext
+    @Environment(NotationalTonicContext.self) var notationalTonicContext
+    @Environment(NotationalContext.self) var notationalContext
+
     let slides: [Slide]
     @State private var index: Int
 
@@ -99,10 +103,18 @@ struct Slideshow: View {
     static func present(
         slides: [Slide],
         startIndex: Int,
-        appContext: AppContext
+        appContext: AppContext,
+        tonalContext: TonalContext,
+        instrumentalContext: InstrumentalContext,
+        notationalTonicContext: NotationalTonicContext,
+        notationalContext: NotationalContext
       ) {
         let view = Slideshow(slides: slides, startIndex: startIndex)
                      .environment(appContext)
+                     .environment(tonalContext)
+                     .environment(instrumentalContext)
+                     .environment(notationalTonicContext)
+                     .environment(notationalContext)
         let hosting = NSHostingController(rootView: view)
 
         let screenFrame = NSScreen.screens.first?.frame ?? .zero

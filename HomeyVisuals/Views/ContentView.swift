@@ -8,6 +8,10 @@ import AppKit
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(AppContext.self) var appContext
+    @Environment(TonalContext.self) var tonalContext
+    @Environment(InstrumentalContext.self) var instrumentalContext
+    @Environment(NotationalTonicContext.self) var notationalTonicContext
+    @Environment(NotationalContext.self) var notationalContext
     @Query(sort: [SortDescriptor(\Slide.position)]) private var slides: [Slide]
     
     var body: some View {
@@ -100,7 +104,11 @@ struct ContentView: View {
       Slideshow.present(
         slides: slides,
         startIndex: index,
-        appContext: appContext
+        appContext: appContext,
+        tonalContext: tonalContext,
+        instrumentalContext: instrumentalContext,
+        notationalTonicContext: notationalTonicContext,
+        notationalContext: notationalContext
       )
     }
     

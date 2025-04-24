@@ -21,6 +21,14 @@ struct SlideDetail: View {
                         x: textWidget.x,
                         y: textWidget.y
                     )
+                
+            }
+            ForEach(slide.instrumentWidgets, id: \.id) { instrumentWidget in
+                InstrumentWidgetContent(instrumentWidget: instrumentWidget)
+                    .position(
+                        x: instrumentWidget.x,
+                        y: instrumentWidget.y
+                    )
             }
         }
     }
