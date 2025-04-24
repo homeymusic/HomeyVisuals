@@ -8,8 +8,10 @@ public final class AppContext {
 
     var slideSelections      = Set<Slide.ID>()
     var textWidgetSelections = Set<TextWidget.ID>()
-    var editingWidgetID: TextWidget.ID? = nil
-    
+    var instrumentWidgetSelections = Set<InstrumentWidget.ID>()
+    var editingTextWidgetID: TextWidget.ID? = nil
+    var editingInstrumentWidgetID: InstrumentWidget.ID? = nil
+
     func selectedSlide(in slides: [Slide]) -> Slide? {
         guard let id = slideSelections.first else { return nil }
         return slides.first { $0.id == id }
@@ -22,4 +24,13 @@ public final class AppContext {
         else { return nil }
         return slide.textWidgets.first { $0.id == widgetID }
     }
+    
+    func selectedInstrumentWidget(in slides: [Slide]) -> InstrumentWidget? {
+        guard
+          let slide      = selectedSlide(in: slides),
+          let widgetID   = instrumentWidgetSelections.first
+        else { return nil }
+        return slide.instrumentWidgets.first { $0.id == widgetID }
+    }
+
 }

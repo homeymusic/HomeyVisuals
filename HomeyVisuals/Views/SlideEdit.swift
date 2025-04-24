@@ -16,7 +16,7 @@ struct SlideEdit: View {
                         .contentShape(Rectangle())
                         .onTapGesture {
                             appContext.textWidgetSelections = []
-                            appContext.editingWidgetID = nil
+                            appContext.editingTextWidgetID = nil
                         }
 
                     // 2) Render each text widget in z-order
@@ -30,6 +30,18 @@ struct SlideEdit: View {
                             textWidget: textWidget
                         )
                     }
+                    
+                    ForEach(
+                        slide.instrumentWidgets.indices
+                            .sorted { slide.instrumentWidgets[$0].z < slide.instrumentWidgets[$1].z },
+                        id: \.self
+                    ) { index in
+                        let instrumentWidget = slide.instrumentWidgets[index]
+                        InstrumentWidgetView(
+                            instrumentWidget: instrumentWidget
+                        )
+                    }
+
                 }
             }
             .navigationTitle("Edit Slide")

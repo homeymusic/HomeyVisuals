@@ -3,11 +3,9 @@ import SwiftData
 import HomeyMusicKit
 import AppKit
 
-/// View for a single TextWidget: select to edit text, drag to move, drag handles to resize.
-/// Holding Option while dragging switches between one-sided and symmetric resizing.
-struct TextWidgetView: View {
+struct InstrumentWidgetView: View {
     @Environment(AppContext.self) private var appContext
-    @Bindable var textWidget: TextWidget
+    @Bindable var instrumentWidget: InstrumentWidget
 
     @FocusState private var fieldIsFocused: Bool
     @State private var dragOffset = CGSize.zero
@@ -17,18 +15,17 @@ struct TextWidgetView: View {
 
     private let handleSize: CGFloat = 10
 
-    private var isSelected: Bool { appContext.textWidgetSelections.contains(textWidget.id) }
-    private var isEditing:  Bool { appContext.editingTextWidgetID == textWidget.id }
+    private var isSelected: Bool { appContext.instrumentWidgetSelections.contains(instrumentWidget.id) }
+    private var isEditing:  Bool { appContext.editingInstrumentWidgetID == instrumentWidget.id }
 
     var body: some View {
         ZStack {
-            if isEditing { editor }
-            else        { display }
+            display
         }
         .contentShape(Rectangle())
         .position(
-            x: textWidget.x + dragOffset.width,
-            y: textWidget.y + dragOffset.height
+            x: instrumentWidget.x + dragOffset.width,
+            y: instrumentWidget.y + dragOffset.height
         )
         .onTapGesture { handleTap() }
         .gesture(moveGesture)
@@ -36,9 +33,9 @@ struct TextWidgetView: View {
 
     // MARK: Display
     private var display: some View {
-        TextWidgetContent(textWidget: textWidget)
+        InstrumentWidgetContent(instrumentWidget: instrumentWidget)
             .multilineTextAlignment(.leading)
-            .frame(width: textWidget.width, alignment: .leading)
+            .frame(width: instrumentWidget.width, alignment: .leading)
             .fixedSize(horizontal: false, vertical: true)
             .padding(handleSize)
             .overlay(selectionOverlay)
@@ -70,31 +67,12 @@ struct TextWidgetView: View {
             .gesture(resizeGesture(anchor: anchor))
     }
 
-    // MARK: Editor
-    private var editor: some View {
-        TextEditor(text: $textWidget.text)
-            .font(.system(size: textWidget.fontSize))
-            .multilineTextAlignment(.leading)
-            .frame(width: textWidget.width, alignment: .leading)
-            .fixedSize(horizontal: false, vertical: true)
-            .padding(handleSize)
-            .background(Color.clear)
-            .scrollContentBackground(.hidden)
-            .overlay(Rectangle().stroke(Color.gray, lineWidth: 1))
-            .focused($fieldIsFocused)
-            .onAppear { fieldIsFocused = true }
-            .onChange(of: fieldIsFocused) { _, focused in
-                if !focused { appContext.editingTextWidgetID = nil }
-            }
-            .onExitCommand { appContext.editingTextWidgetID = nil }
-    }
-
     // MARK: Move Gesture
     private var moveGesture: some Gesture {
         DragGesture(coordinateSpace: .global)
             .onChanged { value in
                 guard !isEditing else { return }
-                if !isSelected { appContext.textWidgetSelections = [textWidget.id] }
+                if !isSelected { appContext.instrumentWidgetSelections = [instrumentWidget.id] }
                 isDragging = true
                 let dx = value.translation.width / appContext.slideScale
                 let dy = value.translation.height / appContext.slideScale
@@ -104,8 +82,8 @@ struct TextWidgetView: View {
                 guard !isEditing else {
                     isDragging = false; dragOffset = .zero; return
                 }
-                textWidget.x += value.translation.width  / appContext.slideScale
-                textWidget.y += value.translation.height / appContext.slideScale
+                instrumentWidget.x += value.translation.width  / appContext.slideScale
+                instrumentWidget.y += value.translation.height / appContext.slideScale
                 isDragging = false
                 dragOffset = .zero
             }
@@ -130,15 +108,15 @@ struct TextWidgetView: View {
                 let sign: CGFloat = (anchor == .trailing ? 1 : -1)
                 if optionDown {
                     // symmetric resize around center
-                    let newW = max(textWidget.width + 2 * sign * delta, handleSize * 2)
-                    textWidget.width = newW
+                    let newW = max(instrumentWidget.width + 2 * sign * delta, handleSize * 2)
+                    instrumentWidget.width = newW
                 } else {
                     // one-sided resize
-                    let currentW = textWidget.width
+                    let currentW = instrumentWidget.width
                     let newW = max(currentW + sign * delta, handleSize * 2)
                     let deltaW = newW - currentW
-                    textWidget.width = newW
-                    textWidget.x += sign * (deltaW / 2)
+                    instrumentWidget.width = newW
+                    instrumentWidget.x += sign * (deltaW / 2)
                 }
             }
             .onEnded { _ in
@@ -151,9 +129,9 @@ struct TextWidgetView: View {
     private func handleTap() {
         guard !isEditing else { return }
         if isSelected {
-            appContext.editingTextWidgetID = textWidget.id
+            appContext.editingInstrumentWidgetID = instrumentWidget.id
         } else {
-            appContext.textWidgetSelections = [textWidget.id]
+            appContext.instrumentWidgetSelections = [instrumentWidget.id]
         }
     }
 }

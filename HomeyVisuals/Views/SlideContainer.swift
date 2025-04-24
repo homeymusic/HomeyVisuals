@@ -72,3 +72,12 @@ struct TextWidgetContent: View {
     }
 }
 
+/// The shared drawing logic for any TextWidget.
+struct InstrumentWidgetContent: View {
+    let instrumentWidget: InstrumentWidget
+
+    var body: some View {
+        Text(instrumentWidget.instrumentChoice.label)
+    }
+}
+

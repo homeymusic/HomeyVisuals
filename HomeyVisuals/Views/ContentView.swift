@@ -61,6 +61,13 @@ struct ContentView: View {
                 .keyboardShortcut("n", modifiers: [.shift, .command])
         }
         ToolbarItem(placement: .principal) {
+            Button(action: addPiano) {
+                Label("Piano", systemImage: InstrumentChoice.piano.icon)
+            }
+            .buttonStyle(.borderless)
+            .disabled(appContext.selectedSlide(in: slides) == nil)
+        }
+        ToolbarItem(placement: .principal) {
             Button(action: addTextWidget) {
                 Label("Text Box", systemImage: "character.textbox")
             }
@@ -108,6 +115,17 @@ struct ContentView: View {
         appContext.textWidgetSelections = [ widget.id ]
     }
     
+    private func addPiano() {
+        guard let slide = appContext.selectedSlide(in: slides) else { return }
+        let widget = InstrumentWidget(slide: slide)
+        
+        withAnimation {
+            slide.instrumentWidgets.append(widget)
+        }
+        // put the new widget’s ID into the selection set
+        appContext.instrumentWidgetSelections = [ widget.id ]
+    }
+
     private func addSlide(after id: Slide.ID?) {
         let newSlide = Slide.create(in: modelContext)
         modelContext.insert(newSlide)

@@ -31,6 +31,9 @@ public final class Slide: Identifiable {
     @Relationship(deleteRule: .cascade, inverse: \TextWidget.slide)
     public var textWidgets: [TextWidget] = []
     
+    @Relationship(deleteRule: .cascade, inverse: \InstrumentWidget.slide)
+    public var instrumentWidgets: [InstrumentWidget] = []
+    
     /// SwiftUI-friendly color binding
     public var backgroundColor: Color {
         get { Color(backgroundRGBAColor) }
@@ -115,21 +118,27 @@ public extension Slide {
             AnyHashable(cameraDeviceID ?? "")
         ]
 
-        // 2) widget-level bits, in stable order
-        let widgetHashes = textWidgets
+        // 2) widget-level bits, in stable z-order
+        let textHashes = textWidgets
             .sorted { $0.z < $1.z }
             .map { $0.widgetHash }
 
-        return AnyHashable(base + [ AnyHashable(widgetHashes) ])
+        let instrumentHashes = instrumentWidgets
+            .sorted { $0.z < $1.z }
+            .map { $0.widgetHash }
+
+        let allHashes = textHashes + instrumentHashes
+
+        return AnyHashable(base + [ AnyHashable(allHashes) ])
     }
 
+    /// The highest z-value across *all* widgets on this slide.
     var highestZ: Int {
-        textWidgets.map(\.z).max() ?? -1
+        let textMaxZ       = textWidgets.map(\.z).max() ?? -1
+        let instrumentMaxZ = instrumentWidgets.map(\.z).max() ?? -1
+        return max(textMaxZ, instrumentMaxZ)
     }
-}
-
-extension Slide {
-    /// “If I letterbox this slide to fill the main screen, what size do I end up?”
+    
     var size: CGSize {
         let screen       = NSScreen.main?.frame.size
                           ?? CGSize(width: 3840, height: 2160)
