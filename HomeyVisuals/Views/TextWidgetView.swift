@@ -53,7 +53,7 @@ struct TextWidgetView: View {
         .font(.system(size: textWidget.fontSize))
         .textFieldStyle(.plain)
         .fixedSize()
-        .overlay(Rectangle().stroke(Color.gray, lineWidth: 1 / HomeyMusicKit.goldenRatio))
+        .overlay(Rectangle().stroke(Color.gray, lineWidth: 1 ))
         .focused($fieldIsFocused)
         .onAppear { fieldIsFocused = true }
         .onChange(of: fieldIsFocused) { _, focused in
@@ -152,10 +152,7 @@ struct TextWidgetView: View {
         let sign      = (anchor == .trailing ? 1.0 : -1.0)
 
         if symmetric {
-            var newW = w0Norm + sign * deltaNorm
-            newW = max(newW, minWNorm)
-            textWidget.width = newW
-            textWidget.x     = x0Norm
+            textWidget.width = max(w0Norm + sign * deltaNorm, minWNorm)
         } else {
             var newW = w0Norm + sign * deltaNorm
             newW = max(newW, minWNorm)
