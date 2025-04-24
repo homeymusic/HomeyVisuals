@@ -58,27 +58,3 @@ struct SlideBackground: View {
     }
 }
 
-/// The shared drawing logic for any TextWidget.
-struct TextWidgetContent: View {
-    let textWidget: TextWidget
-    
-    var body: some View {
-        Text(textWidget.text)
-            .font(.system(size: textWidget.fontSize))
-            .foregroundColor(.white)
-    }
-}
-
-/// The shared drawing logic for any TextWidget.
-struct InstrumentWidgetContent: View {
-    let instrumentWidget: InstrumentWidget
-    @Environment(InstrumentalContext.self) var instrumentalContext
-    
-    var body: some View {
-        InstrumentView()
-            .onAppear {
-                instrumentalContext.instrumentChoice = instrumentWidget.instrumentChoice
-            }
-    }
-}
-

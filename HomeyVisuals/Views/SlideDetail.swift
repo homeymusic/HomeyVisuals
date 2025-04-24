@@ -21,7 +21,9 @@ struct SlideDetail: View {
                         x: textWidget.x,
                         y: textWidget.y
                     )
-                
+                    .multilineTextAlignment(.leading)
+                    .frame(width: textWidget.width, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             ForEach(slide.instrumentWidgets, id: \.id) { instrumentWidget in
                 InstrumentWidgetContent(instrumentWidget: instrumentWidget)
@@ -29,6 +31,9 @@ struct SlideDetail: View {
                         x: instrumentWidget.x,
                         y: instrumentWidget.y
                     )
+                    .multilineTextAlignment(.leading)
+                    .frame(width: instrumentWidget.width, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
     }

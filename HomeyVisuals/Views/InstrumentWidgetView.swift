@@ -141,3 +141,16 @@ struct InstrumentWidgetView: View {
 
 private enum ResizeAnchor { case leading, trailing }
 
+/// The shared drawing logic for any TextWidget.
+struct InstrumentWidgetContent: View {
+    let instrumentWidget: InstrumentWidget
+    @Environment(InstrumentalContext.self) var instrumentalContext
+    
+    var body: some View {
+        InstrumentView()
+            .onAppear {
+                instrumentalContext.instrumentChoice = instrumentWidget.instrumentChoice
+            }
+    }
+}
+

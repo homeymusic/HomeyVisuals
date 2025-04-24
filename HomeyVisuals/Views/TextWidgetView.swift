@@ -161,3 +161,15 @@ struct TextWidgetView: View {
 
 private enum ResizeAnchor { case leading, trailing }
 
+
+/// The shared drawing logic for any TextWidget.
+struct TextWidgetContent: View {
+    let textWidget: TextWidget
+    
+    var body: some View {
+        Text(textWidget.text)
+            .font(.system(size: textWidget.fontSize))
+            .foregroundColor(.white)
+    }
+}
+
