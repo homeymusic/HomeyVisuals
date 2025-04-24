@@ -7,8 +7,7 @@ import HomeyMusicKit
 struct TextWidgetView: View {
     @Environment(Selections.self) private var selections
     @Bindable var textWidget: TextWidget
-    let slideSize: CGSize
-
+    
     @FocusState private var fieldIsFocused: Bool
     @State private var dragOffset: CGSize = .zero
     @State private var isDragging = false
@@ -38,8 +37,8 @@ struct TextWidgetView: View {
         }
         .contentShape(Rectangle())
         .position(
-            x: slideSize.width * textWidget.x + dragOffset.width,
-            y: slideSize.height * textWidget.y + dragOffset.height
+            x: textWidget.slideSize.width * textWidget.x + dragOffset.width,
+            y: textWidget.slideSize.height * textWidget.y + dragOffset.height
         )
         .onTapGesture { handleTap() }
         .gesture(moveGesture)
@@ -53,7 +52,7 @@ struct TextWidgetView: View {
         .font(.system(size: textWidget.fontSize))
         .textFieldStyle(.plain)
         .fixedSize()
-        .overlay(Rectangle().stroke(Color.gray, lineWidth: 1 ))
+        .overlay(Rectangle().stroke(Color.gray, lineWidth: 2 ))
         .focused($fieldIsFocused)
         .onAppear { fieldIsFocused = true }
         .onChange(of: fieldIsFocused) { _, focused in
@@ -65,9 +64,9 @@ struct TextWidgetView: View {
     // MARK: - Content + Handles
     private var content: some View {
         let handleSize: CGFloat = 13
-        let slideW = slideSize.width
+        let slideW = textWidget.slideSize.width
 
-        return TextWidgetContent(textWidget: textWidget, slideSize: slideSize)
+        return TextWidgetContent(textWidget: textWidget)
             .frame(width: textWidget.width * slideW, alignment: .leading)
             .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, handleSize / 2)
@@ -75,7 +74,7 @@ struct TextWidgetView: View {
                 ZStack {
                     Rectangle()
                         .inset(by: handleSize / 2)
-                        .stroke(isDragging ? Color.gray : (isSelected ? Color(.systemBlue) : .clear), lineWidth: 1)
+                        .stroke(isDragging ? Color.gray : (isSelected ? Color(.systemBlue) : .clear), lineWidth: 2)
 
                     if isSelected && !isDragging {
                         GeometryReader { geo in
@@ -85,7 +84,7 @@ struct TextWidgetView: View {
                             Rectangle()
                                 .fill(Color.white)
                                 .frame(width: handleSize, height: handleSize)
-                                .overlay(Rectangle().stroke(Color.black, lineWidth: 1))
+                                .overlay(Rectangle().stroke(Color.black, lineWidth: 2))
                                 .position(x: handleSize / 2, y: yCenter)
                                 .pointerStyle(.frameResize(position: .leading))
                                 .gesture(resizeGesture(anchor: .leading, symmetric: false))
@@ -95,7 +94,7 @@ struct TextWidgetView: View {
                             Rectangle()
                                 .fill(Color.white)
                                 .frame(width: handleSize, height: handleSize)
-                                .overlay(Rectangle().stroke(Color.black, lineWidth: 1))
+                                .overlay(Rectangle().stroke(Color.black, lineWidth: 2))
                                 .position(x: geo.size.width - handleSize / 2, y: yCenter)
                                 .pointerStyle(.frameResize(position: .trailing))
                                 .gesture(resizeGesture(anchor: .trailing, symmetric: false))
@@ -119,8 +118,8 @@ struct TextWidgetView: View {
                 guard !isEditing else {
                     isDragging = false; dragOffset = .zero; return
                 }
-                let dx = value.translation.width / slideSize.width
-                let dy = value.translation.height / slideSize.height
+                let dx = value.translation.width / textWidget.slideSize.width
+                let dy = value.translation.height / textWidget.slideSize.height
                 textWidget.x = (textWidget.x + dx).clamped(to: 0...1)
                 textWidget.y = (textWidget.y + dy).clamped(to: 0...1)
                 isDragging = false
@@ -134,7 +133,7 @@ struct TextWidgetView: View {
             .modifiers(symmetric ? .option : [])
             .onChanged { value in
                 if resizingInitialWidth == nil {
-                    resizingInitialWidth = textWidget.width * slideSize.width
+                    resizingInitialWidth = textWidget.width * textWidget.slideSize.width
                     resizingInitialX     = textWidget.x
                 }
                 applyResize(delta: value.translation.width, anchor: anchor, symmetric: symmetric)
@@ -145,7 +144,7 @@ struct TextWidgetView: View {
     // MARK: - Resize Logic
     private func applyResize(delta: CGFloat, anchor: ResizeAnchor, symmetric: Bool) {
         guard let w0Pts = resizingInitialWidth, let x0Norm = resizingInitialX else { return }
-        let slideW = slideSize.width
+        let slideW = textWidget.slideSize.width
         let deltaNorm = Double(delta / slideW)
         let minWNorm  = Double(minWidthPts / slideW)
         let w0Norm    = Double(w0Pts / slideW)

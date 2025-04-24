@@ -77,6 +77,11 @@ public final class TextWidget: Widget {
         fontSize:   fontSize
       )
     }
+    
+    public var slideSize: CGSize {
+      slide?.size ?? .zero
+    }
+
 }
 
 extension TextWidget {

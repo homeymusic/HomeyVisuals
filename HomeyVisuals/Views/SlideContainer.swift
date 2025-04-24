@@ -5,38 +5,34 @@ import HomeyMusicKit
 struct SlideContainer<Content: View>: View {
     let slide: Slide
     let isThumbnail: Bool
-    @ViewBuilder let content: (_ letterbox: CGSize) -> Content
+    @ViewBuilder let content: Content
 
     /// You can omit `isThumbnail` when you want full-screen/edit mode.
     init(
         slide: Slide,
         isThumbnail: Bool = false,
-        @ViewBuilder content: @escaping (_ letterbox: CGSize) -> Content
+        @ViewBuilder content: () -> Content
     ) {
         self.slide       = slide
         self.isThumbnail = isThumbnail
-        self.content     = content
+        self.content     = content()
     }
 
     var body: some View {
         GeometryReader { geo in
             let containerSize = geo.size
-            
-            // always use the letterbox sized for the main screen
-            let letterbox = slide.letterboxSizeOnScreen
-            
             // compute scale to fit that letterbox into whatever container we have
             let scale = min(
-                containerSize.width  / letterbox.width,
-                containerSize.height / letterbox.height
+                containerSize.width  / slide.size.width,
+                containerSize.height / slide.size.height
             )
 
             ZStack {
                 SlideBackground(slide: slide, isThumbnail: isThumbnail)
-                content(letterbox)
+                content
             }
-            .frame(width:  letterbox.width,
-                   height: letterbox.height)
+            .frame(width:  slide.size.width,
+                   height: slide.size.height)
             .scaleEffect(scale, anchor: .topLeading)
         }
         .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
@@ -61,7 +57,6 @@ struct SlideBackground: View {
 /// The shared drawing logic for any TextWidget.
 struct TextWidgetContent: View {
     let textWidget: TextWidget
-    let slideSize: CGSize
 
     var body: some View {
         Text(textWidget.text)

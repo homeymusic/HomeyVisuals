@@ -4,6 +4,8 @@ import SwiftData
 import UniformTypeIdentifiers
 import HomeyMusicKit
 import SwiftUI
+import CoreGraphics
+import AppKit
 
 @Model
 public final class Slide: Identifiable {
@@ -123,5 +125,25 @@ public extension Slide {
 
     var highestZ: Int {
         textWidgets.map(\.z).max() ?? -1
+    }
+}
+
+extension Slide {
+    /// “If I letterbox this slide to fill the main screen, what size do I end up?”
+    var size: CGSize {
+        let screen       = NSScreen.main?.frame.size
+                          ?? CGSize(width: 3840, height: 2160)
+        let aspect       = CGFloat(aspectRatio.ratio)
+        let screenAspect = screen.width / screen.height
+
+        if aspect > screenAspect {
+            // slide is wider → full-width letterbox
+            let w = screen.width
+            return CGSize(width: w, height: w / aspect)
+        } else {
+            // slide is taller (or equal) → full-height letterbox
+            let h = screen.height
+            return CGSize(width: h * aspect, height: h)
+        }
     }
 }
