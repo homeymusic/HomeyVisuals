@@ -16,7 +16,7 @@ struct InstrumentWidgetEdit: View {
     }
     
     var body: some View {
-        InstrumentView(instrumentalContext.instrumentByChoice[instrumentWidget.instrumentChoice] ?? Piano())
+        InstrumentView(instrumentWidget.instrument)
             .onAppear {
                 instrumentalContext.instrumentChoice = instrumentWidget.instrumentChoice
             }

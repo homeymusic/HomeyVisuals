@@ -135,15 +135,19 @@ struct ContentView: View {
     
     private func addInstrument(instrumentChoice: InstrumentChoice) {
         guard let slide = appContext.selectedSlide(in: slides) else { return }
-        let widget = InstrumentWidget(slide: slide, instrumentChoice: instrumentChoice)
-        
+        let widget = InstrumentWidget.create(
+            forSlide: slide,
+            withChoice: instrumentChoice,
+            in: modelContext
+        )
+
         withAnimation {
             slide.instrumentWidgets.append(widget)
         }
-        // put the new widget’s ID into the selection set
+        // select the new widget
         appContext.widgetSelections = [ widget.id ]
     }
-
+    
     private func addSlide(after id: Slide.ID?) {
         let newSlide = Slide.create(in: modelContext)
         modelContext.insert(newSlide)

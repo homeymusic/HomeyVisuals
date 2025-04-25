@@ -25,7 +25,7 @@ struct WidgetShow: View {
                     .position(x: text.x, y: text.y)
 
             case let instrumentWidget as InstrumentWidget:
-                InstrumentView(instrumentalContext.instrumentByChoice[instrumentWidget.instrumentChoice] ?? Piano())
+                InstrumentView(instrumentWidget.instrument)
                     .frame(width: instrumentWidget.width, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
                     .position(x: instrumentWidget.x, y: instrumentWidget.y)

@@ -19,7 +19,7 @@ struct WidgetThumbnail: View {
                     .position(x: text.x, y: text.y)
 
             case let instrumentWidget as InstrumentWidget:
-                InstrumentView(instrumentalContext.instrumentByChoice[instrumentWidget.instrumentChoice] ?? Piano())
+                InstrumentView(instrumentWidget.instrument)
                     .onAppear {
                         instrumentalContext.instrumentChoice = instrumentWidget.instrumentChoice
                     }
