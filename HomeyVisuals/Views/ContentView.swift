@@ -73,12 +73,16 @@ struct ContentView: View {
                 .keyboardShortcut("n", modifiers: [.shift, .command])
         }
         
-        ToolbarItem(placement: .principal) {
-            Button(action: {addInstrument(instrumentChoice: InstrumentChoice.piano)}) {
-                Label("Piano", systemImage: InstrumentChoice.piano.icon)
+        ToolbarItemGroup(placement: .principal) {
+            ForEach(InstrumentChoice.allInstruments) { choice in
+                Button {
+                    addInstrument(instrumentChoice: choice)
+                } label: {
+                    Label(choice.label.capitalized, systemImage: choice.icon)
+                }
+                .buttonStyle(.borderless)
+                .disabled(appContext.selectedSlide(in: slides) == nil)
             }
-            .buttonStyle(.borderless)
-            .disabled(appContext.selectedSlide(in: slides) == nil)
         }
         
         ToolbarItem(placement: .principal) {
