@@ -14,13 +14,13 @@ public final class InstrumentWidget: Widget {
 
     // MARK: — Stored (relative, persisted)
     /// 0…1 fraction of slide width
-    public var relativeX: Double
+    public var relativeX: Double = 0.5
     /// 0…1 fraction of slide height
-    public var relativeY: Double
+    public var relativeY: Double = 0.5
     /// 0…1 fraction of slide width
-    public var relativeWidth: Double
+    public var relativeWidth: Double = 0.25
     /// 0…1 fraction of slide height
-    public var relativeHeight: Double
+    public var relativeHeight: Double = 0.25
 
     // MARK: — Content
     public var instrumentChoice: InstrumentChoice
@@ -28,21 +28,13 @@ public final class InstrumentWidget: Widget {
     // MARK: — Init
     public init(
         slide: Slide,
-        relativeX: Double = 0.5,
-        relativeY: Double = 0.5,
         z: Int,
-        relativeWidth: Double = 0.25,
-        relativeHeight: Double = 0.25,
         instrumentChoice: InstrumentChoice = .piano
     ) {
-        self.id             = UUID()
-        self.slide          = slide
-        self.relativeX      = relativeX
-        self.relativeY      = relativeY
-        self.z              = z
-        self.relativeWidth  = relativeWidth
-        self.relativeHeight = relativeHeight
-        self.instrumentChoice     = instrumentChoice
+        self.id               = UUID()
+        self.slide            = slide
+        self.z                = z
+        self.instrumentChoice = instrumentChoice
     }
 
     public convenience init(slide: Slide) {

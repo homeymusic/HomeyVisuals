@@ -13,34 +13,26 @@ public final class TextWidget: Widget {
 
     // MARK: — Stored (relative, persisted)
     /// 0…1 fraction of slide width
-    public var relativeX: Double
+    public var relativeX: Double = 0.5
     /// 0…1 fraction of slide height
-    public var relativeY: Double
+    public var relativeY: Double = 0.5
     /// 0…1 fraction of slide width
-    public var relativeWidth: Double
+    public var relativeWidth: Double = 0.25
     /// 0…1 fraction of slide height
-    public var relativeHeight: Double
+    public var relativeHeight: Double = 0.25
 
     // MARK: — Content
-    public var text: String
+    public var text: String = "Text"
 
     public var fontSize: Double = 150.0
 
     // MARK: — Init
     public init(
         slide: Slide,
-        relativeX: Double = 0.5,
-        relativeY: Double = 0.5,
         z: Int,
-        relativeWidth: Double = 0.25,
-        relativeHeight: Double = 0.25,
-        text: String = "Text",
-        fontSize: Double = 150.0
     ) {
         self.id             = UUID()
         self.slide          = slide
-        self.relativeX      = relativeX
-        self.relativeY      = relativeY
         self.z              = z
         self.relativeWidth  = relativeWidth
         self.relativeHeight = relativeHeight
@@ -59,13 +51,7 @@ public final class TextWidget: Widget {
     public convenience init(record: TextWidgetRecord, slide: Slide) {
         self.init(
             slide: slide,
-            relativeX: record.x,
-            relativeY: record.y,
-            z: record.z,
-            relativeWidth: record.width,
-            relativeHeight: record.height,
-            text: record.text,
-            fontSize: record.fontSize
+            z: record.z
         )
         self.id = record.id
     }
