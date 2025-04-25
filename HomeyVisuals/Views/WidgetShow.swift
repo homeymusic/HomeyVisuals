@@ -1,10 +1,15 @@
+// WidgetShow.swift
+
 import SwiftUI
 import HomeyMusicKit
 
-/// Read-only thumbnail for any widget.
-struct WidgetThumbnail: View {
+/// Read-only “show” mode for any widget:
+/// • Text renders statically (no selection/editing/dragging)
+/// • Instruments render playably (always hit-testable)
+struct WidgetShow: View {
     let widget: any Widget
     let scale: CGFloat
+
     @Environment(InstrumentalContext.self) private var instrumentalContext
 
     var body: some View {
@@ -14,7 +19,8 @@ struct WidgetThumbnail: View {
                 Text(text.text)
                     .font(.system(size: text.fontSize))
                     .foregroundColor(.white)
-                    .frame(width: text.width, alignment: .leading)
+                    .frame(width:    text.width,
+                           alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
                     .position(x: text.x, y: text.y)
 
@@ -23,14 +29,16 @@ struct WidgetThumbnail: View {
                     .onAppear {
                         instrumentalContext.instrumentChoice = inst.instrumentChoice
                     }
-                    .position(x: inst.x, y: inst.y)
-                    .frame(width: inst.width, alignment: .leading)
+                    .frame(width:    inst.width,
+                           alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
+                    .position(x: inst.x, y: inst.y)
 
             default:
                 EmptyView()
             }
         }
-        .allowsHitTesting(false)
+        // only instruments remain interactive in “show” mode
+        .allowsHitTesting(widget is InstrumentWidget)
     }
 }

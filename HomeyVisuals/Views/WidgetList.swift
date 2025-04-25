@@ -19,10 +19,10 @@ struct WidgetList: View {
                 switch widgetViewStyle {
                 case .thumbnail:
                     WidgetThumbnail(widget: widget, scale: scale)
-                        .allowsHitTesting(false)
                 case .edit:
                     WidgetEdit(widget: widget, scale: scale)
-                        .allowsHitTesting(true)
+                case .show:
+                    WidgetShow(widget: widget, scale: scale)
                 }
             }
         }
@@ -32,4 +32,5 @@ struct WidgetList: View {
 enum WidgetViewStyle {
     case thumbnail
     case edit
+    case show
 }

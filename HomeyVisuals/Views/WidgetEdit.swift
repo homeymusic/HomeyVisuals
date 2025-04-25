@@ -12,19 +12,22 @@ struct WidgetEdit: View {
     @Environment(InstrumentalContext.self)   private var instrumentalContext
 
     var body: some View {
-        switch widget {
-        case let text as TextWidget:
-            TextWidgetView(
-                textWidget: text,
-                slideScale: scale
-            )
-        case let inst as InstrumentWidget:
-            InstrumentWidgetView(
-                instrumentWidget: inst,
-                slideScale: scale
-            )
-        default:
-            EmptyView()
+        Group {
+            switch widget {
+            case let text as TextWidget:
+                TextWidgetView(
+                    textWidget: text,
+                    slideScale: scale
+                )
+            case let inst as InstrumentWidget:
+                InstrumentWidgetView(
+                    instrumentWidget: inst,
+                    slideScale: scale
+                )
+            default:
+                EmptyView()
+            }
         }
+        .allowsHitTesting(true)
     }
 }

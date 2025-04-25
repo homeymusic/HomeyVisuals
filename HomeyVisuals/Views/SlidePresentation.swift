@@ -3,7 +3,7 @@ import HomeyMusicKit
 import AppKit
 
 /// Full‑screen slideshow with key navigation (including Home/End jump).
-struct Presentation: View {
+struct SlidePresentation: View {
     @Environment(AppContext.self) var appContext
     @Environment(TonalContext.self) var tonalContext
     @Environment(InstrumentalContext.self) var instrumentalContext
@@ -21,7 +21,7 @@ struct Presentation: View {
     var body: some View {
         ZStack {
             // Render the slide
-            SlideThumbnail(slide: slides[index])
+            SlideShow(slide: slides[index])
 
             // Invisible overlay for key handling
             KeyCatcher(
@@ -109,7 +109,7 @@ struct Presentation: View {
         notationalTonicContext: NotationalTonicContext,
         notationalContext: NotationalContext
       ) {
-        let view = Presentation(slides: slides, startIndex: startIndex)
+        let view = SlidePresentation(slides: slides, startIndex: startIndex)
                      .environment(appContext)
                      .environment(tonalContext)
                      .environment(instrumentalContext)
