@@ -20,10 +20,10 @@ struct SlideEdit: View {
                             appContext.editingWidgetID = nil
                         }
 
-                    SlideWidgetsOverlay(
+                    WidgetList(
                         slide: slide,
                         scale: scale,
-                        allowInteraction: true
+                        widgetViewStyle: .edit
                     )
                 }
             }

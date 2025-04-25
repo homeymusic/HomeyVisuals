@@ -38,7 +38,7 @@ struct ContentView: View {
                         case let text as TextWidget:
                             TextWidgetInspect(widget: text)
                         case let inst as InstrumentWidget:
-                            Text("Instrument inspector coming soon")
+                            Text("Instrument inspector coming soon: \(inst.instrumentChoice)")
                         default:
                             EmptyView()
                         }

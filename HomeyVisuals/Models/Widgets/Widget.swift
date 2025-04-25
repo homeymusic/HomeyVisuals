@@ -2,7 +2,7 @@ import Foundation
 import CoreGraphics
 
 /// Base protocol for anything that lives on a Slide and can be hashed for thumbnail invalidation.
-public protocol Widget: AnyObject, Identifiable {
+public protocol Widget: AnyObject, Identifiable, Observable {
     // MARK: — Identity & Z-order
     var id: UUID { get }
     var slide: Slide? { get set }

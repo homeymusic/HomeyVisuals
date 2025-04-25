@@ -30,7 +30,7 @@ struct SlideList: View {
                                     .foregroundStyle(.secondary)
                             }
                             // live, vector thumbnail
-                            SlideDetail(slide: slide, isThumbnail: true)
+                            SlideThumbnail(slide: slide)
                         }
                     }
                     .tag(slide.id)
