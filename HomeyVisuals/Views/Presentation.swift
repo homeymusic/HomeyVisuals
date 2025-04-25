@@ -3,7 +3,7 @@ import HomeyMusicKit
 import AppKit
 
 /// Full‑screen slideshow with key navigation (including Home/End jump).
-struct Slideshow: View {
+struct Presentation: View {
     @Environment(AppContext.self) var appContext
     @Environment(TonalContext.self) var tonalContext
     @Environment(InstrumentalContext.self) var instrumentalContext
@@ -109,7 +109,7 @@ struct Slideshow: View {
         notationalTonicContext: NotationalTonicContext,
         notationalContext: NotationalContext
       ) {
-        let view = Slideshow(slides: slides, startIndex: startIndex)
+        let view = Presentation(slides: slides, startIndex: startIndex)
                      .environment(appContext)
                      .environment(tonalContext)
                      .environment(instrumentalContext)

@@ -111,7 +111,7 @@ struct ContentView: View {
         let index = slides.firstIndex(of: slide)
       else { return }
 
-      Slideshow.present(
+      Presentation.present(
         slides: slides,
         startIndex: index,
         appContext: appContext,
