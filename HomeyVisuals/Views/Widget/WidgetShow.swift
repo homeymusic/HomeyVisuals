@@ -29,8 +29,7 @@ struct WidgetShow: View {
                     .onAppear {
                         instrumentalContext.instrumentChoice = inst.instrumentChoice
                     }
-                    .frame(width:    inst.width,
-                           alignment: .leading)
+                    .frame(width: inst.width, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
                     .position(x: inst.x, y: inst.y)
 
