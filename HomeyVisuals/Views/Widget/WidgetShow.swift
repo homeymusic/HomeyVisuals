@@ -24,14 +24,11 @@ struct WidgetShow: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .position(x: text.x, y: text.y)
 
-            case let inst as InstrumentWidget:
-                InstrumentView()
-                    .onAppear {
-                        instrumentalContext.instrumentChoice = inst.instrumentChoice
-                    }
-                    .frame(width: inst.width, alignment: .leading)
+            case let instrumentWidget as InstrumentWidget:
+                InstrumentView(instrumentalContext.instrumentByChoice[instrumentWidget.instrumentChoice] ?? Piano())
+                    .frame(width: instrumentWidget.width, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
-                    .position(x: inst.x, y: inst.y)
+                    .position(x: instrumentWidget.x, y: instrumentWidget.y)
 
             default:
                 EmptyView()

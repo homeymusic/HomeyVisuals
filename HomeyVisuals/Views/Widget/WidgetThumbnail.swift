@@ -18,13 +18,13 @@ struct WidgetThumbnail: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .position(x: text.x, y: text.y)
 
-            case let inst as InstrumentWidget:
-                InstrumentView()
+            case let instrumentWidget as InstrumentWidget:
+                InstrumentView(instrumentalContext.instrumentByChoice[instrumentWidget.instrumentChoice] ?? Piano())
                     .onAppear {
-                        instrumentalContext.instrumentChoice = inst.instrumentChoice
+                        instrumentalContext.instrumentChoice = instrumentWidget.instrumentChoice
                     }
-                    .position(x: inst.x, y: inst.y)
-                    .frame(width: inst.width, alignment: .leading)
+                    .position(x: instrumentWidget.x, y: instrumentWidget.y)
+                    .frame(width: instrumentWidget.width, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
 
             default:
