@@ -13,14 +13,14 @@ struct WidgetEdit: View {
 
   var body: some View {
     Group {
-      if let text = widget as? TextWidget {
-          makeWidgetContainer(for: text) {
-          TextWidgetEdit(textWidget: text, slideScale: scale)
+      if let textWidget = widget as? TextWidget {
+          makeWidgetContainer(for: textWidget) {
+          TextWidgetEdit(textWidget: textWidget, slideScale: scale)
         }
       }
-      else if let inst = widget as? InstrumentWidget {
-          makeWidgetContainer(for: inst) {
-          InstrumentWidgetEdit(instrumentWidget: inst, slideScale: scale)
+      else if let instrumentWidget = widget as? InstrumentWidget {
+          makeWidgetContainer(for: instrumentWidget) {
+          InstrumentWidgetEdit(instrumentWidget: instrumentWidget, slideScale: scale)
         }
       }
       else {
