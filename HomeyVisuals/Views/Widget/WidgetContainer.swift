@@ -63,7 +63,7 @@ struct WidgetContainer<W: Widget & Observable, Content: View>: View {
                     let w = geo.size.width
                     let h = geo.size.height
 
-                    ForEach(FrameResizePosition.allCases, id: \.self) { pos in
+                    ForEach(Array(widget.allowedResizePositions), id: \.self) { pos in
                         handleView(pos)
                             .position(
                                 x: xPos(for: pos, in: w),

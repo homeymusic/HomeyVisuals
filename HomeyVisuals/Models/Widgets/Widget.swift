@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import CoreGraphics
 
 /// Base protocol for anything that lives on a Slide and can be hashed for thumbnail invalidation.
@@ -7,7 +8,7 @@ public protocol Widget: AnyObject, Identifiable, Observable {
     var id: UUID { get }
     var slide: Slide? { get set }
     var z: Int { get set }
-
+    
     // MARK: — Stored (all relative, persisted)
     /// 0…1 fraction of slide width
     var relativeX: Double { get set }
@@ -17,7 +18,7 @@ public protocol Widget: AnyObject, Identifiable, Observable {
     var relativeWidth: Double { get set }
     /// 0…1 fraction of slide height
     var relativeHeight: Double { get set }
-
+    
     // MARK: — Computed (absolute, derived via slide.size)
     /// Absolute X in points
     var x: CGFloat { get set }
@@ -27,7 +28,9 @@ public protocol Widget: AnyObject, Identifiable, Observable {
     var width: CGFloat { get set }
     /// Absolute height in points
     var height: CGFloat { get set }
-
+    
+    var allowedResizePositions: Set<FrameResizePosition> { get }
+    
     /// Every concrete Widget must supply a hash snapshot that includes any content beyond geometry.
     var widgetHash: AnyHashable { get }
 }
@@ -37,7 +40,7 @@ extension Widget {
     private var slideSize: CGSize {
         slide?.size ?? .zero
     }
-
+    
     // MARK: — Default computed property implementations
     public var x: CGFloat {
         get { CGFloat(relativeX) * slideSize.width }
@@ -46,7 +49,7 @@ extension Widget {
             relativeX = (Double(newValue) / Double(slideSize.width)).clamped(to: 0...1)
         }
     }
-
+    
     public var y: CGFloat {
         get { CGFloat(relativeY) * slideSize.height }
         set {
@@ -54,7 +57,7 @@ extension Widget {
             relativeY = (Double(newValue) / Double(slideSize.height)).clamped(to: 0...1)
         }
     }
-
+    
     public var width: CGFloat {
         get { CGFloat(relativeWidth) * slideSize.width }
         set {
@@ -62,7 +65,7 @@ extension Widget {
             relativeWidth = (Double(newValue) / Double(slideSize.width)).clamped(to: 0...1)
         }
     }
-
+    
     public var height: CGFloat {
         get { CGFloat(relativeHeight) * slideSize.height }
         set {
@@ -70,7 +73,11 @@ extension Widget {
             relativeHeight = (Double(newValue) / Double(slideSize.height)).clamped(to: 0...1)
         }
     }
-
+    
+    public var allowedResizePositions: Set<FrameResizePosition> {
+        Set(FrameResizePosition.allCases)
+    }
+    
     // MARK: — Geometry hashing helper
     /// Gather geometry fields for thumbnail invalidation
     static func baseHashElements(of w: Self) -> [AnyHashable] {

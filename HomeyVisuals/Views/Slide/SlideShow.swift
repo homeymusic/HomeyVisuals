@@ -18,5 +18,6 @@ struct SlideShow: View {
                 widgetViewStyle: .show
             )
         }
+        .clipped()
     }
 }

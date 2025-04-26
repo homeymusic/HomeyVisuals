@@ -18,5 +18,6 @@ struct SlideThumbnail: View {
                 widgetViewStyle: .thumbnail
             )
         }
+        .clipped()
     }
 }

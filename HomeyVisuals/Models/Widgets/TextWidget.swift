@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import SwiftData
 import CoreGraphics
 
@@ -69,6 +70,11 @@ public final class TextWidget: Widget {
             fontSize:   fontSize
         )
     }
+    
+    public var allowedResizePositions: Set<FrameResizePosition> {
+        [.leading, .trailing]
+    }
+    
 }
 
 extension TextWidget {
