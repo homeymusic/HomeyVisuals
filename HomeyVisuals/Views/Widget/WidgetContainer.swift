@@ -15,14 +15,16 @@ struct WidgetContainer<W: Widget & Observable, Content: View>: View {
     // Internal state for dragging & resizing
     @State private var dragOffset = CGSize.zero
     @State private var isDragging = false
-    @State private var lastLeadingTranslation: CGFloat = 0
-    @State private var lastTrailingTranslation: CGFloat = 0
+
+    // Track last translation per handle so drags don't jump
+    @State private var lastTranslation: [FrameResizePosition: CGSize] = [:]
+
     private let handleSize: CGFloat = 10
 
     var body: some View {
         ZStack {
             content()
-                .frame(width: widget.width, height: widget.height, alignment: .leading)
+                .frame(width: widget.width, height: widget.height, alignment: .topLeading)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(handleSize)
                 .overlay(selectionOverlay)
@@ -32,7 +34,7 @@ struct WidgetContainer<W: Widget & Observable, Content: View>: View {
             x: widget.x + dragOffset.width,
             y: widget.y + dragOffset.height
         )
-        .onTapGesture { handleTap() }
+        .onTapGesture(perform: handleTap)
         .gesture(moveGesture)
     }
 
@@ -42,42 +44,72 @@ struct WidgetContainer<W: Widget & Observable, Content: View>: View {
         else           { onSelect()      }
     }
 
+    // MARK: — Selection & Handles
+
     private var selectionOverlay: some View {
         ZStack {
+            // border inset by half a handle so strokes align with handle centers
             Rectangle()
-                .inset(by: handleSize)
+                .inset(by: handleSize / 2)
                 .stroke(
-                    isDragging ? Color.gray :
-                    isEditing  ? Color.gray :
-                    isSelected ? Color.blue :
-                                 Color.clear,
+                    isDragging || isEditing ? Color.gray :
+                    isSelected              ? Color.blue :
+                                               Color.clear,
                     lineWidth: 1
                 )
-            // only show handles when “selected” but not dragging/editing
+
             if isSelected && !isDragging && !isEditing {
                 GeometryReader { geo in
-                    let centerY = geo.size.height / 2
-                    handleView(.leading)
-                        .position(x: handleSize, y: centerY)
-                    handleView(.trailing)
-                        .position(x: geo.size.width - handleSize, y: centerY)
+                    let w = geo.size.width
+                    let h = geo.size.height
+
+                    ForEach(FrameResizePosition.allCases, id: \.self) { pos in
+                        handleView(pos)
+                            .position(
+                                x: xPos(for: pos, in: w),
+                                y: yPos(for: pos, in: h)
+                            )
+                    }
                 }
             }
         }
     }
 
-    private func handleView(_ anchor: ResizeAnchor) -> some View {
+    private func xPos(for pos: FrameResizePosition, in width: CGFloat) -> CGFloat {
+        let half = handleSize / 2
+        switch pos {
+        case .leading, .topLeading, .bottomLeading:
+            return half
+        case .trailing, .topTrailing, .bottomTrailing:
+            return width - half
+        case .top, .bottom:
+            return width / 2
+        }
+    }
+
+    private func yPos(for pos: FrameResizePosition, in height: CGFloat) -> CGFloat {
+        let half = handleSize / 2
+        switch pos {
+        case .top, .topLeading, .topTrailing:
+            return half
+        case .bottom, .bottomLeading, .bottomTrailing:
+            return height - half
+        case .leading, .trailing:
+            return height / 2
+        }
+    }
+
+    private func handleView(_ position: FrameResizePosition) -> some View {
         Rectangle()
             .fill(Color.white)
             .frame(width: handleSize, height: handleSize)
             .overlay(Rectangle().stroke(Color.black, lineWidth: 1))
-            .pointerStyle(
-                .frameResize(position: anchor == .leading ? .leading : .trailing)
-            )
-            .highPriorityGesture(resizeGesture(anchor: anchor))
+            .pointerStyle(.frameResize(position: position))
+            .highPriorityGesture(resizeGesture(for: position))
     }
 
     // MARK: – Move Gesture
+
     private var moveGesture: some Gesture {
         DragGesture(coordinateSpace: .global)
             .onChanged { value in
@@ -91,7 +123,9 @@ struct WidgetContainer<W: Widget & Observable, Content: View>: View {
             }
             .onEnded { value in
                 guard !isEditing else {
-                    isDragging = false; dragOffset = .zero; return
+                    isDragging = false
+                    dragOffset = .zero
+                    return
                 }
                 widget.x += value.translation.width  / slideScale
                 widget.y += value.translation.height / slideScale
@@ -101,38 +135,86 @@ struct WidgetContainer<W: Widget & Observable, Content: View>: View {
     }
 
     // MARK: – Resize Gesture
-    private func resizeGesture(anchor: ResizeAnchor) -> some Gesture {
+
+    private func resizeGesture(for pos: FrameResizePosition) -> some Gesture {
         DragGesture(coordinateSpace: .global)
             .onChanged { value in
-                let prev     = (anchor == .leading ? lastLeadingTranslation
-                                                   : lastTrailingTranslation)
-                let rawDelta = value.translation.width - prev
-                if anchor == .leading {
-                    lastLeadingTranslation = value.translation.width
-                } else {
-                    lastTrailingTranslation = value.translation.width
-                }
-                let delta      = rawDelta / slideScale
-                let optionDown = NSEvent.modifierFlags.contains(.option)
-                let sign: CGFloat = (anchor == .trailing ? 1 : -1)
+                // compute delta from last drag point
+                let prev = lastTranslation[pos] ?? .zero
+                let rawDelta = CGSize(
+                    width:  value.translation.width  - prev.width,
+                    height: value.translation.height - prev.height
+                )
+                lastTranslation[pos] = value.translation
 
-                if optionDown {
-                    // symmetric resize
-                    widget.width = max(widget.width + 2*sign*delta, handleSize*2)
-                } else {
-                    // one-sided resize
-                    let old = widget.width
-                    let nw  = max(old + sign*delta, handleSize*2)
-                    let dw  = nw - old
-                    widget.width = nw
-                    widget.x    += sign * (dw/2)
+                let optionDown = NSEvent.modifierFlags.contains(.option)
+                var newW = widget.width
+                var newH = widget.height
+                var newX = widget.x
+                var newY = widget.y
+
+                // horizontal?
+                if pos.isHorizontal {
+                    let signX: CGFloat = pos.isTrailing ? 1 : -1
+                    let dx = rawDelta.width / slideScale
+                    let dW = optionDown ? 2 * signX * dx : signX * dx
+                    newW = max(widget.width + dW, handleSize * 2)
+                    if !optionDown {
+                        newX += signX * (newW - widget.width) / 2
+                    }
                 }
+
+                // vertical?
+                if pos.isVertical {
+                    let signY: CGFloat = pos.isBottom ? 1 : -1
+                    let dy = rawDelta.height / slideScale
+                    let dH = optionDown ? 2 * signY * dy : signY * dy
+                    newH = max(widget.height + dH, handleSize * 2)
+                    if !optionDown {
+                        newY += signY * (newH - widget.height) / 2
+                    }
+                }
+
+                widget.width  = newW
+                widget.height = newH
+                widget.x      = newX
+                widget.y      = newY
             }
             .onEnded { _ in
-                lastLeadingTranslation  = 0
-                lastTrailingTranslation = 0
+                lastTranslation[pos] = .zero
             }
     }
 }
 
-private enum ResizeAnchor { case leading, trailing }
+private extension FrameResizePosition {
+    var isHorizontal: Bool {
+        switch self {
+        case .leading, .trailing, .topLeading, .topTrailing,
+             .bottomLeading, .bottomTrailing:
+            return true
+        default: return false
+        }
+    }
+    var isVertical: Bool {
+        switch self {
+        case .top, .bottom, .topLeading, .topTrailing,
+             .bottomLeading, .bottomTrailing:
+            return true
+        default: return false
+        }
+    }
+    var isTrailing: Bool {
+        switch self {
+        case .trailing, .topTrailing, .bottomTrailing:
+            return true
+        default: return false
+        }
+    }
+    var isBottom: Bool {
+        switch self {
+        case .bottom, .bottomLeading, .bottomTrailing:
+            return true
+        default: return false
+        }
+    }
+}
