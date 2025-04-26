@@ -76,10 +76,10 @@ public final class Slide: Identifiable {
     }
     
     @MainActor
-    public convenience init(record: SlideRecord, in context: ModelContext) {
+    public convenience init(record: SlideRecord, in modelContext: ModelContext) {
       let fetch = AspectRatio.fetchDescriptor(id: record.aspectRatioID)
-      let ratio = (try? context.fetch(fetch).first)
-                  ?? AspectRatio.wide(in: context)
+      let ratio = (try? modelContext.fetch(fetch).first)
+                  ?? AspectRatio.wide(in: modelContext)
 
       self.init(
         aspectRatio:         ratio,
@@ -92,7 +92,7 @@ public final class Slide: Identifiable {
       // re-create all the widgets
       for wRec in record.textWidgets {
         let w = TextWidget(record: wRec, slide: self)
-        context.insert(w)
+        modelContext.insert(w)
         textWidgets.append(w)
       }
     }
