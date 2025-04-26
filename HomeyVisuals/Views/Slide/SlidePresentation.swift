@@ -2,16 +2,18 @@ import SwiftUI
 import HomeyMusicKit
 import AppKit
 
-/// Full‑screen slideshow with key navigation (including Home/End jump).
+/// Full-screen slideshow with key navigation (including Home/End jump),
+/// and a “letterbox-only” shrink+fade on close.
 struct SlidePresentation: View {
-    @Environment(AppContext.self) var appContext
-    @Environment(TonalContext.self) var tonalContext
+    @Environment(AppContext.self)          var appContext
+    @Environment(TonalContext.self)        var tonalContext
     @Environment(InstrumentalContext.self) var instrumentalContext
     @Environment(NotationalTonicContext.self) var notationalTonicContext
-    @Environment(NotationalContext.self) var notationalContext
+    @Environment(NotationalContext.self)   var notationalContext
 
     let slides: [Slide]
     @State private var index: Int
+    @State private var isClosing = false
 
     init(slides: [Slide], startIndex: Int = 0) {
         self.slides = slides
@@ -20,8 +22,10 @@ struct SlidePresentation: View {
 
     var body: some View {
         ZStack {
-            // Render the slide
+            // --- Slide area: animate only this part on close ---
             SlideShow(slide: slides[index])
+                .scaleEffect(isClosing ? 0.05 : 1.0, anchor: .center)
+                .opacity(isClosing ? 0 : 1)
 
             // Invisible overlay for key handling
             KeyCatcher(
@@ -33,7 +37,7 @@ struct SlidePresentation: View {
             )
             .allowsHitTesting(false)
         }
-        // Esc or Cmd+W closes
+        // intercept Esc/Cmd+W
         .onExitCommand { close() }
     }
 
@@ -63,43 +67,25 @@ struct SlidePresentation: View {
 
     // MARK: - Close
 
-    private func fancyClose() {
-        guard let window = NSApp.keyWindow else { return }
-        
-        // pick how small you want it to get:
-        let finalSize: CGFloat = 20
-        
-        // compute a tiny rect centered in the window’s current frame:
-        let currentFrame = window.frame
-        let centerX = currentFrame.midX - finalSize/2
-        let centerY = currentFrame.midY - finalSize/2
-        let targetFrame = NSRect(x: centerX,
-                                 y: centerY,
-                                 width: finalSize,
-                                 height: finalSize)
-        
-        // ensure the window is layer‑backed so frame/alpha animations run smoothly:
-        window.contentView?.wantsLayer = true
-        window.backgroundColor = .black
-        
-        NSAnimationContext.runAnimationGroup { context in
-            context.duration = 1/HomeyMusicKit.goldenRatio
-            // simultaneously fade out…
-            window.animator().alphaValue = 0
-            // …and shrink to the tiny rect
-            window.animator().setFrame(targetFrame, display: true)
-        } completionHandler: {
-            window.close()
-        }
+    private func close() {
+        // immediate close
+        NSApp.keyWindow?.close()
     }
 
-    private func close() {
-        NSApp.keyWindow?.close()
+    private func fancyClose() {
+        // Animate only the slide (letterbox) to fade & shrink
+        withAnimation(.easeInOut(duration: 1 / HomeyMusicKit.goldenRatio)) {
+            isClosing = true
+        }
+        // Then actually close the window after the animation
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1 / HomeyMusicKit.goldenRatio) {
+            NSApp.keyWindow?.close()
+        }
     }
 
     // MARK: - Presentation Helper
 
-    /// Spins up a new full‑screen window running this slideshow.
+    /// Launches a new full-screen window running this slideshow.
     static func present(
         slides: [Slide],
         startIndex: Int,
@@ -108,15 +94,15 @@ struct SlidePresentation: View {
         instrumentalContext: InstrumentalContext,
         notationalTonicContext: NotationalTonicContext,
         notationalContext: NotationalContext
-      ) {
+    ) {
         let view = SlidePresentation(slides: slides, startIndex: startIndex)
-                     .environment(appContext)
-                     .environment(tonalContext)
-                     .environment(instrumentalContext)
-                     .environment(notationalTonicContext)
-                     .environment(notationalContext)
-        let hosting = NSHostingController(rootView: view)
+            .environment(appContext)
+            .environment(tonalContext)
+            .environment(instrumentalContext)
+            .environment(notationalTonicContext)
+            .environment(notationalContext)
 
+        let hosting = NSHostingController(rootView: view)
         let screenFrame = NSScreen.screens.first?.frame ?? .zero
         let window = NSWindow(
             contentRect:   screenFrame,
@@ -124,9 +110,12 @@ struct SlidePresentation: View {
             backing:       .buffered,
             defer:         false
         )
+
         window.collectionBehavior         = [.fullScreenPrimary]
         window.titlebarAppearsTransparent = true
         window.titleVisibility            = .hidden
+        // leave window.backgroundColor alone so your letterbox
+        // (and any UI chrome) stays visible during the animation
         window.contentViewController      = hosting
 
         window.makeKeyAndOrderFront(nil)
@@ -139,7 +128,6 @@ struct SlidePresentation: View {
 }
 
 // MARK: - KeyCatcher
-
 private struct KeyCatcher: NSViewRepresentable {
     let onPrevious: () -> Void
     let onNext:     () -> Void
@@ -173,23 +161,12 @@ private struct KeyCatcher: NSViewRepresentable {
 
         override func keyDown(with event: NSEvent) {
             switch event.keyCode {
-            case 123, 126, 116, 51:
-                // ← (123), ↑ (126), PageUp (116), Delete (51)
-                onPrevious?()
-            case 124, 125, 121, 49, 36:
-                // → (124), ↓ (125), PageDown (121), Space (49), Return (36)
-                onNext?()
-            case 115:
-                // Home
-                onFirst?()
-            case 119:
-                // End
-                onLast?()
-            case 53:
-                // Esc
-                onClose?()
-            default:
-                super.keyDown(with: event)
+            case 123, 126, 116, 51: onPrevious?()  // ← ↑ PgUp Del
+            case 124, 125, 121, 49, 36: onNext?()  // → ↓ PgDn Space Return
+            case 115: onFirst?()                   // Home
+            case 119: onLast?()                    // End
+            case 53:  onClose?()                   // Esc
+            default:  super.keyDown(with: event)
             }
         }
     }
