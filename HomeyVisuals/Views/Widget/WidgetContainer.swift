@@ -22,7 +22,7 @@ struct WidgetContainer<W: Widget & Observable, Content: View>: View {
     var body: some View {
         ZStack {
             content()
-                .frame(width: widget.width, alignment: .leading)
+                .frame(width: widget.width, height: widget.height, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(handleSize)
                 .overlay(selectionOverlay)

@@ -20,7 +20,7 @@ public final class InstrumentWidget: Widget {
     /// 0…1 fraction of slide width
     public var relativeWidth: Double = 0.25
     /// 0…1 fraction of slide height
-    public var relativeHeight: Double = 0.25
+    public var relativeHeight: Double = 0.25 / 2.0
 
     // MARK: — Content choice
     public var instrumentChoice: InstrumentChoice

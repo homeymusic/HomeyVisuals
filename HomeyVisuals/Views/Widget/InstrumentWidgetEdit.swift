@@ -17,9 +17,6 @@ struct InstrumentWidgetEdit: View {
     
     var body: some View {
         InstrumentView(instrumentWidget.instrument)
-            .onAppear {
-                instrumentalContext.instrumentChoice = instrumentWidget.instrumentChoice
-            }
             .allowsHitTesting(isEditing)
     }
 }

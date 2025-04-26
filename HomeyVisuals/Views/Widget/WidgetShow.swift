@@ -15,18 +15,19 @@ struct WidgetShow: View {
     var body: some View {
         Group {
             switch widget {
-            case let text as TextWidget:
-                Text(text.text)
-                    .font(.system(size: text.fontSize))
+            case let textWidget as TextWidget:
+                Text(textWidget.text)
+                    .font(.system(size: textWidget.fontSize))
                     .foregroundColor(.white)
-                    .frame(width:    text.width,
+                    .frame(width:    textWidget.width,
+                           height: textWidget.height,
                            alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
-                    .position(x: text.x, y: text.y)
+                    .position(x: textWidget.x, y: textWidget.y)
 
             case let instrumentWidget as InstrumentWidget:
                 InstrumentView(instrumentWidget.instrument)
-                    .frame(width: instrumentWidget.width, alignment: .leading)
+                    .frame(width: instrumentWidget.width, height: instrumentWidget.height, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
                     .position(x: instrumentWidget.x, y: instrumentWidget.y)
 
