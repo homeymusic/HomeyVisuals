@@ -18,8 +18,6 @@ struct HomeyVisualsApp: App {
                 .environment(appContext)
                 .environment(orchestrator.tonalContext)
                 .environment(orchestrator.instrumentalContext)
-                .environment(orchestrator.notationalTonicContext)
-                .environment(orchestrator.notationalContext)
         }
         .defaultSize(width: 1440, height: 900)
     }

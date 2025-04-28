@@ -7,7 +7,6 @@ import HomeyMusicKit
 struct SlideEdit: View {
     @Environment(AppContext.self) private var appContext
     @Query(sort: [SortDescriptor(\Slide.position)]) private var slides: [Slide]
-
     var body: some View {
         ZStack {
             // 1) Catch every tap in the entire editing pane and clear selection/edit‐mode
@@ -17,7 +16,6 @@ struct SlideEdit: View {
                     appContext.widgetSelections.removeAll()
                     appContext.editingWidgetID = nil
                 }
-
             // 2) Then draw either the slide editor or a placeholder
             if let slide = appContext.selectedSlide(in: slides) {
                 SlideContainer(slide: slide, isThumbnail: false) { scale in

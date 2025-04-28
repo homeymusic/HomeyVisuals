@@ -7,6 +7,18 @@ import HomeyMusicKit
 public final class InstrumentWidget: Widget {
     #Unique<InstrumentWidget>([\.id], [\.slide, \.z])
 
+    
+    private static let synthConductor = SynthConductor()
+    private static let midiConductor = {
+        let mc = MIDIConductor(
+            clientName:   "Homey Visuals",
+            model:        "Homey Pad macOS",
+            manufacturer: "Homey Music"
+        )
+        mc.setup()
+        return mc
+    }()
+    
     // MARK: — Identity & Z-order
     public var id: UUID
     public var slide: Slide?
@@ -66,48 +78,57 @@ public final class InstrumentWidget: Widget {
 
         switch choice {
         case .modePicker:
-            let inst = ModePicker();   modelContext.insert(inst); widget.modePicker   = inst
+            let i = ModePicker();   modelContext.insert(i); widget.modePicker   = i
         case .tonicPicker:
-            let inst = TonicPicker();  modelContext.insert(inst); widget.tonicPicker  = inst
+            let i = TonicPicker();  modelContext.insert(i); widget.tonicPicker  = i
         case .tonnetz:
-            let inst = Tonnetz();      modelContext.insert(inst); widget.tonnetz      = inst
+            let i = Tonnetz();      modelContext.insert(i); widget.tonnetz      = i
         case .linear:
-            let inst = Linear();       modelContext.insert(inst); widget.linear       = inst
+            let i = Linear();       modelContext.insert(i); widget.linear       = i
         case .diamanti:
-            let inst = Diamanti();     modelContext.insert(inst); widget.diamanti     = inst
+            let i = Diamanti();     modelContext.insert(i); widget.diamanti     = i
         case .piano:
-            let inst = Piano();        modelContext.insert(inst); widget.piano        = inst
+            let i = Piano();        modelContext.insert(i); widget.piano        = i
         case .violin:
-            let inst = Violin();       modelContext.insert(inst); widget.violin       = inst
+            let i = Violin();       modelContext.insert(i); widget.violin       = i
         case .cello:
-            let inst = Cello();        modelContext.insert(inst); widget.cello        = inst
+            let i = Cello();        modelContext.insert(i); widget.cello        = i
         case .bass:
-            let inst = Bass();         modelContext.insert(inst); widget.bass         = inst
+            let i = Bass();         modelContext.insert(i); widget.bass         = i
         case .banjo:
-            let inst = Banjo();        modelContext.insert(inst); widget.banjo        = inst
+            let i = Banjo();        modelContext.insert(i); widget.banjo        = i
         case .guitar:
-            let inst = Guitar();       modelContext.insert(inst); widget.guitar       = inst
+            let i = Guitar();       modelContext.insert(i); widget.guitar       = i
         }
-
+        
         return widget
     }
 
     // MARK: — Computed access to the single persisted instrument
     public var instrument: any Instrument {
-        switch instrumentChoice {
-        case .modePicker: return modePicker!
-        case .tonicPicker:return tonicPicker!
-        case .tonnetz:    return tonnetz!
-        case .linear:     return linear!
-        case .diamanti:   return diamanti!
-        case .piano:      return piano!
-        case .violin:     return violin!
-        case .cello:      return cello!
-        case .bass:       return bass!
-        case .banjo:      return banjo!
-        case .guitar:     return guitar!
-        }
-    }
+        // 1) pick the right child
+        let inst: any Instrument = {
+          switch instrumentChoice {
+            case .modePicker:   return modePicker!
+            case .tonicPicker:  return tonicPicker!
+            case .tonnetz:      return tonnetz!
+            case .linear:       return linear!
+            case .diamanti:     return diamanti!
+            case .piano:        return piano!
+            case .violin:       return violin!
+            case .cello:        return cello!
+            case .bass:         return bass!
+            case .banjo:        return banjo!
+            case .guitar:       return guitar!
+          }
+        }()
+
+        // 2) re-inject on every access
+        inst.midiConductor  = Self.midiConductor
+        inst.synthConductor = Self.synthConductor
+
+        return inst
+      }
 }
 
 extension InstrumentWidget {
