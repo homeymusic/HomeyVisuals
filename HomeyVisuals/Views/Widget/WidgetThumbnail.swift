@@ -5,7 +5,6 @@ import HomeyMusicKit
 struct WidgetThumbnail: View {
     let widget: any Widget
     let scale: CGFloat
-    @Environment(InstrumentalContext.self) private var instrumentalContext
 
     var body: some View {
         Group {

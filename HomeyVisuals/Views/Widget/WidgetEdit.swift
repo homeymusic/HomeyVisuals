@@ -9,7 +9,6 @@ struct WidgetEdit: View {
   let scale: CGFloat
 
   @Environment(AppContext.self)          private var appContext
-  @Environment(InstrumentalContext.self) private var instrumentalContext
 
   var body: some View {
     Group {

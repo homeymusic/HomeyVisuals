@@ -6,8 +6,6 @@ import AppKit
 /// and a “letterbox-only” shrink+fade on close.
 struct SlidePresentation: View {
     @Environment(AppContext.self)          var appContext
-    @Environment(TonalContext.self)        var tonalContext
-    @Environment(InstrumentalContext.self) var instrumentalContext
 
     let slides: [Slide]
     @State private var index: Int
@@ -87,14 +85,10 @@ struct SlidePresentation: View {
     static func present(
         slides: [Slide],
         startIndex: Int,
-        appContext: AppContext,
-        tonalContext: TonalContext,
-        instrumentalContext: InstrumentalContext
+        appContext: AppContext
     ) {
         let view = SlidePresentation(slides: slides, startIndex: startIndex)
             .environment(appContext)
-            .environment(tonalContext)
-            .environment(instrumentalContext)
 
         let hosting = NSHostingController(rootView: view)
         let screenFrame = NSScreen.screens.first?.frame ?? .zero

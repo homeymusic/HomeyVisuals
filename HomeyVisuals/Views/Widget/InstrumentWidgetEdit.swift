@@ -4,7 +4,7 @@ import HomeyMusicKit
 
 struct InstrumentWidgetEdit: View {
     @Environment(AppContext.self) private var appContext
-    @Environment(InstrumentalContext.self) private var instrumentalContext
+
     @Bindable var instrumentWidget: InstrumentWidget
     let slideScale: CGFloat
     
