@@ -16,20 +16,20 @@ private extension Binding where Value == CGFloat {
 
 /// Inspector for a selected TextWidget: tabs for Style/Text/Arrange; "Arrange" default.
 struct TextWidgetInspect: View {
-    @Bindable var widget: TextWidget
+    @Bindable var textWidget: TextWidget
     @State private var selectedTab: Tab = .arrange
 
     // Compute slide’s absolute size in points
     private var slideSize: CGSize {
-        widget.slide?.size ?? .zero
+        textWidget.slide?.size ?? .zero
     }
 
     // Sorted widgets by z-order
     private var sortedWidgets: [TextWidget] {
-        widget.slide?.textWidgets.sorted(by: { $0.z < $1.z }) ?? [widget]
+        textWidget.slide?.textWidgets.sorted(by: { $0.z < $1.z }) ?? [textWidget]
     }
-    private var minZ: Int { sortedWidgets.first?.z ?? widget.z }
-    private var maxZ: Int { sortedWidgets.last?.z ?? widget.z }
+    private var minZ: Int { sortedWidgets.first?.z ?? textWidget.z }
+    private var maxZ: Int { sortedWidgets.last?.z ?? textWidget.z }
 
     enum Tab: String, CaseIterable {
         case style   = "Style"
@@ -77,14 +77,14 @@ struct TextWidgetInspect: View {
                     Image(systemName: "square.3.layers.3d.bottom.filled")
                 }
                 .buttonStyle(.bordered)
-                .disabled(widget.z == minZ)
+                .disabled(textWidget.z == minZ)
                 .keyboardShortcut("b", modifiers: [.shift, .command])
 
                 Button(action: bringToFront) {
                     Image(systemName: "square.3.layers.3d.top.filled")
                 }
                 .buttonStyle(.bordered)
-                .disabled(widget.z == maxZ)
+                .disabled(textWidget.z == maxZ)
                 .keyboardShortcut("f", modifiers: [.shift, .command])
 
                 Spacer()
@@ -93,14 +93,14 @@ struct TextWidgetInspect: View {
                     Image(systemName: "square.2.layers.3d.bottom.filled")
                 }
                 .buttonStyle(.bordered)
-                .disabled(widget.z == minZ)
+                .disabled(textWidget.z == minZ)
                 .keyboardShortcut("b", modifiers: [.option, .shift, .command])
 
                 Button(action: bringForward) {
                     Image(systemName: "square.2.layers.3d.top.filled")
                 }
                 .buttonStyle(.bordered)
-                .disabled(widget.z == maxZ)
+                .disabled(textWidget.z == maxZ)
                 .keyboardShortcut("f", modifiers: [.option, .shift, .command])
             }
 
@@ -112,13 +112,13 @@ struct TextWidgetInspect: View {
             HStack(spacing: 16) {
                 LabeledField(
                     label: "Width",
-                    value: $widget.width.asDouble(),
+                    value: $textWidget.width.asDouble(),
                     range: 0...Double(slideSize.width),
                     step: 1
                 )
                 LabeledField(
                     label: "Height",
-                    value: $widget.height.asDouble(),
+                    value: $textWidget.height.asDouble(),
                     range: 0...Double(slideSize.height),
                     step: 1
                 )
@@ -132,13 +132,13 @@ struct TextWidgetInspect: View {
             HStack(spacing: 16) {
                 LabeledField(
                     label: "X",
-                    value: $widget.x.asDouble(),
+                    value: $textWidget.x.asDouble(),
                     range: 0...Double(slideSize.width),
                     step: 1
                 )
                 LabeledField(
                     label: "Y",
-                    value: $widget.y.asDouble(),
+                    value: $textWidget.y.asDouble(),
                     range: 0...Double(slideSize.height),
                     step: 1
                 )
@@ -156,25 +156,25 @@ struct TextWidgetInspect: View {
     // MARK: — Z-order actions
     private func sendToBack() {
         let items = sortedWidgets
-        guard let idx = items.firstIndex(of: widget) else { return }
+        guard let idx = items.firstIndex(of: textWidget) else { return }
         var newOrder = items
         newOrder.remove(at: idx)
-        newOrder.insert(widget, at: 0)
+        newOrder.insert(textWidget, at: 0)
         renumber(newOrder)
     }
 
     private func bringToFront() {
         let items = sortedWidgets
-        guard let idx = items.firstIndex(of: widget) else { return }
+        guard let idx = items.firstIndex(of: textWidget) else { return }
         var newOrder = items
         newOrder.remove(at: idx)
-        newOrder.append(widget)
+        newOrder.append(textWidget)
         renumber(newOrder)
     }
 
     private func sendBackward() {
         let items = sortedWidgets
-        guard let idx = items.firstIndex(of: widget), idx > 0 else { return }
+        guard let idx = items.firstIndex(of: textWidget), idx > 0 else { return }
         var newOrder = items
         newOrder.swapAt(idx, idx - 1)
         renumber(newOrder)
@@ -182,7 +182,7 @@ struct TextWidgetInspect: View {
 
     private func bringForward() {
         let items = sortedWidgets
-        guard let idx = items.firstIndex(of: widget), idx < items.count - 1 else { return }
+        guard let idx = items.firstIndex(of: textWidget), idx < items.count - 1 else { return }
         var newOrder = items
         newOrder.swapAt(idx, idx + 1)
         renumber(newOrder)

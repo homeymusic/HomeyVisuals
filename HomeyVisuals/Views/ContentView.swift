@@ -32,9 +32,9 @@ struct ContentView: View {
                         // Show the correct inspector based on widget type:
                         switch widget {
                         case let textWidget as TextWidget:
-                            TextWidgetInspect(widget: textWidget)
+                            TextWidgetInspect(textWidget: textWidget)
                         case let instrumentWidget as InstrumentWidget:
-                            Text("Instrument inspector coming soon: \(instrumentWidget.instrument.midiChannel)")
+                            InstrumentWidgetInspect(instrumentWidget: instrumentWidget)
                         default:
                             EmptyView()
                         }
