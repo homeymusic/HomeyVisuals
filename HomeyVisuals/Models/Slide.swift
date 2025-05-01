@@ -34,6 +34,11 @@ public final class Slide: Identifiable {
     @Relationship(deleteRule: .cascade, inverse: \InstrumentWidget.slide)
     public var instrumentWidgets: [InstrumentWidget] = []
     
+    @MainActor
+    var instruments: [any Instrument] {
+      instrumentWidgets.map { $0.instrument }
+    }
+    
     public var widgets: [any Widget] {
         // Note: we need to cast to `any Widget` so we can mix TextWidget & InstrumentWidget
         ((textWidgets as [any Widget]) +

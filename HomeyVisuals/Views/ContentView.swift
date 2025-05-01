@@ -31,10 +31,10 @@ struct ContentView: View {
                     if let widget = appContext.selectedWidget(in: slides) {
                         // Show the correct inspector based on widget type:
                         switch widget {
-                        case let text as TextWidget:
-                            TextWidgetInspect(widget: text)
-                        case let inst as InstrumentWidget:
-                            Text("Instrument inspector coming soon: \(inst.instrumentChoice)")
+                        case let textWidget as TextWidget:
+                            TextWidgetInspect(widget: textWidget)
+                        case let instrumentWidget as InstrumentWidget:
+                            Text("Instrument inspector coming soon: \(instrumentWidget.instrument.midiChannel)")
                         default:
                             EmptyView()
                         }
@@ -49,6 +49,9 @@ struct ContentView: View {
             .toolbar { toolbarItems }
             .onDeleteCommand(perform: deleteSelectedSlides)
             .onAppear(perform: seedAspectRatios)
+            .task {
+                HomeyVisuals.setupMIDIConductor(modelContext: modelContext, homeyMusicAppContext: appContext)
+            }
             .onChange(of: slides) { _, newSlides in
                 if appContext.slideSelections.isEmpty, let first = newSlides.first {
                     appContext.slideSelections = [ first.id ]
@@ -106,16 +109,16 @@ struct ContentView: View {
     }
     
     private func launchSlideshow() {
-      guard
-        let slide = appContext.selectedSlide(in: slides),
-        let index = slides.firstIndex(of: slide)
-      else { return }
-
-      SlidePresentation.present(
-        slides: slides,
-        startIndex: index,
-        appContext: appContext
-      )
+        guard
+            let slide = appContext.selectedSlide(in: slides),
+            let index = slides.firstIndex(of: slide)
+        else { return }
+        
+        SlidePresentation.present(
+            slides: slides,
+            startIndex: index,
+            appContext: appContext
+        )
     }
     
     private func addTextWidget() {
@@ -136,12 +139,15 @@ struct ContentView: View {
             withChoice: instrumentChoice,
             in: modelContext
         )
-
+        
         withAnimation {
             slide.instrumentWidgets.append(widget)
         }
         // select the new widget
         appContext.widgetSelections = [ widget.id ]
+        
+        print("debugMe: inserted into context:", ObjectIdentifier(modelContext))
+        print("debugMe:  conductor using context:", ObjectIdentifier(HomeyVisuals.midiConductor.modelContext))
     }
     
     private func addSlide(after id: Slide.ID?) {

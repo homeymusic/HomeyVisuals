@@ -6,18 +6,6 @@ import HomeyMusicKit
 @Model
 public final class InstrumentWidget: Widget {
     #Unique<InstrumentWidget>([\.id], [\.slide, \.z])
-
-    
-    private static let synthConductor = SynthConductor()
-    private static let midiConductor = {
-        let mc = MIDIConductor(
-            clientName:   "Homey Visuals",
-            model:        "Homey Pad macOS",
-            manufacturer: "Homey Music"
-        )
-        mc.setup()
-        return mc
-    }()
     
     // MARK: — Identity & Z-order
     public var id: UUID
@@ -107,7 +95,7 @@ public final class InstrumentWidget: Widget {
     // MARK: — Computed access to the single persisted instrument
     public var instrument: any Instrument {
         // 1) pick the right child
-        let inst: any Instrument = {
+        let instrument: any Instrument = {
           switch instrumentChoice {
             case .modePicker:   return modePicker!
             case .tonicPicker:  return tonicPicker!
@@ -124,10 +112,10 @@ public final class InstrumentWidget: Widget {
         }()
 
         // 2) re-inject on every access
-        inst.midiConductor  = Self.midiConductor
-        inst.synthConductor = Self.synthConductor
+        instrument.midiConductor  = HomeyVisuals.midiConductor
+        instrument.synthConductor = HomeyVisuals.synthConductor
 
-        return inst
+        return instrument
       }
 }
 
