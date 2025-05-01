@@ -45,6 +45,27 @@ struct ContentView: View {
                     }
                 }
                 .navigationSplitViewColumnWidth(270)
+                .onChange(of: appContext.widgetSelections) {
+                    // 1) Try to get the instrument from the now-selected widget (if it’s an InstrumentWidget)
+                    let instrumentFromCurrentlySelectedWidget: (any Instrument)? = {
+                        guard let selectedWidget = appContext.selectedWidget(in: slides) as? InstrumentWidget
+                        else { return nil }
+                        return selectedWidget.instrument
+                    }()
+
+                    if let instrumentChosenByWidgetSelection = instrumentFromCurrentlySelectedWidget {
+                        HomeyVisuals.instrumentCache.selectInstrument(instrumentChosenByWidgetSelection)
+                    }
+                    // 2) Otherwise, fall back to the very first instrument on the currently selected slide
+                    else if let slideThatIsCurrentlySelected = appContext.selectedSlide(in: slides),
+                            let firstInstrumentOnThatSlide = slideThatIsCurrentlySelected.instruments.first {
+                        HomeyVisuals.instrumentCache.selectInstrument(firstInstrumentOnThatSlide)
+                    }
+                    // 3) If neither yields an instrument, clear the cache’s selection
+                    else {
+                        HomeyVisuals.instrumentCache.selectInstrument(nil)
+                    }
+                }
             }
             .toolbar { toolbarItems }
             .onDeleteCommand(perform: deleteSelectedSlides)
