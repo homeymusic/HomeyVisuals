@@ -8,7 +8,17 @@ struct HomeyVisuals: App {
     
     @State public var appContext = AppContext()
     public static let synthConductor = SynthConductor()
-    public private(set) static var midiConductor: MIDIConductor!
+    public static let instrumentCache = InstrumentCache()
+    public static let midiConductor =  {
+        let midiConductor = MIDIConductor(
+            clientName:   "Homey Visuals",
+            model:        "Homey Pad macOS",
+            manufacturer: "Homey Music",
+            instrumentCache: HomeyVisuals.instrumentCache
+        )
+        midiConductor.setup()
+        return midiConductor
+    }()
     
     var body: some Scene {
         DocumentGroup(
@@ -21,20 +31,6 @@ struct HomeyVisuals: App {
         .defaultSize(width: 1440, height: 900)
     }
     
-    @MainActor
-    public static func setupMIDIConductor(modelContext: ModelContext, homeyMusicAppContext: HomeyMusicAppContext) {
-        guard midiConductor == nil else { return }
-        let c = MIDIConductor(
-            clientName:   "Homey Visuals",
-            model:        "Homey Pad macOS",
-            manufacturer: "Homey Music",
-            modelContext: modelContext,
-            homeyMusicAppContext: homeyMusicAppContext
-        )
-        c.setup()
-        midiConductor = c
-    }
-
 }
 
 

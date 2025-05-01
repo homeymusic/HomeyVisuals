@@ -120,7 +120,7 @@ public final class Slide: Identifiable {
 
 public extension Slide {
     /// Fires whenever any slide-level or widget-level state changes.
-    var thumbnailReloadTrigger: AnyHashable {
+    var reloadTrigger: AnyHashable {
         // 1) slide-level bits
         let base: [AnyHashable] = [
             AnyHashable(id),

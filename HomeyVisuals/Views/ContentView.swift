@@ -49,9 +49,6 @@ struct ContentView: View {
             .toolbar { toolbarItems }
             .onDeleteCommand(perform: deleteSelectedSlides)
             .onAppear(perform: seedAspectRatios)
-            .task {
-                HomeyVisuals.setupMIDIConductor(modelContext: modelContext, homeyMusicAppContext: appContext)
-            }
             .onChange(of: slides) { _, newSlides in
                 if appContext.slideSelections.isEmpty, let first = newSlides.first {
                     appContext.slideSelections = [ first.id ]
@@ -145,9 +142,6 @@ struct ContentView: View {
         }
         // select the new widget
         appContext.widgetSelections = [ widget.id ]
-        
-        print("debugMe: inserted into context:", ObjectIdentifier(modelContext))
-        print("debugMe:  conductor using context:", ObjectIdentifier(HomeyVisuals.midiConductor.modelContext))
     }
     
     private func addSlide(after id: Slide.ID?) {

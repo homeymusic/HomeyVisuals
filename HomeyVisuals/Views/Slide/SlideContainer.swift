@@ -38,6 +38,12 @@ struct SlideContainer<Content: View>: View {
                    height: letterbox.height)
             .scaleEffect(scale, anchor: .topLeading)
             .coordinateSpace(name: "slideSpace")
+            .onAppear {
+                HomeyVisuals.instrumentCache.set(slide.instruments)
+            }
+            .onChange(of: slide.reloadTrigger) {
+                HomeyVisuals.instrumentCache.set(slide.instruments)
+            }
         }
         .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
     }
