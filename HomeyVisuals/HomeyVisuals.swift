@@ -12,7 +12,7 @@ struct HomeyVisuals: App {
     public static let midiConductor =  {
         let midiConductor = MIDIConductor(
             clientName:   "Homey Visuals",
-            model:        "Homey Pad macOS",
+            model:        "Homey Visuals macOS",
             manufacturer: "Homey Music",
             instrumentCache: HomeyVisuals.instrumentCache
         )
