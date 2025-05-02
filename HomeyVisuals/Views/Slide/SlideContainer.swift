@@ -4,6 +4,7 @@ import HomeyMusicKit
 /// Wrap any slide content in the proper letterbox→scale logic.
 struct SlideContainer<Content: View>: View {
     @Environment(AppContext.self) private var appContext
+    @Environment(InstrumentCache.self) private var instrumentCache
     
     let slide: Slide
     let isThumbnail: Bool
@@ -39,10 +40,10 @@ struct SlideContainer<Content: View>: View {
             .scaleEffect(scale, anchor: .topLeading)
             .coordinateSpace(name: "slideSpace")
             .onAppear {
-                HomeyVisuals.instrumentCache.set(slide.instruments)
+                instrumentCache.set(slide.instruments)
             }
             .onChange(of: slide.reloadTrigger) {
-                HomeyVisuals.instrumentCache.set(slide.instruments)
+                instrumentCache.set(slide.instruments)
             }
         }
         .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)

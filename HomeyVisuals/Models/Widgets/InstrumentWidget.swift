@@ -94,7 +94,6 @@ public final class InstrumentWidget: Widget {
 
     // MARK: — Computed access to the single persisted instrument
     public var instrument: any Instrument {
-        // 1) pick the right child
         let instrument: any Instrument = {
           switch instrumentChoice {
             case .modePicker:   return modePicker!
@@ -110,10 +109,6 @@ public final class InstrumentWidget: Widget {
             case .guitar:       return guitar!
           }
         }()
-
-        // 2) re-inject on every access
-        instrument.midiConductor  = HomeyVisuals.midiConductor
-        instrument.synthConductor = HomeyVisuals.synthConductor
 
         return instrument
       }

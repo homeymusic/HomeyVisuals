@@ -5,32 +5,42 @@ import HomeyMusicKit
 
 @main
 struct HomeyVisuals: App {
-    
-    @State public var appContext = AppContext()
-    
-    public static let synthConductor = SynthConductor()
-    public static let instrumentCache = InstrumentCache()
-    
-    public static let midiConductor = {
-        let midiConductor = MIDIConductor(
-            clientName:   "Homey Visuals",
-            model:        "Homey Visuals macOS",
-            manufacturer: "Homey Music",
-            instrumentCache: HomeyVisuals.instrumentCache
-        )
-        midiConductor.setup()
-        return midiConductor
-    }()
-    
+    // — all @State props, no inline defaults
+    @State private var appContext: AppContext
+    @State private var synthConductor: SynthConductor
+    @State private var instrumentCache: InstrumentCache
+    @State private var midiConductor: MIDIConductor
+
     let modelContainer: ModelContainer = {
         let config = ModelConfiguration(isStoredInMemoryOnly: false)
         return try! ModelContainer(for: Slide.self, configurations: config)
     }()
+
+    init() {
+        let appContext = AppContext()
+        let synthConductor = SynthConductor()
+        let instrumentCache = InstrumentCache()
+        let midiConductor = MIDIConductor(
+            clientName:   "Homey Visuals",
+            model:        "Homey Visuals macOS",
+            manufacturer: "Homey Music",
+            instrumentCache: instrumentCache
+        )
+        midiConductor.setup()
+
+        _appContext      = State(initialValue: appContext)
+        _synthConductor  = State(initialValue: synthConductor)
+        _instrumentCache = State(initialValue: instrumentCache)
+        _midiConductor   = State(initialValue: midiConductor)
+    }
     
     var body: some Scene {
         DocumentGroup(editing: Slide.self, contentType: .visuals) {
             ContentView()
                 .environment(appContext)
+                .environment(instrumentCache)
+                .environment(synthConductor)
+                .environment(midiConductor)
                 .modelContainer(modelContainer)
         }
         .defaultSize(width: 1440, height: 900)

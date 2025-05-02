@@ -8,6 +8,8 @@ import AppKit
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(AppContext.self) var appContext
+    @Environment(InstrumentCache.self)  private var instrumentCache
+
     @Query(sort: [SortDescriptor(\Slide.position)]) private var slides: [Slide]
     
     var body: some View {
@@ -54,16 +56,16 @@ struct ContentView: View {
                     }()
 
                     if let instrumentChosenByWidgetSelection = instrumentFromCurrentlySelectedWidget {
-                        HomeyVisuals.instrumentCache.selectInstrument(instrumentChosenByWidgetSelection)
+                        instrumentCache.selectInstrument(instrumentChosenByWidgetSelection)
                     }
                     // 2) Otherwise, fall back to the very first instrument on the currently selected slide
                     else if let slideThatIsCurrentlySelected = appContext.selectedSlide(in: slides),
                             let firstInstrumentOnThatSlide = slideThatIsCurrentlySelected.instruments.first {
-                        HomeyVisuals.instrumentCache.selectInstrument(firstInstrumentOnThatSlide)
+                        instrumentCache.selectInstrument(firstInstrumentOnThatSlide)
                     }
                     // 3) If neither yields an instrument, clear the cache’s selection
                     else {
-                        HomeyVisuals.instrumentCache.selectInstrument(nil)
+                        instrumentCache.selectInstrument(nil)
                     }
                 }
             }
