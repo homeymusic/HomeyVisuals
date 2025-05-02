@@ -9,6 +9,8 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(AppContext.self) var appContext
     @Environment(InstrumentCache.self)  private var instrumentCache
+    @Environment(MIDIConductor.self)  private var midiConductor
+    @Environment(SynthConductor.self)  private var synthConductor
 
     @Query(sort: [SortDescriptor(\Slide.position)]) private var slides: [Slide]
     
@@ -135,10 +137,13 @@ struct ContentView: View {
         else { return }
         
         SlidePresentation.present(
-            slides: slides,
-            startIndex: index,
-            appContext: appContext
-        )
+            slides:           slides,
+            startIndex:       index,
+            appContext:       appContext,
+            instrumentCache:  instrumentCache,
+            synthConductor:   synthConductor,
+            midiConductor:    midiConductor
+          )
     }
     
     private func addTextWidget() {

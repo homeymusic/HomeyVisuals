@@ -6,23 +6,23 @@ import AppKit
 /// and a “letterbox-only” shrink+fade on close.
 struct SlidePresentation: View {
     @Environment(AppContext.self)          var appContext
-
+    
     let slides: [Slide]
     @State private var index: Int
     @State private var isClosing = false
-
+    
     init(slides: [Slide], startIndex: Int = 0) {
         self.slides = slides
         self._index = State(initialValue: startIndex)
     }
-
+    
     var body: some View {
         ZStack {
             // --- Slide area: animate only this part on close ---
             SlideShow(slide: slides[index])
                 .scaleEffect(isClosing ? 0.05 : 1.0, anchor: .center)
                 .opacity(isClosing ? 0 : 1)
-
+            
             // Invisible overlay for key handling
             KeyCatcher(
                 onPrevious: previous,
@@ -36,9 +36,9 @@ struct SlidePresentation: View {
         // intercept Esc/Cmd+W
         .onExitCommand { close() }
     }
-
+    
     // MARK: - Navigation Actions
-
+    
     private func next() {
         if index < slides.count - 1 {
             index += 1
@@ -46,28 +46,28 @@ struct SlidePresentation: View {
             fancyClose()
         }
     }
-
+    
     private func previous() {
         if index > 0 {
             index -= 1
         }
     }
-
+    
     private func goToFirst() {
         index = 0
     }
-
+    
     private func goToLast() {
         index = slides.count - 1
     }
-
+    
     // MARK: - Close
-
+    
     private func close() {
         // immediate close
         NSApp.keyWindow?.close()
     }
-
+    
     private func fancyClose() {
         // Animate only the slide (letterbox) to fade & shrink
         withAnimation(.easeInOut(duration: 1 / HomeyMusicKit.goldenRatio)) {
@@ -78,18 +78,24 @@ struct SlidePresentation: View {
             NSApp.keyWindow?.close()
         }
     }
-
+    
     // MARK: - Presentation Helper
-
+    
     /// Launches a new full-screen window running this slideshow.
     static func present(
         slides: [Slide],
         startIndex: Int,
-        appContext: AppContext
+        appContext: AppContext,
+        instrumentCache: InstrumentCache,
+        synthConductor: SynthConductor,
+        midiConductor: MIDIConductor
     ) {
         let view = SlidePresentation(slides: slides, startIndex: startIndex)
             .environment(appContext)
-
+            .environment(instrumentCache)
+            .environment(synthConductor)
+            .environment(midiConductor)
+        
         let hosting = NSHostingController(rootView: view)
         let screenFrame = NSScreen.screens.first?.frame ?? .zero
         let window = NSWindow(
@@ -98,17 +104,17 @@ struct SlidePresentation: View {
             backing:       .buffered,
             defer:         false
         )
-
+        
         window.collectionBehavior         = [.fullScreenPrimary]
         window.titlebarAppearsTransparent = true
         window.titleVisibility            = .hidden
         // leave window.backgroundColor alone so your letterbox
         // (and any UI chrome) stays visible during the animation
         window.contentViewController      = hosting
-
+        
         window.makeKeyAndOrderFront(nil)
         window.makeFirstResponder(hosting)
-
+        
         let controller = NSWindowController(window: window)
         controller.showWindow(nil)
         DispatchQueue.main.async { window.toggleFullScreen(nil) }
@@ -122,7 +128,7 @@ private struct KeyCatcher: NSViewRepresentable {
     let onClose:    () -> Void
     let onFirst:    () -> Void
     let onLast:     () -> Void
-
+    
     func makeNSView(context: Context) -> KeyCatcherView {
         let view = KeyCatcherView()
         view.onPrevious = onPrevious
@@ -132,21 +138,21 @@ private struct KeyCatcher: NSViewRepresentable {
         view.onLast     = onLast
         return view
     }
-
+    
     func updateNSView(_ nsView: KeyCatcherView, context: Context) {}
-
+    
     class KeyCatcherView: NSView {
         var onPrevious: (() -> Void)?
         var onNext:     (() -> Void)?
         var onClose:    (() -> Void)?
         var onFirst:    (() -> Void)?
         var onLast:     (() -> Void)?
-
+        
         override var acceptsFirstResponder: Bool { true }
         override func viewDidMoveToWindow() {
             window?.makeFirstResponder(self)
         }
-
+        
         override func keyDown(with event: NSEvent) {
             switch event.keyCode {
             case 123, 126, 116, 51: onPrevious?()  // ← ↑ PgUp Del
