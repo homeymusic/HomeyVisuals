@@ -22,8 +22,8 @@ public final class InstrumentWidget: Widget {
     /// 0…1 fraction of slide height
     public var relativeHeight: Double = 0.25 / 2.0
 
-    // MARK: — Content choice
-    public var instrumentChoice: InstrumentChoice
+    // MARK: — Content type
+    public var instrumentType: InstrumentType
 
     // MARK: — One-to-one persisted instrument relationships
     @Relationship(deleteRule: .cascade) public var modePicker: ModePicker?
@@ -42,29 +42,29 @@ public final class InstrumentWidget: Widget {
     private init(
         forSlide slide: Slide,
         zIndex: Int,
-        instrumentChoice: InstrumentChoice
+        instrumentType: InstrumentType
     ) {
         self.id               = UUID()
         self.slide            = slide
         self.z                = zIndex
-        self.instrumentChoice = instrumentChoice
+        self.instrumentType = instrumentType
     }
 
     // MARK: — Static factory for creation + persistence
     @MainActor
     public static func create(
         forSlide slide: Slide,
-        withChoice choice: InstrumentChoice,
+        withType type: InstrumentType,
         in modelContext: ModelContext
     ) -> InstrumentWidget {
         let widget = InstrumentWidget(
             forSlide: slide,
             zIndex:   slide.highestZ + 1,
-            instrumentChoice: choice
+            instrumentType: type
         )
         modelContext.insert(widget)
 
-        switch choice {
+        switch type {
         case .modePicker:
             let i = ModePicker();   modelContext.insert(i); widget.modePicker   = i
         case .tonicPicker:
@@ -95,7 +95,7 @@ public final class InstrumentWidget: Widget {
     // MARK: — Computed access to the single persisted instrument
     public var instrument: any Instrument {
         let instrument: any Instrument = {
-          switch instrumentChoice {
+          switch instrumentType {
             case .modePicker:   return modePicker!
             case .tonicPicker:  return tonicPicker!
             case .tonnetz:      return tonnetz!
@@ -118,7 +118,7 @@ extension InstrumentWidget {
     /// Include geometry + content in the hash snapshot.
     public var widgetHash: AnyHashable {
         var arr = Self.baseHashElements(of: self as! Self)
-        arr.append(AnyHashable(instrumentChoice))
+        arr.append(AnyHashable(instrumentType))
         return AnyHashable(arr)
     }
 }
