@@ -6,7 +6,7 @@ struct SlideContainer<Content: View>: View {
     @Environment(AppContext.self) private var appContext
     @Environment(InstrumentCache.self) private var instrumentCache
     
-    let slide: Slide
+    @Bindable var slide: Slide
     let isThumbnail: Bool
     @ViewBuilder let content: (CGFloat) -> Content
     

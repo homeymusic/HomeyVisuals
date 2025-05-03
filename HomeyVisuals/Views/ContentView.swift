@@ -24,12 +24,11 @@ struct ContentView: View {
                 )
                 .navigationSplitViewColumnWidth(min: 170, ideal: 170, max: 340)
             } content: {
-                SlideEdit()
-                    .navigationSplitViewColumnWidth(
-                        min: geo.size.width * 0.5,
-                        ideal: geo.size.width * 0.8,
-                        max: geo.size.width * 0.9
-                    )
+                if let slide = appContext.selectedSlide(in: slides) {
+                    SlideEdit(slide: slide)
+                } else {
+                    ContentUnavailableView("Nothing to edit", systemImage: "eye")
+                }
             } detail: {
                 Group {
                     if let widget = appContext.selectedWidget(in: slides) {

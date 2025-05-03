@@ -6,7 +6,9 @@ import HomeyMusicKit
 
 struct SlideEdit: View {
     @Environment(AppContext.self) private var appContext
-    @Query(sort: [SortDescriptor(\Slide.position)]) private var slides: [Slide]
+    
+    @Bindable var slide: Slide
+    
     var body: some View {
         ZStack {
             // 1) Catch every tap in the entire editing pane and clear selection/edit‐mode
@@ -17,29 +19,25 @@ struct SlideEdit: View {
                     appContext.editingWidgetID = nil
                 }
             // 2) Then draw either the slide editor or a placeholder
-            if let slide = appContext.selectedSlide(in: slides) {
-                SlideContainer(slide: slide, isThumbnail: false) { scale in
-                    ZStack(alignment: .topLeading) {
-                        // 2a) Also catch taps _inside_ the letterbox to clear
-                        Color.clear
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                appContext.widgetSelections.removeAll()
-                                appContext.editingWidgetID = nil
-                            }
-
-                        // 2b) Your editable widgets
-                        WidgetList(
-                            slide: slide,
-                            scale: scale,
-                            widgetViewStyle: .edit
-                        )
-                    }
+            SlideContainer(slide: slide, isThumbnail: false) { scale in
+                ZStack(alignment: .topLeading) {
+                    // 2a) Also catch taps _inside_ the letterbox to clear
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            appContext.widgetSelections.removeAll()
+                            appContext.editingWidgetID = nil
+                        }
+                    
+                    // 2b) Your editable widgets
+                    WidgetList(
+                        slide: slide,
+                        scale: scale,
+                        widgetViewStyle: .edit
+                    )
                 }
-                .navigationTitle("Edit Slide")
-            } else {
-                ContentUnavailableView("Nothing to edit", systemImage: "eye")
             }
+            .navigationTitle("Edit Slide")
         }
     }
 }

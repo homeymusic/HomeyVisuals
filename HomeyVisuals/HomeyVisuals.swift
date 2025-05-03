@@ -12,7 +12,7 @@ struct HomeyVisuals: App {
     @State private var midiConductor: MIDIConductor
 
     let modelContainer: ModelContainer = {
-        let config = ModelConfiguration(isStoredInMemoryOnly: false)
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
         return try! ModelContainer(for: Slide.self, configurations: config)
     }()
 
