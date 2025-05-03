@@ -35,7 +35,7 @@ public final class Slide: Identifiable {
     public var instrumentWidgets: [InstrumentWidget] = []
     
     @MainActor
-    var instruments: [any Instrument] {
+    var instruments: [any MusicalInstrument] {
       instrumentWidgets.map { $0.instrument }
     }
     

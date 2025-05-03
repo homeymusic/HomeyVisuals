@@ -50,7 +50,7 @@ struct ContentView: View {
                 .navigationSplitViewColumnWidth(270)
                 .onChange(of: appContext.widgetSelections) {
                     // 1) Try to get the instrument from the now-selected widget (if it’s an InstrumentWidget)
-                    let instrumentFromCurrentlySelectedWidget: (any Instrument)? = {
+                    let instrumentFromCurrentlySelectedWidget: (any MusicalInstrument)? = {
                         guard let selectedWidget = appContext.selectedWidget(in: slides) as? InstrumentWidget
                         else { return nil }
                         return selectedWidget.instrument

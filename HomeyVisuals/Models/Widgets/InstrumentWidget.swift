@@ -93,8 +93,8 @@ public final class InstrumentWidget: Widget {
     }
 
     // MARK: — Computed access to the single persisted instrument
-    public var instrument: any Instrument {
-        let instrument: any Instrument = {
+    public var instrument: any MusicalInstrument {
+        let instrument: any MusicalInstrument = {
           switch instrumentType {
             case .modePicker:   return modePicker!
             case .tonicPicker:  return tonicPicker!
