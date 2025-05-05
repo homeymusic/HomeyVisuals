@@ -8,7 +8,7 @@ import AppKit
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(AppContext.self) var appContext
-    @Environment(InstrumentCache.self)  private var instrumentCache
+    @Environment(MusicalInstrumentCache.self)  private var musicalInstrumentCache
     @Environment(MIDIConductor.self)  private var midiConductor
     @Environment(SynthConductor.self)  private var synthConductor
 
@@ -36,8 +36,8 @@ struct ContentView: View {
                         switch widget {
                         case let textWidget as TextWidget:
                             TextWidgetInspect(textWidget: textWidget)
-                        case let instrumentWidget as InstrumentWidget:
-                            InstrumentWidgetInspect(instrumentWidget: instrumentWidget)
+                        case let musicalInstrumentWidget as MusicalInstrumentWidget:
+                            MusicalInstrumentWidgetInspect(musicalInstrumentWidget: musicalInstrumentWidget)
                         default:
                             EmptyView()
                         }
@@ -50,23 +50,23 @@ struct ContentView: View {
                 .navigationSplitViewColumnWidth(270)
                 .onChange(of: appContext.widgetSelections) {
                     // 1) Try to get the instrument from the now-selected widget (if it’s an InstrumentWidget)
-                    let instrumentFromCurrentlySelectedWidget: (any MusicalInstrument)? = {
-                        guard let selectedWidget = appContext.selectedWidget(in: slides) as? InstrumentWidget
+                    let musicalInstrumentFromCurrentlySelectedWidget: (any MusicalInstrument)? = {
+                        guard let selectedMusicalInstrumentWidget = appContext.selectedWidget(in: slides) as? MusicalInstrumentWidget
                         else { return nil }
-                        return selectedWidget.instrument
+                        return selectedMusicalInstrumentWidget.musicalInstrument
                     }()
 
-                    if let instrumentChosenByWidgetSelection = instrumentFromCurrentlySelectedWidget {
-                        instrumentCache.selectInstrument(instrumentChosenByWidgetSelection)
+                    if let musicalInstrumentChosenByWidgetSelection = musicalInstrumentFromCurrentlySelectedWidget {
+                        musicalInstrumentCache.selectMusicalInstrument(musicalInstrumentChosenByWidgetSelection)
                     }
                     // 2) Otherwise, fall back to the very first instrument on the currently selected slide
                     else if let slideThatIsCurrentlySelected = appContext.selectedSlide(in: slides),
-                            let firstInstrumentOnThatSlide = slideThatIsCurrentlySelected.instruments.first {
-                        instrumentCache.selectInstrument(firstInstrumentOnThatSlide)
+                            let firstMusicalInstrumentOnThatSlide = slideThatIsCurrentlySelected.musicalInstruments.first {
+                        musicalInstrumentCache.selectMusicalInstrument(firstMusicalInstrumentOnThatSlide)
                     }
                     // 3) If neither yields an instrument, clear the cache’s selection
                     else {
-                        instrumentCache.selectInstrument(nil)
+                        musicalInstrumentCache.selectMusicalInstrument(nil)
                     }
                 }
             }
@@ -94,7 +94,7 @@ struct ContentView: View {
         }
         
         ToolbarItemGroup(placement: .principal) {
-            ForEach(InstrumentType.allInstruments) { choice in
+            ForEach(MusicalInstrumentType.allInstruments) { choice in
                 Button {
                     addInstrument(instrumentType: choice)
                 } label: {
@@ -139,7 +139,7 @@ struct ContentView: View {
             slides:           slides,
             startIndex:       index,
             appContext:       appContext,
-            instrumentCache:  instrumentCache,
+            musicalInstrumentCache:  musicalInstrumentCache,
             synthConductor:   synthConductor,
             midiConductor:    midiConductor
           )
@@ -156,16 +156,16 @@ struct ContentView: View {
         appContext.widgetSelections = [ widget.id ]
     }
     
-    private func addInstrument(instrumentType: InstrumentType) {
+    private func addInstrument(instrumentType: MusicalInstrumentType) {
         guard let slide = appContext.selectedSlide(in: slides) else { return }
-        let widget = InstrumentWidget.create(
+        let widget = MusicalInstrumentWidget.create(
             forSlide: slide,
             withType: instrumentType,
             in: modelContext
         )
         
         withAnimation {
-            slide.instrumentWidgets.append(widget)
+            slide.musicalInstrumentWidgets.append(widget)
         }
         // select the new widget
         appContext.widgetSelections = [ widget.id ]

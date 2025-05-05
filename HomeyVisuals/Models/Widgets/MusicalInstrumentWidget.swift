@@ -4,8 +4,8 @@ import CoreGraphics
 import HomeyMusicKit
 
 @Model
-public final class InstrumentWidget: Widget {
-    #Unique<InstrumentWidget>([\.id], [\.slide, \.z])
+public final class MusicalInstrumentWidget: Widget {
+    #Unique<MusicalInstrumentWidget>([\.id], [\.slide, \.z])
     
     // MARK: — Identity & Z-order
     public var id: UUID
@@ -23,11 +23,9 @@ public final class InstrumentWidget: Widget {
     public var relativeHeight: Double = 0.25 / 2.0
 
     // MARK: — Content type
-    public var instrumentType: InstrumentType
+    public var musicalInstrumentType: MusicalInstrumentType
 
     // MARK: — One-to-one persisted instrument relationships
-    @Relationship(deleteRule: .cascade) public var modePicker: ModePicker?
-    @Relationship(deleteRule: .cascade) public var tonicPicker: TonicPicker?
     @Relationship(deleteRule: .cascade) public var tonnetz: Tonnetz?
     @Relationship(deleteRule: .cascade) public var linear: Linear?
     @Relationship(deleteRule: .cascade) public var diamanti: Diamanti?
@@ -42,33 +40,29 @@ public final class InstrumentWidget: Widget {
     private init(
         forSlide slide: Slide,
         zIndex: Int,
-        instrumentType: InstrumentType
+        musicalInstrumentType: MusicalInstrumentType
     ) {
         self.id               = UUID()
         self.slide            = slide
         self.z                = zIndex
-        self.instrumentType = instrumentType
+        self.musicalInstrumentType = musicalInstrumentType
     }
 
     // MARK: — Static factory for creation + persistence
     @MainActor
     public static func create(
         forSlide slide: Slide,
-        withType type: InstrumentType,
+        withType type: MusicalInstrumentType,
         in modelContext: ModelContext
-    ) -> InstrumentWidget {
-        let widget = InstrumentWidget(
+    ) -> MusicalInstrumentWidget {
+        let widget = MusicalInstrumentWidget(
             forSlide: slide,
             zIndex:   slide.highestZ + 1,
-            instrumentType: type
+            musicalInstrumentType: type
         )
         modelContext.insert(widget)
 
         switch type {
-        case .modePicker:
-            let i = ModePicker();   modelContext.insert(i); widget.modePicker   = i
-        case .tonicPicker:
-            let i = TonicPicker();  modelContext.insert(i); widget.tonicPicker  = i
         case .tonnetz:
             let i = Tonnetz();      modelContext.insert(i); widget.tonnetz      = i
         case .linear:
@@ -92,12 +86,9 @@ public final class InstrumentWidget: Widget {
         return widget
     }
 
-    // MARK: — Computed access to the single persisted instrument
-    public var instrument: any MusicalInstrument {
-        let instrument: any MusicalInstrument = {
-          switch instrumentType {
-            case .modePicker:   return modePicker!
-            case .tonicPicker:  return tonicPicker!
+    public var musicalInstrument: any MusicalInstrument {
+        let musicalInstrument: any MusicalInstrument = {
+          switch musicalInstrumentType {
             case .tonnetz:      return tonnetz!
             case .linear:       return linear!
             case .diamanti:     return diamanti!
@@ -110,15 +101,15 @@ public final class InstrumentWidget: Widget {
           }
         }()
 
-        return instrument
+        return musicalInstrument
       }
 }
 
-extension InstrumentWidget {
+extension MusicalInstrumentWidget {
     /// Include geometry + content in the hash snapshot.
     public var widgetHash: AnyHashable {
         var arr = Self.baseHashElements(of: self as! Self)
-        arr.append(AnyHashable(instrumentType))
+        arr.append(AnyHashable(musicalInstrumentType))
         return AnyHashable(arr)
     }
 }

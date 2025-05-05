@@ -17,10 +17,10 @@ struct WidgetThumbnail: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .position(x: textWidget.x, y: textWidget.y)
 
-            case let instrumentWidget as InstrumentWidget:
-                InstrumentView(instrumentWidget.instrument)
-                    .position(x: instrumentWidget.x, y: instrumentWidget.y)
-                    .frame(width: instrumentWidget.width, height: instrumentWidget.height, alignment: .leading)
+            case let musicalInstrumentWidget as MusicalInstrumentWidget:
+                MusicalInstrumentView(musicalInstrumentWidget.musicalInstrument)
+                    .position(x: musicalInstrumentWidget.x, y: musicalInstrumentWidget.y)
+                    .frame(width: musicalInstrumentWidget.width, height: musicalInstrumentWidget.height, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
 
             default:

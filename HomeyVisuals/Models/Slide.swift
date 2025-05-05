@@ -31,18 +31,17 @@ public final class Slide: Identifiable {
     @Relationship(deleteRule: .cascade, inverse: \TextWidget.slide)
     public var textWidgets: [TextWidget] = []
     
-    @Relationship(deleteRule: .cascade, inverse: \InstrumentWidget.slide)
-    public var instrumentWidgets: [InstrumentWidget] = []
+    @Relationship(deleteRule: .cascade, inverse: \MusicalInstrumentWidget.slide)
+    public var musicalInstrumentWidgets: [MusicalInstrumentWidget] = []
     
     @MainActor
-    var instruments: [any MusicalInstrument] {
-      instrumentWidgets.map { $0.instrument }
+    var musicalInstruments: [any MusicalInstrument] {
+      musicalInstrumentWidgets.map { $0.musicalInstrument }
     }
     
     public var widgets: [any Widget] {
-        // Note: we need to cast to `any Widget` so we can mix TextWidget & InstrumentWidget
         ((textWidgets as [any Widget]) +
-        (instrumentWidgets as [any Widget])).sorted { $0.z < $1.z }
+        (musicalInstrumentWidgets as [any Widget])).sorted { $0.z < $1.z }
     }
     
     /// SwiftUI-friendly color binding
@@ -134,11 +133,11 @@ public extension Slide {
             .sorted { $0.z < $1.z }
             .map { $0.widgetHash }
 
-        let instrumentHashes = instrumentWidgets
+        let musicalInstrumentHashes = musicalInstrumentWidgets
             .sorted { $0.z < $1.z }
             .map { $0.widgetHash }
 
-        let allHashes = textHashes + instrumentHashes
+        let allHashes = textHashes + musicalInstrumentHashes
 
         return AnyHashable(base + [ AnyHashable(allHashes) ])
     }
@@ -146,8 +145,8 @@ public extension Slide {
     /// The highest z-value across *all* widgets on this slide.
     var highestZ: Int {
         let textMaxZ       = textWidgets.map(\.z).max() ?? -1
-        let instrumentMaxZ = instrumentWidgets.map(\.z).max() ?? -1
-        return max(textMaxZ, instrumentMaxZ)
+        let musicalInstrumentMaxZ = musicalInstrumentWidgets.map(\.z).max() ?? -1
+        return max(textMaxZ, musicalInstrumentMaxZ)
     }
     
     var size: CGSize {

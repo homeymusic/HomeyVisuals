@@ -17,9 +17,9 @@ struct WidgetEdit: View {
           TextWidgetEdit(textWidget: textWidget, slideScale: scale)
         }
       }
-      else if let instrumentWidget = widget as? InstrumentWidget {
-          makeWidgetContainer(for: instrumentWidget) {
-          InstrumentWidgetEdit(instrumentWidget: instrumentWidget, slideScale: scale)
+      else if let musicalInstrumentWidget = widget as? MusicalInstrumentWidget {
+          makeWidgetContainer(for: musicalInstrumentWidget) {
+          MusicalInstrumentWidgetEdit(musicalInstrumentWidget: musicalInstrumentWidget, slideScale: scale)
         }
       }
       else {

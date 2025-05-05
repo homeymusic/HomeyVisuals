@@ -23,17 +23,17 @@ struct WidgetShow: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .position(x: textWidget.x, y: textWidget.y)
 
-            case let instrumentWidget as InstrumentWidget:
-                InstrumentView(instrumentWidget.instrument)
-                    .frame(width: instrumentWidget.width, height: instrumentWidget.height, alignment: .leading)
+            case let musicalInstrumentWidget as MusicalInstrumentWidget:
+                MusicalInstrumentView(musicalInstrumentWidget.musicalInstrument)
+                    .frame(width: musicalInstrumentWidget.width, height: musicalInstrumentWidget.height, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
-                    .position(x: instrumentWidget.x, y: instrumentWidget.y)
+                    .position(x: musicalInstrumentWidget.x, y: musicalInstrumentWidget.y)
 
             default:
                 EmptyView()
             }
         }
         // only instruments remain interactive in “show” mode
-        .allowsHitTesting(widget is InstrumentWidget)
+        .allowsHitTesting(widget is MusicalInstrumentWidget)
     }
 }

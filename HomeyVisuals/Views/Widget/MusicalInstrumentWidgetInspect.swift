@@ -2,8 +2,8 @@ import SwiftUI
 import MIDIKitCore
 import HomeyMusicKit
 
-struct InstrumentWidgetInspect: View {
-    @Bindable var instrumentWidget: InstrumentWidget
+struct MusicalInstrumentWidgetInspect: View {
+    @Bindable var musicalInstrumentWidget: MusicalInstrumentWidget
 
     // 0 = All, 1–16 = channels
     private let channelIndices = Array(0...16)
@@ -28,24 +28,24 @@ struct InstrumentWidgetInspect: View {
                 .pickerStyle(.menu)
             }
         }
-        .navigationTitle("Instrument Settings")
+        .navigationTitle("Musical Instrument Settings")
     }
 
     private var inSelection: Binding<Int> {
         Binding<Int>(
             get: {
-                instrumentWidget.instrument.allMIDIInChannels
+                musicalInstrumentWidget.musicalInstrument.allMIDIInChannels
                     ? 0
-                    : Int(instrumentWidget.instrument.midiInChannel.rawValue) + 1
+                    : Int(musicalInstrumentWidget.musicalInstrument.midiInChannel.rawValue) + 1
             },
             set: { newValue in
                 if newValue == 0 {
-                    instrumentWidget.instrument.allMIDIInChannels = true
+                    musicalInstrumentWidget.musicalInstrument.allMIDIInChannels = true
                 } else {
-                    instrumentWidget.instrument.allMIDIInChannels = false
+                    musicalInstrumentWidget.musicalInstrument.allMIDIInChannels = false
                     // newValue is guaranteed 1…16, so newValue-1 is 0…15
                     let raw = MIDIChannelNumber(newValue - 1)
-                    instrumentWidget.instrument.midiInChannel =
+                    musicalInstrumentWidget.musicalInstrument.midiInChannel =
                         MIDIChannel(rawValue: raw) ?? .default
                 }
             }
@@ -55,17 +55,17 @@ struct InstrumentWidgetInspect: View {
     private var outSelection: Binding<Int> {
         Binding<Int>(
             get: {
-                instrumentWidget.instrument.allMIDIOutChannels
+                musicalInstrumentWidget.musicalInstrument.allMIDIOutChannels
                     ? 0
-                    : Int(instrumentWidget.instrument.midiOutChannel.rawValue) + 1
+                    : Int(musicalInstrumentWidget.musicalInstrument.midiOutChannel.rawValue) + 1
             },
             set: { newValue in
                 if newValue == 0 {
-                    instrumentWidget.instrument.allMIDIOutChannels = true
+                    musicalInstrumentWidget.musicalInstrument.allMIDIOutChannels = true
                 } else {
-                    instrumentWidget.instrument.allMIDIOutChannels = false
+                    musicalInstrumentWidget.musicalInstrument.allMIDIOutChannels = false
                     let raw = MIDIChannelNumber(newValue - 1)
-                    instrumentWidget.instrument.midiOutChannel =
+                    musicalInstrumentWidget.musicalInstrument.midiOutChannel =
                         MIDIChannel(rawValue: raw) ?? .default
                 }
             }
