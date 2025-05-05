@@ -106,6 +106,16 @@ struct ContentView: View {
         }
         
         ToolbarItem(placement: .principal) {
+            Button {
+                addTonalityInstrument()
+            } label: {
+                Label(TonalityInstrumentType.tonicPicker.label.capitalized, systemImage: TonalityInstrumentType.tonicPicker.icon)
+            }
+            .buttonStyle(.borderless)
+            .disabled(appContext.selectedSlide(in: slides) == nil)
+        }
+        
+        ToolbarItem(placement: .principal) {
             Button(action: addTextWidget) {
                 Label("Text Box", systemImage: "character.textbox")
             }
@@ -166,6 +176,20 @@ struct ContentView: View {
         
         withAnimation {
             slide.musicalInstrumentWidgets.append(widget)
+        }
+        // select the new widget
+        appContext.widgetSelections = [ widget.id ]
+    }
+    
+    private func addTonalityInstrument() {
+        guard let slide = appContext.selectedSlide(in: slides) else { return }
+        let widget = TonalityInstrumentWidget.create(
+            forSlide: slide,
+            in: modelContext
+        )
+        
+        withAnimation {
+            slide.tonalityInstrumentWidgets.append(widget)
         }
         // select the new widget
         appContext.widgetSelections = [ widget.id ]

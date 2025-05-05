@@ -29,11 +29,19 @@ struct WidgetShow: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .position(x: musicalInstrumentWidget.x, y: musicalInstrumentWidget.y)
 
+            case let tonalityInstrumentWidget as TonalityInstrumentWidget:
+                TonalityInstrumentView(tonalityInstrumentWidget.tonalityInstrument)
+                    .frame(width: tonalityInstrumentWidget.width, height: tonalityInstrumentWidget.height, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .position(x: tonalityInstrumentWidget.x, y: tonalityInstrumentWidget.y)
+                
             default:
                 EmptyView()
             }
         }
-        // only instruments remain interactive in “show” mode
-        .allowsHitTesting(widget is MusicalInstrumentWidget)
+        .allowsHitTesting(
+            widget is MusicalInstrumentWidget ||
+            widget is TonalityInstrumentWidget
+        )
     }
 }

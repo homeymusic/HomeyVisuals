@@ -23,6 +23,12 @@ struct WidgetThumbnail: View {
                     .frame(width: musicalInstrumentWidget.width, height: musicalInstrumentWidget.height, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
 
+            case let tonalityInstrumentWidget as TonalityInstrumentWidget:
+                TonalityInstrumentView(tonalityInstrumentWidget.tonalityInstrument)
+                    .position(x: tonalityInstrumentWidget.x, y: tonalityInstrumentWidget.y)
+                    .frame(width: tonalityInstrumentWidget.width, height: tonalityInstrumentWidget.height, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
+
             default:
                 EmptyView()
             }

@@ -34,14 +34,23 @@ public final class Slide: Identifiable {
     @Relationship(deleteRule: .cascade, inverse: \MusicalInstrumentWidget.slide)
     public var musicalInstrumentWidgets: [MusicalInstrumentWidget] = []
     
+    @Relationship(deleteRule: .cascade, inverse: \TonalityInstrumentWidget.slide)
+    public var tonalityInstrumentWidgets: [TonalityInstrumentWidget] = []
+    
+    @Relationship
+    public var tonality: Tonality
+
     @MainActor
     var musicalInstruments: [any MusicalInstrument] {
       musicalInstrumentWidgets.map { $0.musicalInstrument }
     }
     
     public var widgets: [any Widget] {
-        ((textWidgets as [any Widget]) +
-        (musicalInstrumentWidgets as [any Widget])).sorted { $0.z < $1.z }
+        (
+            (textWidgets as [any Widget]) +
+            (musicalInstrumentWidgets as [any Widget]) +
+            (tonalityInstrumentWidgets as [any Widget])
+        ).sorted { $0.z < $1.z }
     }
     
     /// SwiftUI-friendly color binding
@@ -49,14 +58,15 @@ public final class Slide: Identifiable {
         get { Color(backgroundRGBAColor) }
         set { backgroundRGBAColor = RGBAColor(newValue) }
     }
-    
+
     @MainActor
     public init(
         aspectRatio: AspectRatio,
         backgroundType: BackgroundType = .color,
         backgroundRGBAColor: RGBAColor = .init(red: 0, green: 0, blue: 0, alpha: 1),
         cameraDeviceID: String? = nil,
-        isSkipped: Bool = false
+        isSkipped: Bool = false,
+        tonality: Tonality = Tonality()
     ) {
         self.id = UUID()
         self.aspectRatio = aspectRatio
@@ -64,6 +74,7 @@ public final class Slide: Identifiable {
         self.backgroundRGBAColor = backgroundRGBAColor
         self.cameraDeviceID = cameraDeviceID
         self.isSkipped = isSkipped
+        self.tonality = tonality
         self.position = 0
     }
     
@@ -137,7 +148,11 @@ public extension Slide {
             .sorted { $0.z < $1.z }
             .map { $0.widgetHash }
 
-        let allHashes = textHashes + musicalInstrumentHashes
+        let tonalityInstrumentHashes = tonalityInstrumentWidgets
+            .sorted { $0.z < $1.z }
+            .map { $0.widgetHash }
+        
+        let allHashes = textHashes + musicalInstrumentHashes + tonalityInstrumentHashes
 
         return AnyHashable(base + [ AnyHashable(allHashes) ])
     }
@@ -146,7 +161,8 @@ public extension Slide {
     var highestZ: Int {
         let textMaxZ       = textWidgets.map(\.z).max() ?? -1
         let musicalInstrumentMaxZ = musicalInstrumentWidgets.map(\.z).max() ?? -1
-        return max(textMaxZ, musicalInstrumentMaxZ)
+        let tonalityInstrumentMaxZ = tonalityInstrumentWidgets.map(\.z).max() ?? -1
+        return max(textMaxZ, musicalInstrumentMaxZ, tonalityInstrumentMaxZ)
     }
     
     var size: CGSize {

@@ -1,0 +1,63 @@
+import Foundation
+import SwiftData
+import CoreGraphics
+import HomeyMusicKit
+
+@Model
+public final class TonalityInstrumentWidget: Widget {
+    #Unique<TonalityInstrumentWidget>([\.id], [\.slide, \.z])
+    
+    // MARK: — Identity & Z-order
+    public var id: UUID
+    public var slide: Slide?
+    public var z: Int
+
+    // MARK: — Stored (relative, persisted)
+    /// 0…1 fraction of slide width
+    public var relativeX: Double = 0.5
+    /// 0…1 fraction of slide height
+    public var relativeY: Double = 0.5
+    /// 0…1 fraction of slide width
+    public var relativeWidth: Double = 0.25
+    /// 0…1 fraction of slide height
+    public var relativeHeight: Double = 0.25 / 2.0
+
+    // MARK: — One-to-one persisted instrument relationships
+    @Relationship(deleteRule: .cascade) public var tonalityInstrument: TonalityInstrument
+
+    // MARK: — Private designated init
+    private init(
+        forSlide slide: Slide,
+        zIndex: Int,
+        tonalityInstrument: TonalityInstrument
+    ) {
+        self.id                 = UUID()
+        self.slide              = slide
+        self.z                  = zIndex
+        self.tonalityInstrument = tonalityInstrument
+    }
+
+    // MARK: — Static factory for creation + persistence
+    @MainActor
+    public static func create(
+        forSlide slide: Slide,
+        in modelContext: ModelContext
+    ) -> TonalityInstrumentWidget {
+        let widget = TonalityInstrumentWidget(
+            forSlide: slide,
+            zIndex:   slide.highestZ + 1,
+            tonalityInstrument: TonalityInstrument()
+        )
+        modelContext.insert(widget)
+        
+        return widget
+    }
+}
+
+extension TonalityInstrumentWidget {
+    /// Include geometry + content in the hash snapshot.
+    public var widgetHash: AnyHashable {
+        var arr = Self.baseHashElements(of: self as! Self)
+        return AnyHashable(arr)
+    }
+}
