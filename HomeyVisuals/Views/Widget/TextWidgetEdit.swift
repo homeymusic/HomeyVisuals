@@ -6,11 +6,7 @@ import AppKit
 struct TextWidgetEdit: View {
     @Environment(AppContext.self) private var appContext
     @Bindable var textWidget: TextWidget
-    let slideScale: CGFloat
 
-    private var isSelected: Bool {
-        appContext.widgetSelections.contains(textWidget.id)
-    }
     private var isEditing: Bool {
         appContext.editingWidgetID == textWidget.id
     }

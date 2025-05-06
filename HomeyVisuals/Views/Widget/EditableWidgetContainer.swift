@@ -3,7 +3,7 @@ import AppKit
 
 /// A reusable “shell” around any SwiftData `Widget` that
 /// provides moving, resizing, selection-and-edit tapping behavior.
-struct WidgetContainer<W: Widget & Observable, Content: View>: View {
+struct EditableWidgetContainer<W: Widget & Observable, Content: View>: View {
     @Bindable var widget: W
     let slideScale: CGFloat
     let isSelected: Bool

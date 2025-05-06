@@ -14,26 +14,13 @@ struct WidgetShow: View {
         Group {
             switch widget {
             case let textWidget as TextWidget:
-                Text(textWidget.text)
-                    .font(.system(size: textWidget.fontSize))
-                    .foregroundColor(.white)
-                    .frame(width:    textWidget.width,
-                           height: textWidget.height,
-                           alignment: .leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .position(x: textWidget.x, y: textWidget.y)
+                TextWidgetShow(textWidget: textWidget)
 
             case let musicalInstrumentWidget as MusicalInstrumentWidget:
-                MusicalInstrumentView(musicalInstrumentWidget.musicalInstrument)
-                    .frame(width: musicalInstrumentWidget.width, height: musicalInstrumentWidget.height, alignment: .leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .position(x: musicalInstrumentWidget.x, y: musicalInstrumentWidget.y)
+                MusicalInstrumentWidgetShow(musicalInstrumentWidget: musicalInstrumentWidget)
 
             case let tonalityInstrumentWidget as TonalityInstrumentWidget:
-                TonalityInstrumentView(tonalityInstrumentWidget.tonalityInstrument)
-                    .frame(width: tonalityInstrumentWidget.width, height: tonalityInstrumentWidget.height, alignment: .leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .position(x: tonalityInstrumentWidget.x, y: tonalityInstrumentWidget.y)
+                TonalityInstrumentWidgetShow(tonalityInstrumentWidget: tonalityInstrumentWidget)
                 
             default:
                 EmptyView()

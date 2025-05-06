@@ -13,18 +13,18 @@ struct WidgetEdit: View {
     var body: some View {
         Group {
             if let textWidget = widget as? TextWidget {
-                makeWidgetContainer(for: textWidget) {
-                    TextWidgetEdit(textWidget: textWidget, slideScale: scale)
+                makeEditableWidgetContainer(for: textWidget) {
+                    TextWidgetEdit(textWidget: textWidget)
                 }
             }
             else if let musicalInstrumentWidget = widget as? MusicalInstrumentWidget {
-                makeWidgetContainer(for: musicalInstrumentWidget) {
-                    MusicalInstrumentWidgetEdit(musicalInstrumentWidget: musicalInstrumentWidget, slideScale: scale)
+                makeEditableWidgetContainer(for: musicalInstrumentWidget) {
+                    MusicalInstrumentWidgetEdit(musicalInstrumentWidget: musicalInstrumentWidget)
                 }
             }
             else if let tonalityInstrumentWidget = widget as? TonalityInstrumentWidget {
-                makeWidgetContainer(for: tonalityInstrumentWidget) {
-                    TonalityInstrumentWidgetEdit(tonalityInstrumentWidget: tonalityInstrumentWidget, slideScale: scale)
+                makeEditableWidgetContainer(for: tonalityInstrumentWidget) {
+                    TonalityInstrumentWidgetEdit(tonalityInstrumentWidget: tonalityInstrumentWidget)
                 }
             }
             else {
@@ -36,14 +36,14 @@ struct WidgetEdit: View {
     /// Builds the WidgetContainer for any concrete Widget type,
     /// wiring up selection/editing state in one place.
     @ViewBuilder
-    private func makeWidgetContainer<W: Widget & Observable, Content: View>(
+    private func makeEditableWidgetContainer<W: Widget & Observable, Content: View>(
         for w: W,
         @ViewBuilder content: @escaping () -> Content
     ) -> some View {
         let isSelected = appContext.widgetSelections.contains(w.id)
         let isEditing  = appContext.editingWidgetID == w.id
         
-        WidgetContainer(
+        EditableWidgetContainer(
             widget: w,
             slideScale: scale,
             isSelected: isSelected,
