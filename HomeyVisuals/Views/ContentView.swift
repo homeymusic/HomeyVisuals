@@ -9,6 +9,7 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(AppContext.self) var appContext
     @Environment(MusicalInstrumentCache.self)  private var musicalInstrumentCache
+    @Environment(TonalityCache.self) private var tonalityCache
     @Environment(MIDIConductor.self)  private var midiConductor
     @Environment(SynthConductor.self)  private var synthConductor
 
@@ -125,7 +126,7 @@ struct ContentView: View {
             .disabled(appContext.selectedSlide(in: slides) == nil)
         }
         ToolbarItem(placement: .primaryAction) {
-            Button(action: launchSlideshow) {
+            Button(action: presentSlides) {
                 Label("Play", systemImage: "play.fill")
             }
             .buttonStyle(.borderless)
@@ -141,7 +142,7 @@ struct ContentView: View {
         }
     }
     
-    private func launchSlideshow() {
+    private func presentSlides() {
         guard
             let slide = appContext.selectedSlide(in: slides),
             let index = slides.firstIndex(of: slide)
@@ -152,6 +153,7 @@ struct ContentView: View {
             startIndex:       index,
             appContext:       appContext,
             musicalInstrumentCache:  musicalInstrumentCache,
+            tonalityCache: tonalityCache,
             synthConductor:   synthConductor,
             midiConductor:    midiConductor
           )

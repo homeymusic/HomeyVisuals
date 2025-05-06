@@ -9,6 +9,7 @@ struct HomeyVisuals: App {
     @State private var appContext: AppContext
     @State private var synthConductor: SynthConductor
     @State private var musicalInstrumentCache: MusicalInstrumentCache
+    @State private var tonalityCache: TonalityCache
     @State private var midiConductor: MIDIConductor
 
     let modelContainer: ModelContainer = {
@@ -20,17 +21,20 @@ struct HomeyVisuals: App {
         let appContext = AppContext()
         let synthConductor = SynthConductor()
         let musicalInstrumentCache = MusicalInstrumentCache()
+        let tonalityCache = TonalityCache()
         let midiConductor = MIDIConductor(
             clientName:   "Homey Visuals",
             model:        "Homey Visuals macOS",
             manufacturer: "Homey Music",
-            musicalInstrumentCache: musicalInstrumentCache
+            musicalInstrumentCache: musicalInstrumentCache,
+            tonalityCache: tonalityCache
         )
         midiConductor.setup()
 
         _appContext      = State(initialValue: appContext)
         _synthConductor  = State(initialValue: synthConductor)
         _musicalInstrumentCache = State(initialValue: musicalInstrumentCache)
+        _tonalityCache = State(initialValue: tonalityCache)
         _midiConductor   = State(initialValue: midiConductor)
     }
     
@@ -39,6 +43,7 @@ struct HomeyVisuals: App {
             ContentView()
                 .environment(appContext)
                 .environment(musicalInstrumentCache)
+                .environment(tonalityCache)
                 .environment(synthConductor)
                 .environment(midiConductor)
                 .modelContainer(modelContainer)

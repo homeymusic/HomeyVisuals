@@ -45,6 +45,15 @@ public final class Slide: Identifiable {
       musicalInstrumentWidgets.map { $0.musicalInstrument }
     }
     
+    @MainActor
+    var tonalities: [Tonality] {
+        let all = musicalInstrumentWidgets.map(\.musicalInstrument.tonality) + tonalityInstrumentWidgets.map(\.tonalityInstrument.tonality)
+        var seen = Set<ObjectIdentifier>()
+        return all.filter {
+            seen.insert(ObjectIdentifier($0)).inserted
+        }
+    }
+    
     public var widgets: [any Widget] {
         (
             (textWidgets as [any Widget]) +

@@ -5,7 +5,8 @@ import HomeyMusicKit
 struct SlideContainer<Content: View>: View {
     @Environment(AppContext.self) private var appContext
     @Environment(MusicalInstrumentCache.self) private var musicalInstrumentCache
-    
+    @Environment(TonalityCache.self) private var tonalityCache
+
     @Bindable var slide: Slide
     let isThumbnail: Bool
     @ViewBuilder let content: (CGFloat) -> Content
@@ -41,9 +42,11 @@ struct SlideContainer<Content: View>: View {
             .coordinateSpace(name: "slideSpace")
             .onAppear {
                 musicalInstrumentCache.set(slide.musicalInstruments)
+                tonalityCache.set(slide.tonalities)
             }
             .onChange(of: slide.reloadTrigger) {
                 musicalInstrumentCache.set(slide.musicalInstruments)
+                tonalityCache.set(slide.tonalities)
             }
         }
         .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
