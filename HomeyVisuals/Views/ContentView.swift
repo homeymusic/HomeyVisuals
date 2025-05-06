@@ -38,6 +38,8 @@ struct ContentView: View {
                             TextWidgetInspect(textWidget: textWidget)
                         case let musicalInstrumentWidget as MusicalInstrumentWidget:
                             MusicalInstrumentWidgetInspect(musicalInstrumentWidget: musicalInstrumentWidget)
+                        case let tonalityInstrumentWidget as TonalityInstrumentWidget:
+                            TonalityInstrumentWidgetInspect(tonalityInstrumentWidget: tonalityInstrumentWidget)
                         default:
                             EmptyView()
                         }
@@ -96,7 +98,7 @@ struct ContentView: View {
         ToolbarItemGroup(placement: .principal) {
             ForEach(MusicalInstrumentType.allInstruments) { choice in
                 Button {
-                    addInstrument(instrumentType: choice)
+                    addMusicalInstrumentWidget(instrumentType: choice)
                 } label: {
                     Label(choice.label.capitalized, systemImage: choice.icon)
                 }
@@ -107,7 +109,7 @@ struct ContentView: View {
         
         ToolbarItem(placement: .principal) {
             Button {
-                addTonalityInstrument()
+                addTonalityInstrumentWidget()
             } label: {
                 Label(TonalityInstrumentType.tonicPicker.label.capitalized, systemImage: TonalityInstrumentType.tonicPicker.icon)
             }
@@ -166,7 +168,7 @@ struct ContentView: View {
         appContext.widgetSelections = [ widget.id ]
     }
     
-    private func addInstrument(instrumentType: MusicalInstrumentType) {
+    private func addMusicalInstrumentWidget(instrumentType: MusicalInstrumentType) {
         guard let slide = appContext.selectedSlide(in: slides) else { return }
         let widget = MusicalInstrumentWidget.create(
             forSlide: slide,
@@ -181,7 +183,7 @@ struct ContentView: View {
         appContext.widgetSelections = [ widget.id ]
     }
     
-    private func addTonalityInstrument() {
+    private func addTonalityInstrumentWidget() {
         guard let slide = appContext.selectedSlide(in: slides) else { return }
         let widget = TonalityInstrumentWidget.create(
             forSlide: slide,

@@ -46,7 +46,7 @@ public final class TonalityInstrumentWidget: Widget {
         let widget = TonalityInstrumentWidget(
             forSlide: slide,
             zIndex:   slide.highestZ + 1,
-            tonalityInstrument: TonalityInstrument()
+            tonalityInstrument: TonalityInstrument(tonality: slide.tonality)
         )
         modelContext.insert(widget)
         
@@ -57,7 +57,7 @@ public final class TonalityInstrumentWidget: Widget {
 extension TonalityInstrumentWidget {
     /// Include geometry + content in the hash snapshot.
     public var widgetHash: AnyHashable {
-        var arr = Self.baseHashElements(of: self as! Self)
+        let arr = Self.baseHashElements(of: self as! Self)
         return AnyHashable(arr)
     }
 }
