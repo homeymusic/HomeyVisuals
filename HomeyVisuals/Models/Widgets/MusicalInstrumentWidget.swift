@@ -13,14 +13,10 @@ public final class MusicalInstrumentWidget: Widget {
     public var z: Int
 
     // MARK: — Stored (relative, persisted)
-    /// 0…1 fraction of slide width
     public var relativeX: Double = 0.5
-    /// 0…1 fraction of slide height
     public var relativeY: Double = 0.5
-    /// 0…1 fraction of slide width
-    public var relativeWidth: Double = 0.25
-    /// 0…1 fraction of slide height
-    public var relativeHeight: Double = 0.25 / 2.0
+    public var relativeWidth: Double = 1.0 / HomeyMusicKit.goldenRatio
+    public var relativeHeight: Double = 1.0 / (2.0 * HomeyMusicKit.goldenRatio)
 
     // MARK: — Content type
     public var musicalInstrumentType: MusicalInstrumentType
