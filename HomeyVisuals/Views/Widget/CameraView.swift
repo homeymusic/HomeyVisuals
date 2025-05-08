@@ -1,21 +1,57 @@
 import SwiftUI
 import AVFoundation
 import HomeyMusicKit
+import CoreMedia
+import CoreGraphics
+
+extension AVCaptureDevice {
+  /// The activeFormat’s pixel dimensions, as width/height.
+  var nativeAspectRatio: CGFloat {
+    let desc = activeFormat.formatDescription
+    let dims = CMVideoFormatDescriptionGetDimensions(desc)
+    return CGFloat(dims.width) / CGFloat(dims.height)
+  }
+}
 
 struct CameraView: View {
     let cameraDeviceID: String?
     let isThumbnail: Bool
-
+    let isDeviceAspectRatio: Bool
+    
+    init(
+      cameraDeviceID: String?,
+      isThumbnail: Bool,
+      isDeviceAspectRatio: Bool = false
+    ) {
+      self.cameraDeviceID        = cameraDeviceID
+      self.isThumbnail           = isThumbnail
+      self.isDeviceAspectRatio   = isDeviceAspectRatio
+    }
+    
     var body: some View {
         if let device = CameraView.device(for: cameraDeviceID) {
             if isThumbnail {
                 VideoIcon()
             } else {
-                CameraFeed(device: device)
-                    .id(device.uniqueID)
+                if isDeviceAspectRatio {
+                    CameraFeed(device: device)
+                        .id(device.uniqueID)
+                        .aspectRatio(device.nativeAspectRatio, contentMode: .fit)
+                        .clipped()
+                } else {
+                    CameraFeed(device: device)
+                        .id(device.uniqueID)
+                }
             }
         } else {
-            VideoIcon(isSlashed: true)
+            if isDeviceAspectRatio {
+                VideoIcon(isSlashed: true)
+                    .aspectRatio(contentMode: .fit)
+                    .clipped()
+            } else {
+                VideoIcon(isSlashed: true)
+            }
+
         }
     }
     

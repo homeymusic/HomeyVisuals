@@ -12,17 +12,10 @@ struct CameraWidgetShow: View {
             cameraDeviceID: cameraWidget.cameraDeviceID,
             isThumbnail: false
         )
-        .aspectRatio(contentMode: .fill)
+        .frame(width: cameraWidget.width, height: cameraWidget.height, alignment: .leading)
+        .fixedSize(horizontal: false, vertical: true)
+        .position(x: cameraWidget.x, y: cameraWidget.y)
+        .allowsHitTesting(false)
         .clipped()
-        .frame(
-            width:  cameraWidget.width,
-            height: cameraWidget.height,
-            alignment: .center
-        )
-        .position(
-            x: cameraWidget.x + cameraWidget.width  / 2,
-            y: cameraWidget.y + cameraWidget.height / 2
-        )
-        .allowsHitTesting(true)
     }
 }

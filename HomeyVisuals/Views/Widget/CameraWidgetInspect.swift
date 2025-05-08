@@ -1,8 +1,7 @@
-// CameraWidgetInspect.swift
-
 import SwiftUI
 import SwiftData
 import HomeyMusicKit
+
 
 struct CameraWidgetInspect: View {
     @Bindable var cameraWidget: CameraWidget
@@ -22,9 +21,7 @@ struct CameraWidgetInspect: View {
                     }
                     .pickerStyle(.menu)
 
-                    CameraView(cameraDeviceID: cameraWidget.cameraDeviceID, isThumbnail: false)
-                        .aspectRatio(contentMode: .fit)
-                        .clipped()
+                    CameraView(cameraDeviceID: cameraWidget.cameraDeviceID, isThumbnail: false, isDeviceAspectRatio: true)
                 }
             }
             .padding()
