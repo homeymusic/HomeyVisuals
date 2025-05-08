@@ -5,7 +5,6 @@ import HomeyMusicKit
 struct MusicalInstrumentWidgetInspect: View {
     @Bindable var musicalInstrumentWidget: MusicalInstrumentWidget
 
-    // 0 = All, 1–16 = channels
     private let channelIndices = Array(0...16)
 
     var body: some View {
@@ -27,9 +26,43 @@ struct MusicalInstrumentWidgetInspect: View {
                 }
                 .pickerStyle(.menu)
             }
+
+            Section("Interval Notation") {
+                ForEach(IntervalLabelType.allCases, id: \.self) { intervalLabelType in
+                    if intervalLabelType == .symbol {
+                        Divider()
+                    }
+                    Toggle(isOn: intervalBinding(for: intervalLabelType)) {
+                        Label(intervalLabelType.label, systemImage: intervalLabelType.icon)
+                    }
+                }
+            }
+
+            Divider()
+            
+            Section("Pitch Notation") {
+                ForEach(PitchLabelType.pitchCases, id: \.self) { pitchLabelType in
+                    if pitchLabelType != .accidentals {
+                        Toggle(isOn: pitchBinding(for: pitchLabelType)) {
+                            Label(pitchLabelType.label, systemImage: pitchLabelType.icon)
+                        }
+
+                        if pitchLabelType == .fixedDo {
+                            Picker("Accidentals", selection: accidentalBinding) {
+                                ForEach(Accidental.displayCases) { accidental in
+                                    Text(accidental.icon).tag(accidental)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+                        }
+                    }
+                }
+            }
         }
         .navigationTitle("Musical Instrument Settings")
     }
+
+    // MARK: - MIDI Channel Bindings
 
     private var inSelection: Binding<Int> {
         Binding<Int>(
@@ -43,7 +76,6 @@ struct MusicalInstrumentWidgetInspect: View {
                     musicalInstrumentWidget.musicalInstrument.allMIDIInChannels = true
                 } else {
                     musicalInstrumentWidget.musicalInstrument.allMIDIInChannels = false
-                    // newValue is guaranteed 1…16, so newValue-1 is 0…15
                     let raw = MIDIChannelNumber(newValue - 1)
                     musicalInstrumentWidget.musicalInstrument.midiInChannel =
                         MIDIChannel(rawValue: raw) ?? .default
@@ -68,6 +100,49 @@ struct MusicalInstrumentWidgetInspect: View {
                     musicalInstrumentWidget.musicalInstrument.midiOutChannel =
                         MIDIChannel(rawValue: raw) ?? .default
                 }
+            }
+        )
+    }
+
+    // MARK: - Label Bindings
+
+    private func intervalBinding(for type: IntervalLabelType) -> Binding<Bool> {
+        Binding(
+            get: {
+                musicalInstrumentWidget.musicalInstrument.intervalLabelTypes.contains(type)
+            },
+            set: { isOn in
+                if isOn {
+                    musicalInstrumentWidget.musicalInstrument.intervalLabelTypes.insert(type)
+                } else {
+                    musicalInstrumentWidget.musicalInstrument.intervalLabelTypes.remove(type)
+                }
+            }
+        )
+    }
+
+    private func pitchBinding(for type: PitchLabelType) -> Binding<Bool> {
+        Binding(
+            get: {
+                musicalInstrumentWidget.musicalInstrument.pitchLabelTypes.contains(type)
+            },
+            set: { isOn in
+                if isOn {
+                    musicalInstrumentWidget.musicalInstrument.pitchLabelTypes.insert(type)
+                } else {
+                    musicalInstrumentWidget.musicalInstrument.pitchLabelTypes.remove(type)
+                }
+            }
+        )
+    }
+
+    private var accidentalBinding: Binding<Accidental> {
+        Binding(
+            get: {
+                musicalInstrumentWidget.musicalInstrument.accidental
+            },
+            set: {
+                musicalInstrumentWidget.musicalInstrument.accidental = $0
             }
         )
     }

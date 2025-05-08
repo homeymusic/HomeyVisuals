@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import SwiftData
 import CoreGraphics
 import HomeyMusicKit
@@ -18,9 +19,9 @@ public final class TonalityInstrumentWidget: Widget {
     /// 0…1 fraction of slide height
     public var relativeY: Double = 0.5
     /// 0…1 fraction of slide width
-    public var relativeWidth: Double = 0.25
+    public var relativeWidth: Double = 1.0 / (2.0 * HomeyMusicKit.goldenRatio)
     /// 0…1 fraction of slide height
-    public var relativeHeight: Double = 0.25 / 2.0
+    public var relativeHeight: Double = 1.0 / (8.0 * HomeyMusicKit.goldenRatio)
 
     // MARK: — One-to-one persisted instrument relationships
     @Relationship(deleteRule: .cascade) public var tonalityInstrument: TonalityInstrument
@@ -52,6 +53,7 @@ public final class TonalityInstrumentWidget: Widget {
         
         return widget
     }
+    
 }
 
 extension TonalityInstrumentWidget {
