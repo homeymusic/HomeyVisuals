@@ -7,6 +7,13 @@ struct MusicalInstrumentWidgetInspect: View {
 
     var body: some View {
         Form {
+                        
+            if let keyboardInstrument = musicalInstrumentWidget.musicalInstrument as? KeyboardInstrument {
+                Section("Keyboard Layout") {
+                    RowsColsPickerInspectView(keyboardInstrument: keyboardInstrument)
+                }
+            }
+
             Section("Audio and MIDI") {
                 Toggle(isOn: playSynthBinding) {
                     Label("Play Synthesizer", systemImage: "speaker.wave.2")
