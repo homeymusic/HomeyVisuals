@@ -75,7 +75,10 @@ struct ContentView: View {
             }
             .toolbar { toolbarItems }
             .onDeleteCommand(perform: deleteSelectedSlides)
-            .onAppear(perform: seedAspectRatios)
+            .onAppear {
+                seedAspectRatios()
+                seedColorPalettes()
+            }
             .onChange(of: slides) { _, newSlides in
                 if appContext.slideSelections.isEmpty, let first = newSlides.first {
                     appContext.slideSelections = [ first.id ]
@@ -140,6 +143,11 @@ struct ContentView: View {
         if appContext.slideSelections.isEmpty, let first = slides.first {
             appContext.slideSelections = [ first.id ]
         }
+    }
+    
+    private func seedColorPalettes() {
+        IntervalColorPalette.seedSystemIntervalPalettes(modelContext: modelContext)
+        PitchColorPalette.seedSystemPitchPalettes(modelContext: modelContext)
     }
     
     private func presentSlides() {
