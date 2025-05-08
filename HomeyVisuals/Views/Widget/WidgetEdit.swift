@@ -17,6 +17,11 @@ struct WidgetEdit: View {
                     TextWidgetEdit(textWidget: textWidget)
                 }
             }
+            else if let cameraWidget = widget as? CameraWidget {
+                makeEditableWidgetContainer(for: cameraWidget, allowEditing: false) {
+                    CameraWidgetEdit(cameraWidget: cameraWidget)
+                }
+            }
             else if let musicalInstrumentWidget = widget as? MusicalInstrumentWidget {
                 makeEditableWidgetContainer(for: musicalInstrumentWidget) {
                     MusicalInstrumentWidgetEdit(musicalInstrumentWidget: musicalInstrumentWidget)
@@ -33,27 +38,32 @@ struct WidgetEdit: View {
         }
     }
     
-    /// Builds the WidgetContainer for any concrete Widget type,
-    /// wiring up selection/editing state in one place.
     @ViewBuilder
     private func makeEditableWidgetContainer<W: Widget & Observable, Content: View>(
         for w: W,
+        allowEditing: Bool = true,
         @ViewBuilder content: @escaping () -> Content
     ) -> some View {
         let isSelected = appContext.widgetSelections.contains(w.id)
-        let isEditing  = appContext.editingWidgetID == w.id
-        
-        EditableWidgetContainer(
+        // Only consider “editing” if allowEditing is true
+        let isEditing  = allowEditing && appContext.editingWidgetID == w.id
+
+        WidgetEditContainer(
             widget: w,
             slideScale: scale,
             isSelected: isSelected,
             isEditing: isEditing,
             onSelect: {
                 appContext.widgetSelections = [ w.id ]
-                appContext.editingWidgetID  = nil
+                // If we’re not allowing edit, clear any edit state
+                if !allowEditing {
+                    appContext.editingWidgetID = nil
+                }
             },
             onBeginEditing: {
-                appContext.editingWidgetID  = w.id
+                if allowEditing {
+                    appContext.editingWidgetID = w.id
+                }
             }
         ) {
             content()

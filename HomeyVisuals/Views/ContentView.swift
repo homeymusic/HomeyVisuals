@@ -37,6 +37,8 @@ struct ContentView: View {
                         switch widget {
                         case let textWidget as TextWidget:
                             TextWidgetInspect(textWidget: textWidget)
+                        case let cameraWidget as CameraWidget:
+                            CameraWidgetInspect(cameraWidget: cameraWidget)
                         case let musicalInstrumentWidget as MusicalInstrumentWidget:
                             MusicalInstrumentWidgetInspect(musicalInstrumentWidget: musicalInstrumentWidget)
                         case let tonalityInstrumentWidget as TonalityInstrumentWidget:
@@ -128,6 +130,15 @@ struct ContentView: View {
             .buttonStyle(.borderless)
             .disabled(appContext.selectedSlide(in: slides) == nil)
         }
+        
+        ToolbarItem(placement: .principal) {
+            Button(action: addCameraWidget) {
+                Label("Camera", systemImage: "video")
+            }
+            .buttonStyle(.borderless)
+            .disabled(appContext.selectedSlide(in: slides) == nil)
+        }
+
         ToolbarItem(placement: .primaryAction) {
             Button(action: presentSlides) {
                 Label("Play", systemImage: "play.fill")
@@ -178,11 +189,24 @@ struct ContentView: View {
         appContext.widgetSelections = [ widget.id ]
     }
     
+    private func addCameraWidget() {
+        guard let slide = appContext.selectedSlide(in: slides) else { return }
+        let widget = CameraWidget(slide: slide)
+        print("addCameraWidget relativeWidth", widget.relativeWidth, "relativeHeight", widget.relativeHeight)
+
+        
+        withAnimation {
+            slide.cameraWidgets.append(widget)
+        }
+        // put the new widget’s ID into the selection set
+        appContext.widgetSelections = [ widget.id ]
+    }
+    
     private func addMusicalInstrumentWidget(instrumentType: MusicalInstrumentType) {
         guard let slide = appContext.selectedSlide(in: slides) else { return }
         let widget = MusicalInstrumentWidget.create(
-            forSlide: slide,
-            withType: instrumentType,
+            slide: slide,
+            type: instrumentType,
             in: modelContext
         )
         
@@ -196,7 +220,7 @@ struct ContentView: View {
     private func addTonalityInstrumentWidget() {
         guard let slide = appContext.selectedSlide(in: slides) else { return }
         let widget = TonalityInstrumentWidget.create(
-            forSlide: slide,
+            slide: slide,
             in: modelContext
         )
         

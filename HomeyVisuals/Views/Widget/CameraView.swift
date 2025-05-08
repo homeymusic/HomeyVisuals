@@ -2,8 +2,52 @@ import SwiftUI
 import AVFoundation
 import HomeyMusicKit
 
+struct CameraView: View {
+    let cameraDeviceID: String?
+    let isThumbnail: Bool
+
+    var body: some View {
+        if let device = CameraView.device(for: cameraDeviceID) {
+            if isThumbnail {
+                VideoIcon()
+            } else {
+                CameraFeed(device: device)
+                    .id(device.uniqueID)
+            }
+        } else {
+            VideoIcon(isSlashed: true)
+        }
+    }
+    
+    /// Which device types to show on each platform
+    private static var deviceTypes: [AVCaptureDevice.DeviceType] {
+    #if os(macOS)
+        return [.builtInWideAngleCamera, .external]
+    #else
+        return [.builtInWideAngleCamera, .builtInUltraWideCamera, .builtInTelephotoCamera]
+    #endif
+    }
+
+    /// All cameras the system can enumerate today
+    public static var availableDevices: [AVCaptureDevice] {
+        AVCaptureDevice.DiscoverySession(
+            deviceTypes: deviceTypes,
+            mediaType: .video,
+            position: .unspecified
+        ).devices
+    }
+    
+    /// Look up a device by its uniqueID (or `nil` if none)
+    public static func device(for uniqueID: String?) -> AVCaptureDevice? {
+        guard let id = uniqueID else { return nil }
+        return availableDevices.first { $0.uniqueID == id }
+    }
+
+
+}
+
 /// A full‑screen (or cropped) live camera feed.
-public struct CameraView: NSViewRepresentable {
+public struct CameraFeed: NSViewRepresentable {
     public let device: AVCaptureDevice
 
     public init(device: AVCaptureDevice) {
@@ -30,51 +74,6 @@ public struct CameraView: NSViewRepresentable {
     }
 
     public func updateNSView(_ nsView: NSViewType, context: Context) { }
-
-    // MARK: ——— Helpers for device enumeration ———
-
-    /// Which device types to show on each platform
-    private static var deviceTypes: [AVCaptureDevice.DeviceType] {
-    #if os(macOS)
-        return [.builtInWideAngleCamera, .external]
-    #else
-        return [.builtInWideAngleCamera, .builtInUltraWideCamera, .builtInTelephotoCamera]
-    #endif
-    }
-
-    /// All cameras the system can enumerate today
-    public static var availableDevices: [AVCaptureDevice] {
-        AVCaptureDevice.DiscoverySession(
-            deviceTypes: deviceTypes,
-            mediaType: .video,
-            position: .unspecified
-        ).devices
-    }
-
-    /// Look up a device by its uniqueID (or `nil` if none)
-    public static func device(for uniqueID: String?) -> AVCaptureDevice? {
-        guard let id = uniqueID else { return nil }
-        return availableDevices.first { $0.uniqueID == id }
-    }
-}
-
-struct CameraFeed: View {
-    let slide: Slide
-    let isThumbnail: Bool
-
-    var body: some View {
-        if let device = CameraView.device(for: slide.cameraDeviceID) {
-            if isThumbnail {
-                VideoIcon()
-            } else {
-                CameraView(device: device)
-                    .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fill)
-                    .clipped()
-            }
-        } else {
-            VideoIcon(isSlashed: true)
-        }
-    }
 
 }
 

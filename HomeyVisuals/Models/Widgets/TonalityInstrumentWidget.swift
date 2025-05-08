@@ -28,7 +28,7 @@ public final class TonalityInstrumentWidget: Widget {
 
     // MARK: — Private designated init
     private init(
-        forSlide slide: Slide,
+        slide: Slide,
         zIndex: Int,
         tonalityInstrument: TonalityInstrument
     ) {
@@ -41,11 +41,11 @@ public final class TonalityInstrumentWidget: Widget {
     // MARK: — Static factory for creation + persistence
     @MainActor
     public static func create(
-        forSlide slide: Slide,
+        slide: Slide,
         in modelContext: ModelContext
     ) -> TonalityInstrumentWidget {
         let widget = TonalityInstrumentWidget(
-            forSlide: slide,
+            slide: slide,
             zIndex:   slide.highestZ + 1,
             tonalityInstrument: TonalityInstrument(tonality: slide.tonality)
         )

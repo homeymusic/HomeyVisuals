@@ -15,6 +15,9 @@ struct WidgetShow: View {
             switch widget {
             case let textWidget as TextWidget:
                 TextWidgetShow(textWidget: textWidget)
+                
+            case let cameraWidget as CameraWidget:
+                CameraWidgetShow(cameraWidget: cameraWidget)
 
             case let musicalInstrumentWidget as MusicalInstrumentWidget:
                 MusicalInstrumentWidgetShow(musicalInstrumentWidget: musicalInstrumentWidget)

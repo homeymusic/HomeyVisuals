@@ -39,8 +39,8 @@ struct SlideInspect: View {
                                 Text(device.localizedName).tag(device.uniqueID)
                             }
                         }
-                        if let device = CameraView.device(for: slide.cameraDeviceID) {
-                            CameraView(device: device)
+                        if slide.cameraDeviceID != nil {
+                            CameraView(cameraDeviceID: slide.cameraDeviceID, isThumbnail: false)
                                 .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
                                 .clipped()
                         } else {

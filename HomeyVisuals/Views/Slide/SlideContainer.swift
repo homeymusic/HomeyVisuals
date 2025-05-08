@@ -63,7 +63,9 @@ struct SlideBackground: View {
         case .color:
             slide.backgroundColor
         case .cameraFeed:
-            CameraFeed(slide: slide, isThumbnail: isThumbnail)
+            CameraView(cameraDeviceID: slide.cameraDeviceID, isThumbnail: isThumbnail)
+                .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fill)
+                .clipped()
         }
     }
 }

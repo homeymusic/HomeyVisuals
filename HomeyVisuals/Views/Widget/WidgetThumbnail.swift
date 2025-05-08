@@ -17,6 +17,12 @@ struct WidgetThumbnail: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .position(x: textWidget.x, y: textWidget.y)
 
+            case let cameraWidget as CameraWidget:
+                CameraView(cameraDeviceID: cameraWidget.cameraDeviceID, isThumbnail: true)
+                    .position(x: cameraWidget.x, y: cameraWidget.y)
+                    .frame(width: cameraWidget.width, height: cameraWidget.height, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
+
             case let musicalInstrumentWidget as MusicalInstrumentWidget:
                 MusicalInstrumentView(musicalInstrumentWidget.musicalInstrument)
                     .position(x: musicalInstrumentWidget.x, y: musicalInstrumentWidget.y)

@@ -34,7 +34,7 @@ public final class MusicalInstrumentWidget: Widget {
 
     // MARK: — Private designated init
     private init(
-        forSlide slide: Slide,
+        slide: Slide,
         zIndex: Int,
         musicalInstrumentType: MusicalInstrumentType
     ) {
@@ -47,12 +47,12 @@ public final class MusicalInstrumentWidget: Widget {
     // MARK: — Static factory for creation + persistence
     @MainActor
     public static func create(
-        forSlide slide: Slide,
-        withType type: MusicalInstrumentType,
+        slide: Slide,
+        type: MusicalInstrumentType,
         in modelContext: ModelContext
     ) -> MusicalInstrumentWidget {
         let widget = MusicalInstrumentWidget(
-            forSlide: slide,
+            slide: slide,
             zIndex:   slide.highestZ + 1,
             musicalInstrumentType: type
         )

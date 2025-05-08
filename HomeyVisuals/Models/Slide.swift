@@ -31,6 +31,9 @@ public final class Slide: Identifiable {
     @Relationship(deleteRule: .cascade, inverse: \TextWidget.slide)
     public var textWidgets: [TextWidget] = []
     
+    @Relationship(deleteRule: .cascade, inverse: \CameraWidget.slide)
+    public var cameraWidgets: [CameraWidget] = []
+    
     @Relationship(deleteRule: .cascade, inverse: \MusicalInstrumentWidget.slide)
     public var musicalInstrumentWidgets: [MusicalInstrumentWidget] = []
     
@@ -57,6 +60,7 @@ public final class Slide: Identifiable {
     public var widgets: [any Widget] {
         (
             (textWidgets as [any Widget]) +
+            (cameraWidgets as [any Widget]) +
             (musicalInstrumentWidgets as [any Widget]) +
             (tonalityInstrumentWidgets as [any Widget])
         ).sorted { $0.z < $1.z }
@@ -153,6 +157,10 @@ public extension Slide {
             .sorted { $0.z < $1.z }
             .map { $0.widgetHash }
 
+        let cameraHashes = cameraWidgets
+            .sorted { $0.z < $1.z }
+            .map { $0.widgetHash }
+        
         let musicalInstrumentHashes = musicalInstrumentWidgets
             .sorted { $0.z < $1.z }
             .map { $0.widgetHash }
@@ -161,7 +169,7 @@ public extension Slide {
             .sorted { $0.z < $1.z }
             .map { $0.widgetHash }
         
-        let allHashes = textHashes + musicalInstrumentHashes + tonalityInstrumentHashes
+        let allHashes = textHashes + cameraHashes + musicalInstrumentHashes + tonalityInstrumentHashes
 
         return AnyHashable(base + [ AnyHashable(allHashes) ])
     }
