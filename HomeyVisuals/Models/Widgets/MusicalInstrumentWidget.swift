@@ -60,23 +60,50 @@ public final class MusicalInstrumentWidget: Widget {
 
         switch type {
         case .tonnetz:
-            let i = Tonnetz(tonality: slide.tonality);      modelContext.insert(i); widget.tonnetz      = i
+            let i = Tonnetz(tonality: slide.tonality)
+            modelContext.insert(i)
+            modelContext.ensureColorPalette(on: i)
+            widget.tonnetz      = i
         case .linear:
-            let i = Linear(tonality: slide.tonality);       modelContext.insert(i); widget.linear       = i
+            let i = Linear(tonality: slide.tonality)
+            modelContext.insert(i)
+            modelContext.ensureColorPalette(on: i)
+            widget.linear       = i
         case .diamanti:
-            let i = Diamanti(tonality: slide.tonality);     modelContext.insert(i); widget.diamanti     = i
+            let i = Diamanti(tonality: slide.tonality)
+            modelContext.insert(i)
+            modelContext.ensureColorPalette(on: i)
+            widget.diamanti     = i
         case .piano:
-            let i = Piano(tonality: slide.tonality);        modelContext.insert(i); widget.piano        = i
+            let i = Piano(tonality: slide.tonality)
+            modelContext.insert(i)
+            modelContext.ensureColorPalette(on: i)
+            widget.piano        = i
         case .violin:
-            let i = Violin(tonality: slide.tonality);       modelContext.insert(i); widget.violin       = i
+            let i = Violin(tonality: slide.tonality)
+            modelContext.insert(i)
+            modelContext.ensureColorPalette(on: i)
+            widget.violin       = i
         case .cello:
-            let i = Cello(tonality: slide.tonality);        modelContext.insert(i); widget.cello        = i
+            let i = Cello(tonality: slide.tonality)
+            modelContext.insert(i)
+            modelContext.ensureColorPalette(on: i)
+            widget.cello        = i
         case .bass:
-            let i = Bass(tonality: slide.tonality);         modelContext.insert(i); widget.bass         = i
+            let i = Bass(tonality: slide.tonality)
+            modelContext.insert(i)
+            modelContext.ensureColorPalette(on: i)
+            widget.bass         = i
         case .banjo:
-            let i = Banjo(tonality: slide.tonality);        modelContext.insert(i); widget.banjo        = i
+            let i = Banjo(tonality: slide.tonality)
+            modelContext.insert(i)
+            modelContext.ensureColorPalette(on: i)
+            widget.banjo        = i
         case .guitar:
-            let i = Guitar(tonality: slide.tonality);       modelContext.insert(i); widget.guitar       = i
+            let i = Guitar(tonality: slide.tonality)
+            modelContext.insert(i)
+            modelContext.ensureColorPalette(on: i)
+            widget.guitar       = i
         }
         
         return widget
