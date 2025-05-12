@@ -124,26 +124,6 @@ struct ContentView: View {
         }
         
         ToolbarItem(placement: .principal) {
-            Button {
-                addPitchDirectionPickerWidget()
-            } label: {
-                Label(TonalityControlType.pitchDirectionPicker.label.capitalized, systemImage: TonalityControlType.pitchDirectionPicker.icon)
-            }
-            .buttonStyle(.borderless)
-            .disabled(appContext.selectedSlide(in: slides) == nil)
-        }
-        
-        ToolbarItem(placement: .principal) {
-            Button {
-                addOctaveShifterWidget()
-            } label: {
-                Label(TonalityControlType.octaveShifter.label.capitalized, systemImage: TonalityControlType.octaveShifter.icon)
-            }
-            .buttonStyle(.borderless)
-            .disabled(appContext.selectedSlide(in: slides) == nil)
-        }
-        
-        ToolbarItem(placement: .principal) {
             Button(action: addTextWidget) {
                 Label("Text Box", systemImage: "character.textbox")
             }
