@@ -8,8 +8,7 @@ struct HomeyVisuals: App {
     // — all @State props, no inline defaults
     @State private var appContext: AppContext
     @State private var synthConductor: SynthConductor
-    @State private var musicalInstrumentCache: MusicalInstrumentCache
-    @State private var tonalityCache: TonalityCache
+    @State private var instrumentCache: InstrumentCache
     @State private var midiConductor: MIDIConductor
 
     let modelContainer: ModelContainer = {
@@ -20,21 +19,18 @@ struct HomeyVisuals: App {
     init() {
         let appContext = AppContext()
         let synthConductor = SynthConductor()
-        let musicalInstrumentCache = MusicalInstrumentCache()
-        let tonalityCache = TonalityCache()
+        let instrumentCache = InstrumentCache()
         let midiConductor = MIDIConductor(
             clientName:   "Homey Visuals",
             model:        "Homey Visuals macOS",
             manufacturer: "Homey Music",
-            musicalInstrumentCache: musicalInstrumentCache,
-            tonalityCache: tonalityCache
+            instrumentCache: instrumentCache
         )
         midiConductor.setup()
 
         _appContext      = State(initialValue: appContext)
         _synthConductor  = State(initialValue: synthConductor)
-        _musicalInstrumentCache = State(initialValue: musicalInstrumentCache)
-        _tonalityCache = State(initialValue: tonalityCache)
+        _instrumentCache = State(initialValue: instrumentCache)
         _midiConductor   = State(initialValue: midiConductor)
     }
     
@@ -42,8 +38,7 @@ struct HomeyVisuals: App {
         DocumentGroup(editing: Slide.self, contentType: .visuals) {
             ContentView()
                 .environment(appContext)
-                .environment(musicalInstrumentCache)
-                .environment(tonalityCache)
+                .environment(instrumentCache)
                 .environment(synthConductor)
                 .environment(midiConductor)
                 .modelContainer(modelContainer)

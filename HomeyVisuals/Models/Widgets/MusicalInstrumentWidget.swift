@@ -11,16 +11,16 @@ public final class MusicalInstrumentWidget: Widget {
     public var id: UUID
     public var slide: Slide?
     public var z: Int
-
+    
     // MARK: — Stored (relative, persisted)
     public var relativeX: Double = 0.5
     public var relativeY: Double = 0.5
     public var relativeWidth: Double = 1.0 / HomeyMusicKit.goldenRatio
     public var relativeHeight: Double = 1.0 / (2.0 * HomeyMusicKit.goldenRatio)
-
+    
     // MARK: — Content type
-    public var musicalInstrumentType: MusicalInstrumentType
-
+    public var musicalInstrumentType: MIDIInstrumentType
+    
     // MARK: — One-to-one persisted instrument relationships
     @Relationship(deleteRule: .cascade) public var tonnetz: Tonnetz?
     @Relationship(deleteRule: .cascade) public var linear: Linear?
@@ -31,24 +31,25 @@ public final class MusicalInstrumentWidget: Widget {
     @Relationship(deleteRule: .cascade) public var bass: Bass?
     @Relationship(deleteRule: .cascade) public var banjo: Banjo?
     @Relationship(deleteRule: .cascade) public var guitar: Guitar?
-
+    
     // MARK: — Private designated init
     private init(
         slide: Slide,
         zIndex: Int,
-        musicalInstrumentType: MusicalInstrumentType
+        musicalInstrumentType: MIDIInstrumentType
     ) {
         self.id               = UUID()
         self.slide            = slide
         self.z                = zIndex
         self.musicalInstrumentType = musicalInstrumentType
     }
-
+    
     // MARK: — Static factory for creation + persistence
     @MainActor
     public static func create(
         slide: Slide,
-        type: MusicalInstrumentType,
+        type: MIDIInstrumentType,
+        midiConductor: MIDIConductor,
         in modelContext: ModelContext
     ) -> MusicalInstrumentWidget {
         let widget = MusicalInstrumentWidget(
@@ -57,7 +58,7 @@ public final class MusicalInstrumentWidget: Widget {
             musicalInstrumentType: type
         )
         modelContext.insert(widget)
-
+        
         switch type {
         case .tonnetz:
             let i = Tonnetz(tonality: slide.tonality)
@@ -104,14 +105,16 @@ public final class MusicalInstrumentWidget: Widget {
             modelContext.insert(i)
             modelContext.ensureColorPalette(on: i)
             widget.guitar       = i
+        case .tonality:
+            fatalError("tonality not supported")
         }
-        
+        widget.musicalInstrument.midiConductor = midiConductor
         return widget
     }
-
+    
     public var musicalInstrument: any MusicalInstrument {
         let musicalInstrument: any MusicalInstrument = {
-          switch musicalInstrumentType {
+            switch musicalInstrumentType {
             case .tonnetz:      return tonnetz!
             case .linear:       return linear!
             case .diamanti:     return diamanti!
@@ -121,11 +124,13 @@ public final class MusicalInstrumentWidget: Widget {
             case .bass:         return bass!
             case .banjo:        return banjo!
             case .guitar:       return guitar!
-          }
+            case .tonality:
+                fatalError("tonality not supported")
+            }
         }()
-
+        
         return musicalInstrument
-      }
+    }
 }
 
 extension MusicalInstrumentWidget {

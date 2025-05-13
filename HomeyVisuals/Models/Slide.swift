@@ -49,7 +49,13 @@ public final class Slide: Identifiable {
     }
     
     @MainActor
+    var tonalityInstruments: [TonalityInstrument] {
+      tonalityInstrumentWidgets.map { $0.tonalityInstrument }
+    }
+    
+    @MainActor
     var tonalities: [Tonality] {
+        print("tonalityInstrumentWidgets", tonalityInstrumentWidgets)
         let all = musicalInstrumentWidgets.map(\.musicalInstrument.tonality) + tonalityInstrumentWidgets.map(\.tonalityInstrument.tonality)
         var seen = Set<ObjectIdentifier>()
         return all.filter {

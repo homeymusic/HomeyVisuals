@@ -42,6 +42,7 @@ public final class TonalityInstrumentWidget: Widget {
     @MainActor
     public static func create(
         slide: Slide,
+        midiConductor: MIDIConductor,
         in modelContext: ModelContext
     ) -> TonalityInstrumentWidget {
         let widget = TonalityInstrumentWidget(
@@ -50,7 +51,7 @@ public final class TonalityInstrumentWidget: Widget {
             tonalityInstrument: TonalityInstrument(tonality: slide.tonality)
         )
         modelContext.insert(widget)
-        
+        widget.tonalityInstrument.midiConductor = midiConductor
         return widget
     }
     

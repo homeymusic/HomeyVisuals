@@ -86,15 +86,13 @@ struct SlidePresentation: View {
         slides: [Slide],
         startIndex: Int,
         appContext: AppContext,
-        musicalInstrumentCache: MusicalInstrumentCache,
-        tonalityCache: TonalityCache,
+        instrumentCache: InstrumentCache,
         synthConductor: SynthConductor,
         midiConductor: MIDIConductor
     ) {
         let view = SlidePresentation(slides: slides, startIndex: startIndex)
             .environment(appContext)
-            .environment(musicalInstrumentCache)
-            .environment(tonalityCache)
+            .environment(instrumentCache)
             .environment(synthConductor)
             .environment(midiConductor)
         

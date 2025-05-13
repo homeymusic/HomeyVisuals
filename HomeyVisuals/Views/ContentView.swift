@@ -8,8 +8,7 @@ import AppKit
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(AppContext.self) var appContext
-    @Environment(MusicalInstrumentCache.self)  private var musicalInstrumentCache
-    @Environment(TonalityCache.self) private var tonalityCache
+    @Environment(InstrumentCache.self)  private var instrumentCache
     @Environment(MIDIConductor.self)  private var midiConductor
     @Environment(SynthConductor.self)  private var synthConductor
 
@@ -62,16 +61,16 @@ struct ContentView: View {
                     }()
 
                     if let musicalInstrumentChosenByWidgetSelection = musicalInstrumentFromCurrentlySelectedWidget {
-                        musicalInstrumentCache.selectMusicalInstrument(musicalInstrumentChosenByWidgetSelection)
+                        instrumentCache.selectInstrument(musicalInstrumentChosenByWidgetSelection)
                     }
                     // 2) Otherwise, fall back to the very first instrument on the currently selected slide
                     else if let slideThatIsCurrentlySelected = appContext.selectedSlide(in: slides),
                             let firstMusicalInstrumentOnThatSlide = slideThatIsCurrentlySelected.musicalInstruments.first {
-                        musicalInstrumentCache.selectMusicalInstrument(firstMusicalInstrumentOnThatSlide)
+                        instrumentCache.selectInstrument(firstMusicalInstrumentOnThatSlide)
                     }
                     // 3) If neither yields an instrument, clear the cache’s selection
                     else {
-                        musicalInstrumentCache.selectMusicalInstrument(nil)
+                        instrumentCache.selectInstrument(nil)
                     }
                 }
             }
@@ -102,7 +101,7 @@ struct ContentView: View {
         }
         
         ToolbarItemGroup(placement: .principal) {
-            ForEach(MusicalInstrumentType.allInstruments) { choice in
+            ForEach(MIDIInstrumentType.allInstruments) { choice in
                 Button {
                     addMusicalInstrumentWidget(instrumentType: choice)
                 } label: {
@@ -171,8 +170,7 @@ struct ContentView: View {
             slides:           slides,
             startIndex:       index,
             appContext:       appContext,
-            musicalInstrumentCache:  musicalInstrumentCache,
-            tonalityCache: tonalityCache,
+            instrumentCache:  instrumentCache,
             synthConductor:   synthConductor,
             midiConductor:    midiConductor
           )
@@ -202,11 +200,12 @@ struct ContentView: View {
         appContext.widgetSelections = [ widget.id ]
     }
     
-    private func addMusicalInstrumentWidget(instrumentType: MusicalInstrumentType) {
+    private func addMusicalInstrumentWidget(instrumentType: MIDIInstrumentType) {
         guard let slide = appContext.selectedSlide(in: slides) else { return }
         let widget = MusicalInstrumentWidget.create(
             slide: slide,
             type: instrumentType,
+            midiConductor: midiConductor,
             in: modelContext
         )
         
@@ -221,6 +220,7 @@ struct ContentView: View {
         guard let slide = appContext.selectedSlide(in: slides) else { return }
         let widget = TonalityInstrumentWidget.create(
             slide: slide,
+            midiConductor: midiConductor,
             in: modelContext
         )
         
@@ -234,6 +234,7 @@ struct ContentView: View {
         guard let slide = appContext.selectedSlide(in: slides) else { return }
         let widget = TonalityInstrumentWidget.create(
             slide: slide,
+            midiConductor: midiConductor,
             in: modelContext
         )
         
@@ -247,6 +248,7 @@ struct ContentView: View {
         guard let slide = appContext.selectedSlide(in: slides) else { return }
         let widget = TonalityInstrumentWidget.create(
             slide: slide,
+            midiConductor: midiConductor,
             in: modelContext
         )
         
