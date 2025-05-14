@@ -54,6 +54,12 @@ struct MusicalInstrumentWidgetInspect: View {
                 }
                 
                 SectionView(title: "Audio and MIDI") {
+                    Toggle(isOn: pitchBinding(for: PitchLabelType.midi)) {
+                        HStack { PitchLabelType.midi.image; Text(PitchLabelType.midi.label) }
+                    }
+                    Toggle(isOn: showMIDIVelocityBinding) {
+                        Label("MIDI Velocity", systemImage: "gauge.with.dots.needle.67percent")
+                    }
                     Toggle(isOn: playSynthBinding) {
                         Label("Play Synthesizer", systemImage: "speaker.wave.2")
                     }
@@ -259,6 +265,29 @@ struct MusicalInstrumentWidgetInspect: View {
             }
         )
     }
+    
+    private var showMIDINoteBinding: Binding<Bool> {
+        Binding(
+            get: {
+                musicalInstrumentWidget.musicalInstrument.pitchLabelTypes.contains(.midi)
+            },
+            set: { newValue in
+                musicalInstrumentWidget.musicalInstrument.showMIDIVelocity = newValue
+            }
+        )
+    }
+    
+    private var showMIDIVelocityBinding: Binding<Bool> {
+        Binding(
+            get: {
+                musicalInstrumentWidget.musicalInstrument.showMIDIVelocity
+            },
+            set: { newValue in
+                musicalInstrumentWidget.musicalInstrument.showMIDIVelocity = newValue
+            }
+        )
+    }
+
 }
 private struct SectionView<Content: View>: View {
     let title: String
