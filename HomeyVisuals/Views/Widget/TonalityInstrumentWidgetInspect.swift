@@ -68,7 +68,7 @@ struct TonalityInstrumentWidgetInspect: View {
                 Divider()
 
                 SectionView(title: "Pitch Notation") {
-                    ForEach(PitchLabelType.pitchCases, id: \.self) { type in
+                    ForEach(PitchLabelType.allCases, id: \.self) { type in
                         if type != .accidentals {
                             Toggle(isOn: pitchBinding(for: type)) {
                                 HStack { type.image; Text(type.label) }
