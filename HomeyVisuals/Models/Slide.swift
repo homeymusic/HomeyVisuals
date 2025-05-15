@@ -40,6 +40,9 @@ public final class Slide: Identifiable {
     @Relationship(deleteRule: .cascade, inverse: \TonalityInstrumentWidget.slide)
     public var tonalityInstrumentWidgets: [TonalityInstrumentWidget] = []
     
+    @Relationship(deleteRule: .cascade, inverse: \TonicPitchStatusWidget.slide)
+    public var tonicPitchStatusWidget: [TonicPitchStatusWidget] = []    
+    
     @Relationship
     public var tonality: Tonality
 
@@ -50,7 +53,8 @@ public final class Slide: Identifiable {
     
     @MainActor
     var tonalityInstruments: [TonalityInstrument] {
-      tonalityInstrumentWidgets.map { $0.tonalityInstrument }
+        tonalityInstrumentWidgets.map { $0.tonalityInstrument } +
+        tonicPitchStatusWidget.map { $0.tonalityInstrument }
     }
     
     @MainActor
@@ -68,7 +72,8 @@ public final class Slide: Identifiable {
             (textWidgets as [any Widget]) +
             (cameraWidgets as [any Widget]) +
             (musicalInstrumentWidgets as [any Widget]) +
-            (tonalityInstrumentWidgets as [any Widget])
+            (tonalityInstrumentWidgets as [any Widget]) +
+            (tonicPitchStatusWidget as [any Widget]) 
         ).sorted { $0.z < $1.z }
     }
     

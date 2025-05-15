@@ -35,6 +35,12 @@ struct WidgetThumbnail: View {
                     .frame(width: tonalityInstrumentWidget.width, height: tonalityInstrumentWidget.height, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
 
+            case let tonicPitchStatusWidget as TonicPitchStatusWidget:
+                TonicPitchStatusView(tonicPitchStatusWidget.tonalityInstrument)
+                    .position(x: tonicPitchStatusWidget.x, y: tonicPitchStatusWidget.y)
+                    .frame(width: tonicPitchStatusWidget.width, height: tonicPitchStatusWidget.height, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                
             default:
                 EmptyView()
             }

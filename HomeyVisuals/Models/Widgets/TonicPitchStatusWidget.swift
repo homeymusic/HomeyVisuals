@@ -5,8 +5,8 @@ import CoreGraphics
 import HomeyMusicKit
 
 @Model
-public final class TonalityInstrumentWidget: Widget {
-    #Unique<TonalityInstrumentWidget>([\.id], [\.slide, \.z])
+public final class TonicPitchStatusWidget: Widget {
+    #Unique<TonicPitchStatusWidget>([\.id], [\.slide, \.z])
     
     // MARK: — Identity & Z-order
     public var id: UUID
@@ -39,21 +39,25 @@ public final class TonalityInstrumentWidget: Widget {
         slide: Slide,
         midiConductor: MIDIConductor,
         in modelContext: ModelContext
-    ) -> TonalityInstrumentWidget {
-        let widget = TonalityInstrumentWidget(
+    ) -> TonicPitchStatusWidget {
+        let widget = TonicPitchStatusWidget(
             slide: slide,
             zIndex:   slide.highestZ + 1,
-            tonalityInstrument: TonalityInstrument(tonality: slide.tonality)
+            tonalityInstrument: TonalityInstrument(
+                tonality: slide.tonality,
+            )
         )
         modelContext.insert(widget)
         modelContext.ensureColorPalette(on: widget.tonalityInstrument)
         widget.tonalityInstrument.midiConductor = midiConductor
+        widget.tonalityInstrument.pitchLabelTypes = [ .letter, .octave]
+        widget.tonalityInstrument.intervalLabelTypes = [ .symbol ]
         return widget
     }
     
 }
 
-extension TonalityInstrumentWidget {
+extension TonicPitchStatusWidget {
     /// Include geometry + content in the hash snapshot.
     public var widgetHash: AnyHashable {
         let arr = Self.baseHashElements(of: self as! Self)

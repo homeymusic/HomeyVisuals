@@ -25,6 +25,9 @@ struct WidgetShow: View {
             case let tonalityInstrumentWidget as TonalityInstrumentWidget:
                 TonalityInstrumentWidgetShow(tonalityInstrumentWidget: tonalityInstrumentWidget)
                 
+            case let tonicPitchStatusWidget as TonicPitchStatusWidget:
+                TonicPitchStatusWidgetShow(tonicPitchStatusWidget: tonicPitchStatusWidget)
+
             default:
                 EmptyView()
             }

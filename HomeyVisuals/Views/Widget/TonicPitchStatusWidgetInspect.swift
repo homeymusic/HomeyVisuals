@@ -3,8 +3,8 @@ import SwiftData
 import MIDIKitCore
 import HomeyMusicKit
 
-struct TonalityInstrumentWidgetInspect: View {
-    @Bindable var tonalityInstrumentWidget: TonalityInstrumentWidget
+struct TonicPitchStatusWidgetInspect: View {
+    @Bindable var tonicPitchStatusWidget: TonicPitchStatusWidget
 
     @Query(sort: \IntervalColorPalette.position, order: .forward)
     private var intervalColorPalettes: [IntervalColorPalette]
@@ -16,21 +16,11 @@ struct TonalityInstrumentWidgetInspect: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 
-                SectionView(title: "Tonality Layout") {
-                    Picker("Layout", selection: layoutBinding) {
-                        ForEach(TonalityInstrumentLayoutType.allCases, id: \.self) { layout in
-                            layout.image
-                                .tag(layout)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                }
-                
                 SectionView(title: "Color Palette") {
                     VStack(spacing: 4) {
                         ForEach(intervalColorPalettes, id: \.self) { palette in
                             ColorPaletteGridRow(
-                                tonalityInstrument: tonalityInstrumentWidget.tonalityInstrument,
+                                tonalityInstrument: tonicPitchStatusWidget.tonalityInstrument,
                                 colorPalette: palette
                             )
                         }
@@ -50,7 +40,7 @@ struct TonalityInstrumentWidgetInspect: View {
 
                         ForEach(pitchColorPalettes, id: \.self) { palette in
                             ColorPaletteGridRow(
-                                tonalityInstrument: tonalityInstrumentWidget.tonalityInstrument,
+                                tonalityInstrument: tonicPitchStatusWidget.tonalityInstrument,
                                 colorPalette: palette
                             )
                         }
@@ -79,14 +69,6 @@ struct TonalityInstrumentWidgetInspect: View {
                     .pickerStyle(.menu)
                 }
                 
-                SectionView(title: "Tonality Controls") {
-                    ForEach(TonalityControlType.allCases, id: \.self) { type in
-                        Toggle(isOn: tonalityControlBinding(for: type)) {
-                            HStack { type.image; Text(type.label) }
-                        }
-                    }
-                }               
-
                 SectionView(title: "Interval Notation") {
                     ForEach(IntervalLabelType.allCases, id: \.self) { type in
                         if type == .symbol { Divider() }
@@ -99,7 +81,7 @@ struct TonalityInstrumentWidgetInspect: View {
                 Divider()
 
                 SectionView(title: "Pitch Notation") {
-                    ForEach(PitchLabelType.allCases, id: \.self) { type in
+                    ForEach(PitchLabelType.pitchCases, id: \.self) { type in
                         if type != .accidentals {
                             Toggle(isOn: pitchBinding(for: type)) {
                                 HStack { type.image; Text(type.label) }
@@ -134,22 +116,22 @@ struct TonalityInstrumentWidgetInspect: View {
     private var midiInSelection: Binding<ChannelPickerValue> {
         Binding<ChannelPickerValue>(
             get: {
-                switch tonalityInstrumentWidget.tonalityInstrument.midiInChannelMode {
+                switch tonicPitchStatusWidget.tonalityInstrument.midiInChannelMode {
                 case .all: .all
                 case .none: .none
                 case .selected:
-                    .selected(Int(tonalityInstrumentWidget.tonalityInstrument.midiInChannel.rawValue) + 1)
+                    .selected(Int(tonicPitchStatusWidget.tonalityInstrument.midiInChannel.rawValue) + 1)
                 }
             },
             set: { newValue in
                 switch newValue {
                 case .all:
-                    tonalityInstrumentWidget.tonalityInstrument.midiInChannelMode = .all
+                    tonicPitchStatusWidget.tonalityInstrument.midiInChannelMode = .all
                 case .none:
-                    tonalityInstrumentWidget.tonalityInstrument.midiInChannelMode = .none
+                    tonicPitchStatusWidget.tonalityInstrument.midiInChannelMode = .none
                 case .selected(let channel):
-                    tonalityInstrumentWidget.tonalityInstrument.midiInChannelMode = .selected
-                    tonalityInstrumentWidget.tonalityInstrument.midiInChannel =
+                    tonicPitchStatusWidget.tonalityInstrument.midiInChannelMode = .selected
+                    tonicPitchStatusWidget.tonalityInstrument.midiInChannel =
                         MIDIChannel(rawValue: MIDIChannelNumber(channel - 1)) ?? .default
                 }
             }
@@ -159,22 +141,22 @@ struct TonalityInstrumentWidgetInspect: View {
     private var midiOutSelection: Binding<ChannelPickerValue> {
         Binding<ChannelPickerValue>(
             get: {
-                switch tonalityInstrumentWidget.tonalityInstrument.midiOutChannelMode {
+                switch tonicPitchStatusWidget.tonalityInstrument.midiOutChannelMode {
                 case .all: .all
                 case .none: .none
                 case .selected:
-                    .selected(Int(tonalityInstrumentWidget.tonalityInstrument.midiOutChannel.rawValue) + 1)
+                    .selected(Int(tonicPitchStatusWidget.tonalityInstrument.midiOutChannel.rawValue) + 1)
                 }
             },
             set: { newValue in
                 switch newValue {
                 case .all:
-                    tonalityInstrumentWidget.tonalityInstrument.midiOutChannelMode = .all
+                    tonicPitchStatusWidget.tonalityInstrument.midiOutChannelMode = .all
                 case .none:
-                    tonalityInstrumentWidget.tonalityInstrument.midiOutChannelMode = .none
+                    tonicPitchStatusWidget.tonalityInstrument.midiOutChannelMode = .none
                 case .selected(let channel):
-                    tonalityInstrumentWidget.tonalityInstrument.midiOutChannelMode = .selected
-                    tonalityInstrumentWidget.tonalityInstrument.midiOutChannel =
+                    tonicPitchStatusWidget.tonalityInstrument.midiOutChannelMode = .selected
+                    tonicPitchStatusWidget.tonalityInstrument.midiOutChannel =
                         MIDIChannel(rawValue: MIDIChannelNumber(channel - 1)) ?? .default
                 }
             }
@@ -184,9 +166,9 @@ struct TonalityInstrumentWidgetInspect: View {
     
     private var outlineBinding: Binding<Bool> {
         Binding<Bool>(
-            get: { tonalityInstrumentWidget.tonalityInstrument.showOutlines },
+            get: { tonicPitchStatusWidget.tonalityInstrument.showOutlines },
             set: { newValue in
-                tonalityInstrumentWidget.tonalityInstrument.showOutlines = newValue
+                tonicPitchStatusWidget.tonalityInstrument.showOutlines = newValue
             }
         )
     }
@@ -196,10 +178,10 @@ struct TonalityInstrumentWidgetInspect: View {
     private var intervalColorPaletteBinding: Binding<IntervalColorPalette?> {
         Binding<IntervalColorPalette?>(
             get: {
-                tonalityInstrumentWidget.tonalityInstrument.intervalColorPalette
+                tonicPitchStatusWidget.tonalityInstrument.intervalColorPalette
             },
             set: { newValue in
-                tonalityInstrumentWidget.tonalityInstrument.intervalColorPalette = newValue
+                tonicPitchStatusWidget.tonalityInstrument.intervalColorPalette = newValue
             }
         )
     }
@@ -207,10 +189,10 @@ struct TonalityInstrumentWidgetInspect: View {
     private var pitchColorPaletteBinding: Binding<PitchColorPalette?> {
         Binding<PitchColorPalette?>(
             get: {
-                tonalityInstrumentWidget.tonalityInstrument.pitchColorPalette
+                tonicPitchStatusWidget.tonalityInstrument.pitchColorPalette
             },
             set: { newValue in
-                tonalityInstrumentWidget.tonalityInstrument.pitchColorPalette = newValue
+                tonicPitchStatusWidget.tonalityInstrument.pitchColorPalette = newValue
             }
         )
     }
@@ -220,13 +202,13 @@ struct TonalityInstrumentWidgetInspect: View {
     private func tonalityControlBinding(for type: TonalityControlType) -> Binding<Bool> {
         Binding(
             get: {
-                tonalityInstrumentWidget.tonalityInstrument.tonalityControlTypes.contains(type)
+                tonicPitchStatusWidget.tonalityInstrument.tonalityControlTypes.contains(type)
             },
             set: { isOn in
                 if isOn {
-                    tonalityInstrumentWidget.tonalityInstrument.tonalityControlTypes.insert(type)
+                    tonicPitchStatusWidget.tonalityInstrument.tonalityControlTypes.insert(type)
                 } else {
-                    tonalityInstrumentWidget.tonalityInstrument.tonalityControlTypes.remove(type)
+                    tonicPitchStatusWidget.tonalityInstrument.tonalityControlTypes.remove(type)
                 }
             }
         )
@@ -235,13 +217,13 @@ struct TonalityInstrumentWidgetInspect: View {
     private func intervalBinding(for type: IntervalLabelType) -> Binding<Bool> {
         Binding(
             get: {
-                tonalityInstrumentWidget.tonalityInstrument.intervalLabelTypes.contains(type)
+                tonicPitchStatusWidget.tonalityInstrument.intervalLabelTypes.contains(type)
             },
             set: { isOn in
                 if isOn {
-                    tonalityInstrumentWidget.tonalityInstrument.intervalLabelTypes.insert(type)
+                    tonicPitchStatusWidget.tonalityInstrument.intervalLabelTypes.insert(type)
                 } else {
-                    tonalityInstrumentWidget.tonalityInstrument.intervalLabelTypes.remove(type)
+                    tonicPitchStatusWidget.tonalityInstrument.intervalLabelTypes.remove(type)
                 }
             }
         )
@@ -250,13 +232,13 @@ struct TonalityInstrumentWidgetInspect: View {
     private func pitchBinding(for type: PitchLabelType) -> Binding<Bool> {
         Binding(
             get: {
-                tonalityInstrumentWidget.tonalityInstrument.pitchLabelTypes.contains(type)
+                tonicPitchStatusWidget.tonalityInstrument.pitchLabelTypes.contains(type)
             },
             set: { isOn in
                 if isOn {
-                    tonalityInstrumentWidget.tonalityInstrument.pitchLabelTypes.insert(type)
+                    tonicPitchStatusWidget.tonalityInstrument.pitchLabelTypes.insert(type)
                 } else {
-                    tonalityInstrumentWidget.tonalityInstrument.pitchLabelTypes.remove(type)
+                    tonicPitchStatusWidget.tonalityInstrument.pitchLabelTypes.remove(type)
                 }
             }
         )
@@ -265,10 +247,10 @@ struct TonalityInstrumentWidgetInspect: View {
     private var accidentalBinding: Binding<Accidental> {
         Binding(
             get: {
-                tonalityInstrumentWidget.tonalityInstrument.accidental
+                tonicPitchStatusWidget.tonalityInstrument.accidental
             },
             set: {
-                tonalityInstrumentWidget.tonalityInstrument.accidental = $0
+                tonicPitchStatusWidget.tonalityInstrument.accidental = $0
             }
         )
     }
@@ -276,10 +258,10 @@ struct TonalityInstrumentWidgetInspect: View {
     private var showMIDINoteBinding: Binding<Bool> {
         Binding(
             get: {
-                tonalityInstrumentWidget.tonalityInstrument.pitchLabelTypes.contains(.midi)
+                tonicPitchStatusWidget.tonalityInstrument.pitchLabelTypes.contains(.midi)
             },
             set: { newValue in
-                tonalityInstrumentWidget.tonalityInstrument.showMIDIVelocity = newValue
+                tonicPitchStatusWidget.tonalityInstrument.showMIDIVelocity = newValue
             }
         )
     }
@@ -287,10 +269,10 @@ struct TonalityInstrumentWidgetInspect: View {
     private var layoutBinding: Binding<TonalityInstrumentLayoutType> {
         Binding(
             get: {
-                tonalityInstrumentWidget.tonalityInstrument.tonalityInstrumentLayoutType
+                tonicPitchStatusWidget.tonalityInstrument.tonalityInstrumentLayoutType
             },
             set: {
-                tonalityInstrumentWidget.tonalityInstrument.tonalityInstrumentLayoutType = $0
+                tonicPitchStatusWidget.tonalityInstrument.tonalityInstrumentLayoutType = $0
                 buzz()
             }
         )

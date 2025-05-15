@@ -42,6 +42,8 @@ struct ContentView: View {
                             MusicalInstrumentWidgetInspect(musicalInstrumentWidget: musicalInstrumentWidget)
                         case let tonalityInstrumentWidget as TonalityInstrumentWidget:
                             TonalityInstrumentWidgetInspect(tonalityInstrumentWidget: tonalityInstrumentWidget)
+                        case let tonicPitchStatusWidget as TonicPitchStatusWidget:
+                            TonicPitchStatusWidgetInspect(tonicPitchStatusWidget: tonicPitchStatusWidget)
                         default:
                             EmptyView()
                         }
@@ -117,6 +119,16 @@ struct ContentView: View {
                 addTonalityInstrumentWidget()
             } label: {
                 Label(TonalityControlType.tonicPicker.label.capitalized, systemImage: TonalityControlType.tonicPicker.icon)
+            }
+            .buttonStyle(.borderless)
+            .disabled(appContext.selectedSlide(in: slides) == nil)
+        }
+        
+        ToolbarItem(placement: .principal) {
+            Button {
+                addTonicPitchStatusWidget()
+            } label: {
+                TonalityStatusType.tonic.image
             }
             .buttonStyle(.borderless)
             .disabled(appContext.selectedSlide(in: slides) == nil)
@@ -230,6 +242,20 @@ struct ContentView: View {
         appContext.widgetSelections = [ widget.id ]
     }
         
+    private func addTonicPitchStatusWidget() {
+        guard let slide = appContext.selectedSlide(in: slides) else { return }
+        let widget = TonicPitchStatusWidget.create(
+            slide: slide,
+            midiConductor: midiConductor,
+            in: modelContext
+        )
+        
+        withAnimation {
+            slide.tonicPitchStatusWidget.append(widget)
+        }
+        appContext.widgetSelections = [ widget.id ]
+    }
+
     private func addPitchDirectionPickerWidget() {
         guard let slide = appContext.selectedSlide(in: slides) else { return }
         let widget = TonalityInstrumentWidget.create(

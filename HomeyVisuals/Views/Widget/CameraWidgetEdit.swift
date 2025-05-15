@@ -18,6 +18,6 @@ struct CameraWidgetEdit: View {
             isThumbnail: false
         )
         .clipped()
-        .allowsHitTesting(isEditing)
+        .allowsHitTesting(false)
     }
 }

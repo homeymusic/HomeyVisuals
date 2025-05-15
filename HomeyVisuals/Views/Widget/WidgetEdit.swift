@@ -32,6 +32,11 @@ struct WidgetEdit: View {
                     TonalityInstrumentWidgetEdit(tonalityInstrumentWidget: tonalityInstrumentWidget)
                 }
             }
+            else if let tonicPitchStatusWidget = widget as? TonicPitchStatusWidget {
+                makeEditableWidgetContainer(for: tonicPitchStatusWidget, allowEditing: false) {
+                    TonicPitchStatusWidgetEdit(tonicPitchStatusWidget: tonicPitchStatusWidget)
+                }
+            }
             else {
                 EmptyView()
             }
