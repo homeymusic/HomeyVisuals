@@ -17,7 +17,13 @@ struct TonalityInstrumentWidgetInspect: View {
             VStack(alignment: .leading, spacing: 24) {
                 
                 SectionView(title: "Keyboard Layout") {
-                    Text("TODO: add the ability to toggle between piano view and homey music view")
+                    Picker("Layout", selection: layoutBinding) {
+                        ForEach(TonalityInstrumentLayoutType.allCases, id: \.self) { layout in
+                            layout.image
+                                .tag(layout)
+                        }
+                    }
+                    .pickerStyle(.segmented)
                 }
                 
                 SectionView(title: "Audio and MIDI") {
@@ -247,6 +253,17 @@ struct TonalityInstrumentWidgetInspect: View {
         )
     }
     
+    private var layoutBinding: Binding<TonalityInstrumentLayoutType> {
+        Binding(
+            get: {
+                tonalityInstrumentWidget.tonalityInstrument.tonalityInstrumentLayoutType
+            },
+            set: {
+                tonalityInstrumentWidget.tonalityInstrument.tonalityInstrumentLayoutType = $0
+                buzz()
+            }
+        )
+    }
 }
 private struct SectionView<Content: View>: View {
     let title: String
