@@ -13,15 +13,10 @@ public final class TonalityInstrumentWidget: Widget {
     public var slide: Slide?
     public var z: Int
 
-    // MARK: — Stored (relative, persisted)
-    /// 0…1 fraction of slide width
     public var relativeX: Double = 0.5
-    /// 0…1 fraction of slide height
     public var relativeY: Double = 0.5
-    /// 0…1 fraction of slide width
-    public var relativeWidth: Double = 1.0 / (2.0 * HomeyMusicKit.goldenRatio)
-    /// 0…1 fraction of slide height
-    public var relativeHeight: Double = 1.0 / (8.0 * HomeyMusicKit.goldenRatio)
+    public var relativeWidth: Double = 1.0 / HomeyMusicKit.goldenRatio
+    public var relativeHeight: Double = 1.0 / (4.0 * HomeyMusicKit.goldenRatio)
 
     // MARK: — One-to-one persisted instrument relationships
     @Relationship(deleteRule: .cascade) public var tonalityInstrument: TonalityInstrument

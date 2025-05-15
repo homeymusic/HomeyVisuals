@@ -21,15 +21,24 @@ public final class CameraWidget: Widget {
     
     // MARK: — Init
     public init(
-        slide: Slide? = nil,
-        z: Int = 0,
-        cameraDeviceID: String? = nil
+        slide: Slide?,
+        z: Int,
+        cameraDeviceID: String?
     ) {
         self.id               = UUID()
         self.slide            = slide
         self.z                = z
         self.cameraDeviceID   = cameraDeviceID
     }
+    
+    public convenience init(slide: Slide, cameraDeviceID: String? = nil) {
+        self.init(
+            slide: slide,
+            z: slide.highestZ + 1,
+            cameraDeviceID: cameraDeviceID
+        )
+    }
+
     
 }
 
