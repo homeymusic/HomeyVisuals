@@ -1,16 +1,16 @@
 import SwiftUI
 import HomeyMusicKit
 
-/// Wrap any slide content in the proper letterbox→scale logic,
-/// avoiding zero-size transforms in full-screen.
+/// Wrap any slide content in the proper letterbox→scale logic.
 struct SlideContainer<Content: View>: View {
     @Environment(AppContext.self) private var appContext
     @Environment(InstrumentCache.self) private var instrumentCache
-
+    
     @Bindable var slide: Slide
     let isThumbnail: Bool
     @ViewBuilder let content: (CGFloat) -> Content
-
+    
+    /// You can omit `isThumbnail` when you want full-screen/edit mode.
     init(
         slide: Slide,
         isThumbnail: Bool = false,
@@ -20,19 +20,20 @@ struct SlideContainer<Content: View>: View {
         self.isThumbnail = isThumbnail
         self.content     = content
     }
-
+    
     var body: some View {
         GeometryReader { geo in
+            // 1) Compute the scale that fits your slide into the container
             let letterbox = slide.size
-            // only compute a custom scale if we have a real container size
-            let hasValidSize = geo.size.width > 0 && geo.size.height > 0
-            let rawScale = min(
-                geo.size.width  / letterbox.width,
-                geo.size.height / letterbox.height
+            let scale = max(
+                min(
+                    geo.size.width  / letterbox.width,
+                    geo.size.height / letterbox.height
+                ),
+                .leastNonzeroMagnitude
             )
-            // fallback to 1 until we get a non-zero layout
-            let scale = hasValidSize ? rawScale : 1
-
+            
+            // 2) Kick the scale into AppContext any time it changes
             ZStack(alignment: .topLeading) {
                 SlideBackground(slide: slide, isThumbnail: isThumbnail)
                 content(scale)
@@ -44,10 +45,11 @@ struct SlideContainer<Content: View>: View {
             .onAppear {
                 instrumentCache.set(slide.musicalInstruments + slide.tonalityInstruments)
             }
-            .onChange(of: slide.reloadTrigger) { _ in
+            .onChange(of: slide.reloadTrigger) {
                 instrumentCache.set(slide.musicalInstruments + slide.tonalityInstruments)
             }
             .onDisappear {
+                // slide was removed from the hierarchy (i.e. deleted)
                 instrumentCache.set([])
             }
         }
@@ -59,19 +61,16 @@ struct SlideContainer<Content: View>: View {
 struct SlideBackground: View {
     let slide: Slide
     let isThumbnail: Bool
-
+    
     var body: some View {
         switch slide.backgroundType {
         case .color:
             slide.backgroundColor
-
         case .cameraFeed:
-            CameraView(
-                cameraDeviceID: slide.cameraDeviceID,
-                isThumbnail: isThumbnail
-            )
-            .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fill)
-            .clipped()
+            CameraView(cameraDeviceID: slide.cameraDeviceID, isThumbnail: isThumbnail)
+                .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fill)
+                .clipped()
         }
     }
 }
+
