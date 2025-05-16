@@ -37,6 +37,11 @@ struct WidgetEdit: View {
                     TonicPitchStatusWidgetEdit(tonicPitchStatusWidget: tonicPitchStatusWidget)
                 }
             }
+            else if let midiMonitorWidget = widget as? MIDIMonitorWidget {
+                makeEditableWidgetContainer(for: midiMonitorWidget) {
+                    MIDIMonitorWidgetEdit(midiMonitorWidget: midiMonitorWidget)
+                }
+            }
             else {
                 EmptyView()
             }

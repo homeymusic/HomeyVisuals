@@ -41,6 +41,12 @@ struct WidgetThumbnail: View {
                     .frame(width: tonicPitchStatusWidget.width, height: tonicPitchStatusWidget.height, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
                 
+            case let midiMonitorWidget as MIDIMonitorWidget:
+                MIDIMonitorView(midiMonitorWidget.tonalityInstrument)
+                    .position(x: midiMonitorWidget.x, y: midiMonitorWidget.y)
+                    .frame(width: midiMonitorWidget.width, height: midiMonitorWidget.height, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                
             default:
                 EmptyView()
             }

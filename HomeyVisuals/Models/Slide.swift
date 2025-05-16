@@ -41,7 +41,10 @@ public final class Slide: Identifiable {
     public var tonalityInstrumentWidgets: [TonalityInstrumentWidget] = []
     
     @Relationship(deleteRule: .cascade, inverse: \TonicPitchStatusWidget.slide)
-    public var tonicPitchStatusWidget: [TonicPitchStatusWidget] = []    
+    public var tonicPitchStatusWidgets: [TonicPitchStatusWidget] = []    
+    
+    @Relationship(deleteRule: .cascade, inverse: \MIDIMonitorWidget.slide)
+    public var midiMonitorWidgets: [MIDIMonitorWidget] = []
     
     @Relationship
     public var tonality: Tonality
@@ -54,13 +57,14 @@ public final class Slide: Identifiable {
     @MainActor
     var tonalityInstruments: [TonalityInstrument] {
         tonalityInstrumentWidgets.map { $0.tonalityInstrument } +
-        tonicPitchStatusWidget.map { $0.tonalityInstrument }
+        tonicPitchStatusWidgets.map { $0.tonalityInstrument } +
+        midiMonitorWidgets.map { $0.tonalityInstrument }
     }
     
     @MainActor
     var tonalities: [Tonality] {
         print("tonalityInstrumentWidgets", tonalityInstrumentWidgets)
-        let all = musicalInstrumentWidgets.map(\.musicalInstrument.tonality) + tonalityInstrumentWidgets.map(\.tonalityInstrument.tonality)
+        let all = musicalInstruments.map { $0.tonality } + tonalityInstruments.map { $0.tonality }
         var seen = Set<ObjectIdentifier>()
         return all.filter {
             seen.insert(ObjectIdentifier($0)).inserted
@@ -73,7 +77,8 @@ public final class Slide: Identifiable {
             (cameraWidgets as [any Widget]) +
             (musicalInstrumentWidgets as [any Widget]) +
             (tonalityInstrumentWidgets as [any Widget]) +
-            (tonicPitchStatusWidget as [any Widget]) 
+            (tonicPitchStatusWidgets as [any Widget]) +
+            (midiMonitorWidgets as [any Widget])
         ).sorted { $0.z < $1.z }
     }
     

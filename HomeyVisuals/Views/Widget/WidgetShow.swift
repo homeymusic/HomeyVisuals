@@ -28,13 +28,16 @@ struct WidgetShow: View {
             case let tonicPitchStatusWidget as TonicPitchStatusWidget:
                 TonicPitchStatusWidgetShow(tonicPitchStatusWidget: tonicPitchStatusWidget)
 
+            case let midiMonitorWidget as MIDIMonitorWidget:
+                MIDIMonitorWidgetShow(midiMonitorWidget: midiMonitorWidget)
+                
             default:
                 EmptyView()
             }
         }
-        .allowsHitTesting(
-            widget is MusicalInstrumentWidget ||
-            widget is TonalityInstrumentWidget
-        )
+//        .allowsHitTesting(
+//            widget is MusicalInstrumentWidget ||
+//            widget is TonalityInstrumentWidget
+//        )
     }
 }

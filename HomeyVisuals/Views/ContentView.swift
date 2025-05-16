@@ -44,6 +44,8 @@ struct ContentView: View {
                             TonalityInstrumentWidgetInspect(tonalityInstrumentWidget: tonalityInstrumentWidget)
                         case let tonicPitchStatusWidget as TonicPitchStatusWidget:
                             TonicPitchStatusWidgetInspect(tonicPitchStatusWidget: tonicPitchStatusWidget)
+                        case let midiMonitorWidget as MIDIMonitorWidget:
+                            MIDIMonitorWidgetInspect(midiMonitorWidget: midiMonitorWidget)
                         default:
                             EmptyView()
                         }
@@ -129,6 +131,16 @@ struct ContentView: View {
                 addTonicPitchStatusWidget()
             } label: {
                 TonalityStatusType.tonic.image
+            }
+            .buttonStyle(.borderless)
+            .disabled(appContext.selectedSlide(in: slides) == nil)
+        }
+        
+        ToolbarItem(placement: .principal) {
+            Button {
+                addMIDIMonitorWidget()
+            } label: {
+                TonalityStatusType.midiMonitor.image
             }
             .buttonStyle(.borderless)
             .disabled(appContext.selectedSlide(in: slides) == nil)
@@ -251,7 +263,21 @@ struct ContentView: View {
         )
         
         withAnimation {
-            slide.tonicPitchStatusWidget.append(widget)
+            slide.tonicPitchStatusWidgets.append(widget)
+        }
+        appContext.widgetSelections = [ widget.id ]
+    }
+    
+    private func addMIDIMonitorWidget() {
+        guard let slide = appContext.selectedSlide(in: slides) else { return }
+        let widget = MIDIMonitorWidget.create(
+            slide: slide,
+            midiConductor: midiConductor,
+            in: modelContext
+        )
+        
+        withAnimation {
+            slide.midiMonitorWidgets.append(widget)
         }
         appContext.widgetSelections = [ widget.id ]
     }
