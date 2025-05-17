@@ -11,42 +11,19 @@ struct MIDIMonitorWidgetInspect: View {
 
     @Query(sort: \PitchColorPalette.position, order: .forward)
     private var pitchColorPalettes: [PitchColorPalette]
-
+    
+    private static let integerFormatter: NumberFormatter = {
+      let f = NumberFormatter()
+      f.numberStyle = .none
+      f.allowsFloats = false
+      f.minimum = 0
+      return f
+    }()
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 
-                SectionView(title: "Color Palette") {
-                    VStack(spacing: 4) {
-                        ForEach(intervalColorPalettes, id: \.self) { palette in
-                            ColorPaletteGridRow(
-                                tonalityInstrument: midiMonitorWidget.tonalityInstrument,
-                                colorPalette: palette
-                            )
-                        }
-
-                        Divider()
-                            .padding(.vertical, 4)
-
-                        Toggle("Outline", isOn: outlineBinding)
-                            .tint(.gray)
-                            .foregroundColor(.white)
-                            .onChange(of: outlineBinding.wrappedValue) {
-                                buzz()
-                            }
-
-                        Divider()
-                            .padding(.vertical, 4)
-
-                        ForEach(pitchColorPalettes, id: \.self) { palette in
-                            ColorPaletteGridRow(
-                                tonalityInstrument: midiMonitorWidget.tonalityInstrument,
-                                colorPalette: palette
-                            )
-                        }
-                    }
-                }
-
                 SectionView(title: "Audio and MIDI") {
                     Picker("MIDI Input", selection: midiInSelection) {
                         Text("All").tag(ChannelPickerValue.all)
@@ -64,6 +41,31 @@ struct MIDIMonitorWidgetInspect: View {
                         }
                     }
                     .pickerStyle(.menu)
+                                        
+                    // Free-form integer field for maxStoredEvents
+                    if let midiConductor = midiMonitorWidget
+                                          .tonalityInstrument
+                                          .midiConductor
+                    {
+                      HStack {
+                        Text("Max events to keep:")
+                        TextField(
+                          "",
+                          value: Binding(
+                            get: { midiConductor.maxStoredEvents },
+                            set: { midiConductor.maxStoredEvents = $0 }
+                          ),
+                          formatter: Self.integerFormatter
+                        )
+                        .frame(width: 80)
+                        .multilineTextAlignment(.trailing)
+                        .textFieldStyle(.roundedBorder)
+                        .onSubmit {
+                            midiConductor.maxStoredEvents = max(1, midiConductor.maxStoredEvents)
+                        }
+                      }
+                      .padding(.top, 8)
+                    }
                 }
                 
             }
