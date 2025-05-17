@@ -15,7 +15,7 @@ public final class TonicPitchStatusWidget: Widget {
 
     public var relativeX: Double = 0.5
     public var relativeY: Double = 0.5
-    public var relativeWidth: Double = 1.0 / HomeyMusicKit.goldenRatio
+    public var relativeWidth: Double = 1.0 / (4.0 * HomeyMusicKit.goldenRatio)
     public var relativeHeight: Double = 1.0 / (4.0 * HomeyMusicKit.goldenRatio)
 
     // MARK: — One-to-one persisted instrument relationships
