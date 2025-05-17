@@ -10,6 +10,7 @@ struct SlidePresentation: View {
     
     let slides: [Slide]
     @State private var index: Int
+    @State private var didEnterFullScreen = false
     @State private var isClosing = false
     
     init(slides: [Slide], startIndex: Int = 0) {
@@ -19,10 +20,18 @@ struct SlidePresentation: View {
     
     var body: some View {
         ZStack {
-            // --- Slide area: animate only this part on close ---
-            SlideShow(slide: slides[index])
-                .scaleEffect(isClosing ? 0.05 : 1.0, anchor: .center)
-                .opacity(isClosing ? 0 : 1)
+            
+            Color(nsColor: .windowBackgroundColor)
+              .ignoresSafeArea(.all)
+            
+            if didEnterFullScreen {
+                // --- Slide area: animate only this part on close ---
+                SlideShow(slide: slides[index])
+                    .scaleEffect(isClosing ? 0.05 : 1.0, anchor: .center)
+                    .opacity(isClosing ? 0 : 1)
+            } else {
+                slides[index].backgroundColor
+            }
             
             // Invisible overlay for key handling
             KeyCatcher(
@@ -34,7 +43,11 @@ struct SlidePresentation: View {
             )
             .allowsHitTesting(false)
         }
-        // intercept Esc/Cmd+W
+        .onReceive(NotificationCenter.default
+          .publisher(for: NSWindow.didEnterFullScreenNotification, object: nil)
+        ) { _ in
+          withAnimation { didEnterFullScreen = true }
+        }
         .onExitCommand { close() }
     }
     
@@ -109,8 +122,6 @@ struct SlidePresentation: View {
         window.collectionBehavior         = [.fullScreenPrimary]
         window.titlebarAppearsTransparent = true
         window.titleVisibility            = .hidden
-        // leave window.backgroundColor alone so your letterbox
-        // (and any UI chrome) stays visible during the animation
         window.contentViewController      = hosting
         
         window.makeKeyAndOrderFront(nil)

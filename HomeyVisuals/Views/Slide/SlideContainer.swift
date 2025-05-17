@@ -23,34 +23,34 @@ struct SlideContainer<Content: View>: View {
     
     var body: some View {
         GeometryReader { geo in
-            // 1) Compute the scale that fits your slide into the container
             let letterbox = slide.size
-            let scale = max(
-                min(
+            
+            // Guard against zero width or height
+            if geo.size.width > 0 && geo.size.height > 0 {
+                let scale = min(
                     geo.size.width  / letterbox.width,
                     geo.size.height / letterbox.height
-                ),
-                .leastNonzeroMagnitude
-            )
-            
-            // 2) Kick the scale into AppContext any time it changes
-            ZStack(alignment: .topLeading) {
-                SlideBackground(slide: slide, isThumbnail: isThumbnail)
-                content(scale)
-            }
-            .frame(width:  letterbox.width,
-                   height: letterbox.height)
-            .scaleEffect(scale, anchor: .topLeading)
-            .coordinateSpace(name: "slideSpace")
-            .onAppear {
-                instrumentCache.set(slide.musicalInstruments + slide.tonalityInstruments)
-            }
-            .onChange(of: slide.reloadTrigger) {
-                instrumentCache.set(slide.musicalInstruments + slide.tonalityInstruments)
-            }
-            .onDisappear {
-                // slide was removed from the hierarchy (i.e. deleted)
-                instrumentCache.set([])
+                )
+                
+                ZStack(alignment: .topLeading) {
+                    SlideBackground(slide: slide, isThumbnail: isThumbnail)
+                    content(scale)
+                }
+                .frame(width: letterbox.width, height: letterbox.height)
+                .scaleEffect(scale, anchor: .topLeading)
+                .coordinateSpace(name: "slideSpace")
+                .onAppear {
+                    instrumentCache.set(slide.musicalInstruments + slide.tonalityInstruments)
+                }
+                .onChange(of: slide.reloadTrigger) {
+                    instrumentCache.set(slide.musicalInstruments + slide.tonalityInstruments)
+                }
+                .onDisappear {
+                    instrumentCache.set([])
+                }
+            } else {
+                // Render placeholder or empty space initially
+                Color.clear
             }
         }
         .aspectRatio(CGFloat(slide.aspectRatio.ratio), contentMode: .fit)
