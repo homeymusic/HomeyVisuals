@@ -19,7 +19,7 @@ public final class MusicalInstrumentWidget: Widget {
     public var relativeHeight: Double = 1.0 / (2.0 * HomeyMusicKit.goldenRatio)
     
     // MARK: — Content type
-    public var musicalInstrumentType: MIDIInstrumentType
+    public var instrumentType: InstrumentType
     
     // MARK: — One-to-one persisted instrument relationships
     @Relationship(deleteRule: .cascade) public var tonnetz: Tonnetz?
@@ -36,30 +36,30 @@ public final class MusicalInstrumentWidget: Widget {
     private init(
         slide: Slide,
         zIndex: Int,
-        musicalInstrumentType: MIDIInstrumentType
+        musicalInstrumentType: InstrumentType
     ) {
         self.id               = UUID()
         self.slide            = slide
         self.z                = zIndex
-        self.musicalInstrumentType = musicalInstrumentType
+        self.instrumentType = musicalInstrumentType
     }
     
     // MARK: — Static factory for creation + persistence
     @MainActor
     public static func create(
         slide: Slide,
-        type: MIDIInstrumentType,
+        instrumentType: InstrumentType,
         midiConductor: MIDIConductor,
         in modelContext: ModelContext
     ) -> MusicalInstrumentWidget {
         let widget = MusicalInstrumentWidget(
             slide: slide,
             zIndex:   slide.highestZ + 1,
-            musicalInstrumentType: type
+            musicalInstrumentType: instrumentType
         )
         modelContext.insert(widget)
         
-        switch type {
+        switch instrumentType {
         case .tonnetz:
             let i = Tonnetz(tonality: slide.tonality)
             modelContext.insert(i)
@@ -114,7 +114,7 @@ public final class MusicalInstrumentWidget: Widget {
     
     public var musicalInstrument: any MusicalInstrument {
         let musicalInstrument: any MusicalInstrument = {
-            switch musicalInstrumentType {
+            switch instrumentType {
             case .tonnetz:      return tonnetz!
             case .linear:       return linear!
             case .diamanti:     return diamanti!
@@ -137,7 +137,7 @@ extension MusicalInstrumentWidget {
     /// Include geometry + content in the hash snapshot.
     public var widgetHash: AnyHashable {
         var arr = Self.baseHashElements(of: self as! Self)
-        arr.append(AnyHashable(musicalInstrumentType))
+        arr.append(AnyHashable(instrumentType))
         return AnyHashable(arr)
     }
 }

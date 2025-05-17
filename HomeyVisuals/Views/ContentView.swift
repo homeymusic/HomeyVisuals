@@ -105,7 +105,7 @@ struct ContentView: View {
         }
         
         ToolbarItemGroup(placement: .principal) {
-            ForEach(MIDIInstrumentType.allInstruments) { choice in
+            ForEach(InstrumentType.allInstruments) { choice in
                 Button {
                     addMusicalInstrumentWidget(instrumentType: choice)
                 } label: {
@@ -224,11 +224,11 @@ struct ContentView: View {
         appContext.widgetSelections = [ widget.id ]
     }
     
-    private func addMusicalInstrumentWidget(instrumentType: MIDIInstrumentType) {
+    private func addMusicalInstrumentWidget(instrumentType: InstrumentType) {
         guard let slide = appContext.selectedSlide(in: slides) else { return }
         let widget = MusicalInstrumentWidget.create(
             slide: slide,
-            type: instrumentType,
+            instrumentType: instrumentType,
             midiConductor: midiConductor,
             in: modelContext
         )
