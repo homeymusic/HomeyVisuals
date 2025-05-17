@@ -15,8 +15,8 @@ public final class MIDIMonitorWidget: Widget {
 
     public var relativeX: Double = 0.5
     public var relativeY: Double = 0.5
-    public var relativeWidth: Double = 1.0 / HomeyMusicKit.goldenRatio
-    public var relativeHeight: Double = 1.0 / (4.0 * HomeyMusicKit.goldenRatio)
+    public var relativeWidth: Double = 0.5
+    public var relativeHeight: Double = 0.5
 
     // MARK: — One-to-one persisted instrument relationships
     @Relationship(deleteRule: .cascade) public var tonalityInstrument: TonalityInstrument

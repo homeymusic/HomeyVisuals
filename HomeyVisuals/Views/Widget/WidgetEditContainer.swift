@@ -48,17 +48,61 @@ struct WidgetEditContainer<W: Widget & Observable, Content: View>: View {
 
     private var selectionOverlay: some View {
         ZStack {
-            // border inset by half a handle so strokes align with handle centers
-            Rectangle()
-                .inset(by: handleSize / 2)
-                .stroke(
-                    isDragging || isEditing ? Color.gray :
-                    isSelected              ? Color.blue :
-                                               Color.clear,
-                    lineWidth: 1
-                )
+            // — Frame border for each state —
+            if isEditing {
+                // gray border when editable
+                Rectangle()
+                    .inset(by: handleSize / 2)
+                    .stroke(Color.gray, lineWidth: 1)
+            }
+            else if isSelected {
+                // blue border when selected (including dragging)
+                Rectangle()
+                    .inset(by: handleSize / 2)
+                    .stroke(Color.blue, lineWidth: 1)
+            }
 
-            if isSelected && !isDragging && !isEditing {
+            // — Handles or crosshairs based on state —
+            if isEditing {
+                // no handles when in edit mode
+                EmptyView()
+            }
+            else if isDragging {
+                // narrow crosshair handles while dragging
+                GeometryReader { geo in
+                    let w = geo.size.width
+                    let h = geo.size.height
+                    let length = handleSize
+                    let thickness: CGFloat = 3
+
+                    ForEach(Array(widget.allowedResizePositions), id: \.self) { pos in
+                        let cx = xPos(for: pos, in: w)
+                        let cy = yPos(for: pos, in: h)
+
+                        let (tickW, tickH, angle): (CGFloat, CGFloat, Angle) = {
+                            switch pos {
+                            case .top, .bottom:
+                                return (thickness, length, .degrees(0))
+                            case .leading, .trailing:
+                                return (length, thickness, .degrees(0))
+                            case .topLeading, .bottomTrailing:
+                                return (length, thickness, .degrees(45))
+                            case .topTrailing, .bottomLeading:
+                                return (length, thickness, .degrees(-45))
+                            }
+                        }()
+
+                        Rectangle()
+                            .fill(Color.white)
+                            .frame(width: tickW, height: tickH)
+                            .overlay(Rectangle().stroke(Color.black, lineWidth: 1))
+                            .rotationEffect(angle)
+                            .position(x: cx, y: cy)
+                    }
+                }
+            }
+            else if isSelected {
+                // normal square handles when selected (not dragging/editing)
                 GeometryReader { geo in
                     let w = geo.size.width
                     let h = geo.size.height
@@ -139,7 +183,6 @@ struct WidgetEditContainer<W: Widget & Observable, Content: View>: View {
     private func resizeGesture(for pos: FrameResizePosition) -> some Gesture {
         DragGesture(coordinateSpace: .global)
             .onChanged { value in
-                // compute delta from last drag point
                 let prev = lastTranslation[pos] ?? .zero
                 let rawDelta = CGSize(
                     width:  value.translation.width  - prev.width,
